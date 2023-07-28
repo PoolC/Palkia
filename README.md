@@ -1,6 +1,6 @@
-# MINCHO
+# Palkia
 
-풀씨 백엔드 API 개편 프로젝트
+풀씨 백엔드 API 개편 개편 프로젝트
 
 ## Getting Started
 

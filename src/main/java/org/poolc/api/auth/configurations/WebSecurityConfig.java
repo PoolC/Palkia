@@ -38,8 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(Arrays.asList("https://alpha.poolc.org",
-                "https://poolc.org", "http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList("*"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control",
                 "Content-Type", "Accept", "Content-Length", "Accept-Encoding", "X-Requested-With"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
@@ -64,6 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT, "/project/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.DELETE, "/project/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers("/project/**").permitAll()
+                .antMatchers("/swagger-ui/*").permitAll()
 
                 .antMatchers(HttpMethod.POST, "/board").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.PUT, "/board/*").hasAuthority(MemberRole.ADMIN.name())
