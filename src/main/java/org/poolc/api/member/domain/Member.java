@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.Getter;
 import org.poolc.api.auth.exception.UnauthorizedException;
-import org.poolc.api.board.domain.Board;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.common.exception.ConflictException;
 import org.poolc.api.interview.domain.InterviewSlot;
@@ -189,12 +188,6 @@ public class Member extends TimestampEntity implements UserDetails {
         InterviewSlot slot = interviewSlot.deleteMember(this);
         this.interviewSlot = null;
         return slot;
-    }
-
-    public List<Board> getAccessibleBoards(List<Board> boards) {
-        return boards.stream()
-                .filter(board -> board.memberHasReadPermissions(roles))
-                .collect(Collectors.toList());
     }
 
     @Override
