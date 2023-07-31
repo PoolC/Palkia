@@ -15,7 +15,6 @@ import static javax.persistence.FetchType.LAZY;
         sequenceName = "COMMENT_SEQ"
 )
 @Getter
-@Builder
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "COMMENT_SEQ_GENERATOR")
@@ -45,4 +44,11 @@ public class Comment {
         this.body = body;
     }
 
+    public Comment(Long id, GeneralPost generalPost, Member member, Boolean anonymous, String body) {
+        this.id = id;
+        this.generalPost = generalPost;
+        this.member = member;
+        this.anonymous = anonymous;
+        this.body = body;
+    }
 }
