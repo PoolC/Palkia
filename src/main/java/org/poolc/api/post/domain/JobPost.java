@@ -3,18 +3,17 @@ package org.poolc.api.post.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
-import org.poolc.api.comment.domain.Reply;
+
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
 
 @Entity
 @Getter
 @SequenceGenerator(
         name = "JOB_POST_GENERATOR",
-        sequenceName = "JOB_SEQ"
+        sequenceName = "JOB_POST_SEQ"
 )
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JobPost extends Post {
@@ -36,10 +35,6 @@ public class JobPost extends Post {
 
     @Column(name = "deadline")
     private LocalDateTime deadline;
-
-    @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private List<Reply> replyList = new ArrayList<>();
 
     public JobPost() {}
 

@@ -3,7 +3,7 @@ package org.poolc.api.comment.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import org.poolc.api.member.domain.Member;
-import org.poolc.api.post.domain.JobPost;
+import org.poolc.api.post.domain.QuestionPost;
 
 import javax.persistence.*;
 
@@ -23,8 +23,8 @@ public class Reply {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "job_post_id", nullable = false, referencedColumnName = "ID")
-    private JobPost jobPost;
+    @JoinColumn(name = "question_post_id", nullable = false, referencedColumnName = "ID")
+    private QuestionPost questionPost;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "author_uuid", nullable = false, referencedColumnName = "UUID")
@@ -41,8 +41,8 @@ public class Reply {
 
     public Reply() {}
 
-    public Reply(JobPost jobPost, Member member, Boolean anonymous, String body, Long likeCount) {
-        this.jobPost = jobPost;
+    public Reply(QuestionPost questionPost, Member member, Boolean anonymous, String body, Long likeCount) {
+        this.questionPost = questionPost;
         this.member = member;
         this.anonymous = anonymous;
         this.body = body;
