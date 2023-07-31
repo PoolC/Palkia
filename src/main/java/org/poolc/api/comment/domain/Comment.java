@@ -7,6 +7,9 @@ import org.poolc.api.post.domain.GeneralPost;
 
 import javax.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static javax.persistence.FetchType.LAZY;
 
 @Entity(name = "Comment")
@@ -35,20 +38,42 @@ public class Comment {
     @Column(name = "body", nullable = false, columnDefinition = "text")
     private String body;
 
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted = false;
+
+    // 대댓글이면 children 가질 수 없음
+    @Column(name = "is_child", nullable = false)
+    private Boolean isChild;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "parent_id", referencedColumnName = "ID")
+    private Comment parent;
+
+    @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    private List<Comment> children = new ArrayList<>();
+
     public Comment() {}
 
-    public Comment(GeneralPost generalPost, Member member, Boolean anonymous, String body) {
-        this.generalPost = generalPost;
-        this.member = member;
-        this.anonymous = anonymous;
-        this.body = body;
-    }
-
-    public Comment(Long id, GeneralPost generalPost, Member member, Boolean anonymous, String body) {
+    public Comment(Long id, GeneralPost generalPost, Member member, Boolean anonymous, String body, Boolean isDeleted, Boolean isChild, Comment parent, List<Comment> children) {
         this.id = id;
         this.generalPost = generalPost;
         this.member = member;
         this.anonymous = anonymous;
         this.body = body;
+        this.isDeleted = isDeleted;
+        this.isChild = isChild;
+        this.parent = parent;
+        this.children = children;
+    }
+
+    public Comment(GeneralPost generalPost, Member member, Boolean anonymous, String body, Boolean isDeleted, Boolean isChild, Comment parent, List<Comment> children) {
+        this.generalPost = generalPost;
+        this.member = member;
+        this.anonymous = anonymous;
+        this.body = body;
+        this.isDeleted = isDeleted;
+        this.isChild = isChild;
+        this.parent = parent;
+        this.children = children;
     }
 }
