@@ -27,16 +27,20 @@ public class QuestionPost extends Post {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private List<Reply> replyList = new ArrayList<>();
 
-    public QuestionPost() {}
+    public QuestionPost() {
+        super.setPostType(PostType.QUESTION_POST);
+    }
 
     public QuestionPost(Long id, List<Reply> replyList) {
         this.id = id;
         this.replyList = replyList;
+        super.setPostType(PostType.QUESTION_POST);
     }
 
     public QuestionPost(Board board, Member member, Boolean anonymous, String title, String body, Long id, List<Reply> replyList) {
         super(board, member, anonymous, title, body);
         this.id = id;
         this.replyList = replyList;
+        super.setPostType(PostType.QUESTION_POST);
     }
 }

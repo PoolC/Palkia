@@ -38,7 +38,9 @@ public class JobPost extends Post {
     @Column(name = "deadline")
     private LocalDateTime deadline;
 
-    public JobPost() {}
+    public JobPost() {
+        super.setPostType(PostType.JOB_POST);
+    }
 
     public JobPost(Long id, JobType position, String region, String field, LocalDateTime deadline) {
         this.id = id;
@@ -46,6 +48,7 @@ public class JobPost extends Post {
         this.region = region;
         this.field = field;
         this.deadline = deadline;
+        super.setPostType(PostType.JOB_POST);
     }
 
     public JobPost(Board board, Member member, Boolean anonymous, String title, String body, Long id, JobType position, String region, String field, LocalDateTime deadline) {
@@ -55,7 +58,7 @@ public class JobPost extends Post {
         this.region = region;
         this.field = field;
         this.deadline = deadline;
+        super.setPostType(PostType.JOB_POST);
     }
-
 
 }

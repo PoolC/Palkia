@@ -40,6 +40,9 @@ public abstract class Post extends TimestampEntity {
     @Column(name = "file_uri", columnDefinition = "varchar(1024)")
     private List<String> fileList = new ArrayList<>();
 
+    @Column(name = "post_type", nullable = false)
+    private PostType postType;
+
     @Column(name = "like_count", columnDefinition = "bigint default 0")
     private Long likeCount;
 
@@ -75,4 +78,7 @@ public abstract class Post extends TimestampEntity {
         this.body = body;
     }
 
+    public void setPostType(PostType postType) {
+        this.postType = postType;
+    }
 }

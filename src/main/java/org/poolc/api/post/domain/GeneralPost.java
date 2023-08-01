@@ -27,15 +27,19 @@ public class GeneralPost extends Post {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private List<Comment> commentList = new ArrayList<>();
 
-    public GeneralPost() {}
+    public GeneralPost() {
+        super.setPostType(PostType.GENERAL_POST);
+    }
 
     public GeneralPost(Long id, List<Comment> commentList) {
+        super.setPostType(PostType.GENERAL_POST);
         this.id = id;
         this.commentList = commentList;
     }
 
     public GeneralPost(Board board, Member member, Boolean anonymous, String title, String body, Long id, List<Comment> commentList) {
         super(board, member, anonymous, title, body);
+        super.setPostType(PostType.GENERAL_POST);
         this.id = id;
         this.commentList = commentList;
     }
