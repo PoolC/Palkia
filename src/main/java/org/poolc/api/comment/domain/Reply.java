@@ -2,6 +2,7 @@ package org.poolc.api.comment.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
+import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.domain.QuestionPost;
 
@@ -16,7 +17,7 @@ import static javax.persistence.FetchType.LAZY;
 )
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Reply {
+public class Reply extends TimestampEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "REPLY_SEQ_GENERATOR")
@@ -36,16 +37,20 @@ public class Reply {
     @Column(name = "body", nullable = false)
     private String body;
 
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted = false;
+
     @Column(name = "like_count", columnDefinition = "bigint default 0")
     private Long likeCount;
 
     public Reply() {}
 
-    public Reply(QuestionPost questionPost, Member member, Boolean anonymous, String body, Long likeCount) {
+    public Reply(QuestionPost questionPost, Member member, Boolean anonymous, String body, Boolean isDeleted, Long likeCount) {
         this.questionPost = questionPost;
         this.member = member;
         this.anonymous = anonymous;
         this.body = body;
+        this.isDeleted = isDeleted;
         this.likeCount = likeCount;
     }
 
