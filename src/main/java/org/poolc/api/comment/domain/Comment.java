@@ -2,6 +2,7 @@ package org.poolc.api.comment.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.domain.GeneralPost;
 
@@ -18,7 +19,8 @@ import static javax.persistence.FetchType.LAZY;
         sequenceName = "COMMENT_SEQ"
 )
 @Getter
-public class Comment {
+@Builder
+public class Comment extends TimestampEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "COMMENT_SEQ_GENERATOR")
     @Column(name = "id")
@@ -49,7 +51,7 @@ public class Comment {
     @JoinColumn(name = "parent_id", referencedColumnName = "ID")
     private Comment parent;
 
-    @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    @OneToMany(mappedBy = "parent")
     private List<Comment> children = new ArrayList<>();
 
     public Comment() {}
@@ -76,4 +78,9 @@ public class Comment {
         this.parent = parent;
         this.children = children;
     }
+
+    public void setIsDeleted() {
+        this.isDeleted = true;
+    }
+    public boolean hasChildren() { return this.getChildren().size() != 0; }
 }
