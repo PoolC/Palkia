@@ -34,14 +34,14 @@ public class Comment extends TimestampEntity {
     @JoinColumn(name = "author_uuid", nullable = false, referencedColumnName = "UUID")
     private Member member;
 
-    @Column(name = "anonymous", nullable = false)
-    private Boolean anonymous = false;
+    @Column(name = "anonymous", nullable = false, columnDefinition = "boolean default false")
+    private Boolean anonymous;
 
     @Column(name = "body", nullable = false, columnDefinition = "text")
     private String body;
 
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted = false;
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
+    private Boolean isDeleted;
 
     // 대댓글이면 children 가질 수 없음
     @Column(name = "is_child", nullable = false)
@@ -52,6 +52,7 @@ public class Comment extends TimestampEntity {
     private Comment parent;
 
     @OneToMany(mappedBy = "parent")
+    @Builder.Default
     private List<Comment> children = new ArrayList<>();
 
     public Comment() {}

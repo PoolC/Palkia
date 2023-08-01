@@ -33,14 +33,14 @@ public class Reply extends TimestampEntity {
     @JoinColumn(name = "author_uuid", nullable = false, referencedColumnName = "UUID")
     private Member member;
 
-    @Column(name = "anonymous", nullable = false)
-    private Boolean anonymous = false;
+    @Column(name = "anonymous", nullable = false, columnDefinition = "boolean default false")
+    private Boolean anonymous;
 
     @Column(name = "body", nullable = false)
     private String body;
 
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted = false;
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
+    private Boolean isDeleted;
 
     @Column(name = "like_count", columnDefinition = "bigint default 0")
     private Long likeCount;
