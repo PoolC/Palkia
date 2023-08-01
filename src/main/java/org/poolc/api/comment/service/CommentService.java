@@ -60,8 +60,24 @@ public class CommentService {
     }
 
     public void deleteComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new NoSuchElementException("No comment found with given comment id."));
+        Comment comment = findOne(commentId);
         comment.setIsDeleted();
+    }
+
+    public void updateComment(Long commentId, CommentUpdateValues commentUpdateValues) {
+        Comment comment = findOne(commentId);
+        if (!comment.getIsQuestion()) {
+            comment.updateComment(commentUpdateValues);
+        }
+    }
+
+    public void likeComment(Long commentId) {
+        Comment comment = findOne(commentId);
+        if (comment.getIsQuestion()) comment.addLikeCount();
+    }
+
+    public void dislikeComment(Long commentId) {
+        Comment comment = findOne(commentId);
+        if (comment.getIsQuestion()) comment.deductLikeCount();
     }
 }

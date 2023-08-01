@@ -2,6 +2,7 @@ package org.poolc.api.comment.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.poolc.api.comment.vo.CommentUpdateValues;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.domain.GeneralPost;
@@ -59,6 +60,9 @@ public class Comment extends TimestampEntity {
     @Builder.Default
     private List<Comment> children = new ArrayList<>();
 
+    @Column(name = "like_count")
+    private Long likeCount;
+
     public Comment() {}
 
     public Comment(Long id, GeneralPost generalPost, Member member, Boolean anonymous, Boolean isQuestion, String body, Boolean isDeleted, Boolean isChild, Comment parent, List<Comment> children) {
@@ -72,10 +76,21 @@ public class Comment extends TimestampEntity {
         this.isChild = isChild;
         this.parent = parent;
         this.children = children;
+        if (this.isQuestion) this.likeCount = 0L;
     }
 
     public void setIsDeleted() {
         this.isDeleted = true;
     }
     public boolean hasChildren() { return this.getChildren().size() != 0; }
+    public void updateComment(CommentUpdateValues commentUpdateValues) {
+        this.anonymous = commentUpdateValues.getAnonymous();
+        this.body = commentUpdateValues.getBody();
+    }
+    public void addLikeCount() {
+        if (this.isQuestion) likeCount ++;
+    }
+    public void deductLikeCount() {
+        if (this.isQuestion) likeCount --;
+    }
 }
