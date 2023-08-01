@@ -37,6 +37,10 @@ public class Comment extends TimestampEntity {
     @Column(name = "anonymous", nullable = false, columnDefinition = "boolean default false")
     private Boolean anonymous;
 
+    // 질문이면 수정 삭제 방지
+    @Column(name = "is_question", nullable = false, columnDefinition = "boolean default false")
+    private Boolean isQuestion;
+
     @Column(name = "body", nullable = false, columnDefinition = "text")
     private String body;
 
@@ -57,22 +61,12 @@ public class Comment extends TimestampEntity {
 
     public Comment() {}
 
-    public Comment(Long id, GeneralPost generalPost, Member member, Boolean anonymous, String body, Boolean isDeleted, Boolean isChild, Comment parent, List<Comment> children) {
+    public Comment(Long id, GeneralPost generalPost, Member member, Boolean anonymous, Boolean isQuestion, String body, Boolean isDeleted, Boolean isChild, Comment parent, List<Comment> children) {
         this.id = id;
         this.generalPost = generalPost;
         this.member = member;
         this.anonymous = anonymous;
-        this.body = body;
-        this.isDeleted = isDeleted;
-        this.isChild = isChild;
-        this.parent = parent;
-        this.children = children;
-    }
-
-    public Comment(GeneralPost generalPost, Member member, Boolean anonymous, String body, Boolean isDeleted, Boolean isChild, Comment parent, List<Comment> children) {
-        this.generalPost = generalPost;
-        this.member = member;
-        this.anonymous = anonymous;
+        this.isQuestion = isQuestion;
         this.body = body;
         this.isDeleted = isDeleted;
         this.isChild = isChild;
