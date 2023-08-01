@@ -1,7 +1,9 @@
 package org.poolc.api.comment.dto;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.poolc.api.comment.domain.Comment;
 
 import java.time.LocalDateTime;
@@ -10,64 +12,47 @@ import java.util.stream.Collectors;
 
 @Getter
 @Builder
+@Setter(AccessLevel.PRIVATE)
 public class CommentResponse {
-    private final Long commentId;
-    private final Long generalPostId;
-    private final String writerLoginId;
-    private final String writerName;
-    private final Boolean anonymous;
-    private final String body;
-    private final Boolean isDeleted;
-    private final Boolean isChild;
-    private final Long parentCommentId;
-    private final List<CommentResponse> children;
-    private final LocalDateTime createdAt;
+    private Long commentId;
+    private Long generalPostId;
+    private String writerLoginId;
+    private String writerName;
+    private Boolean anonymous;
+    private String body;
+    private Long parentCommentId;
+    private List<CommentResponse> children;
+    private Long likeCount;
+    private LocalDateTime createdAt;
+
+    public CommentResponse() {}
 
     public static CommentResponse of(Comment comment) {
-        List<CommentResponse> children = comment.getChildren()
-                .stream().map(CommentResponse::of)
-                .collect(Collectors.toList());
-        if (comment.getIsDeleted() && !comment.hasChildren()) {
-            return null;
-        } else if (comment.getIsDeleted() && comment.hasChildren()) {
-            return CommentResponse.builder()
-                    .commentId(comment.getId())
-                    .generalPostId(comment.getGeneralPost().getId())
-                    .writerLoginId(null)
-                    .writerName(null)
-                    .body("삭제된 댓글입니다.")
-                    .isDeleted(true)
-                    .isChild(false)
-                    .parentCommentId(null)
-                    .children(children)
-                    .createdAt(comment.getCreatedAt())
-                    .build();
-        } else if (comment.getAnonymous()) {
-            return CommentResponse.builder()
-                    .commentId(comment.getId())
-                    .generalPostId(comment.getGeneralPost().getId())
-                    .writerLoginId(null)
-                    .writerName(null)
-                    .body(comment.getBody())
-                    .isDeleted(false)
-                    .isChild(comment.getIsChild())
-                    .parentCommentId(comment.getParent().getId())
-                    .children(children)
-                    .createdAt(comment.getCreatedAt())
-                    .build();
+        CommentResponse response = new CommentResponse();
+
+        if (comment.getIsDeleted()) {
+            // 삭제된 자식 없는 댓글
+            if (!comment.hasChildren()) return null;
+            // 삭제된 자식 있는 댓글
+            else response.setBody("삭제된 댓글입니다.");
         } else {
-            return CommentResponse.builder()
-                    .commentId(comment.getId())
-                    .generalPostId(comment.getGeneralPost().getId())
-                    .writerLoginId(comment.getMember().getLoginID())
-                    .writerName(comment.getMember().getName())
-                    .body(comment.getBody())
-                    .isDeleted(false)
-                    .isChild(comment.getIsChild())
-                    .parentCommentId(comment.getParent().getId())
-                    .children(children)
-                    .createdAt(comment.getCreatedAt())
-                    .build();
+            response.setCommentId(comment.getId());
+            response.setGeneralPostId(comment.getGeneralPost().getId());
+            response.setCreatedAt(comment.getCreatedAt());
+            // 익명 아닌 댓글
+            if (!comment.getAnonymous()) {
+                response.setWriterLoginId(comment.getMember().getLoginID());
+                response.setWriterName(comment.getMember().getName());
+            }
+            // 답변은 좋아요 개수 포함
+            if (comment.getIsQuestion()) response.setLikeCount(comment.getLikeCount());
+            if (comment.hasChildren()) {
+                response.setChildren(comment.getChildren()
+                        .stream().map(CommentResponse::of)
+                        .collect(Collectors.toList()));
+            }
+            if (comment.getIsChild()) response.setParentCommentId(comment.getParent().getId());
         }
+        return response;
     }
 }
