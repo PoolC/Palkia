@@ -2,11 +2,11 @@ package org.poolc.api.post.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
+import org.poolc.api.post.domain.JobType;
 import org.poolc.api.post.domain.PostType;
 
+import java.time.LocalDateTime;
 import java.util.List;
-
-/* Create request for General & Question Post*/
 
 @Getter
 public class PostCreateRequest {
@@ -16,6 +16,10 @@ public class PostCreateRequest {
     private final String body;
     private final List<String> fileList;
     private final PostType postType;
+    private JobType position;
+    private String region;
+    private String field;
+    private LocalDateTime deadline;
 
     @JsonCreator
     public PostCreateRequest(Long boardId, Boolean anonymous, String title, String body, List<String> fileList, PostType postType) {
@@ -27,4 +31,17 @@ public class PostCreateRequest {
         this.postType = postType;
     }
 
+    @JsonCreator
+    public PostCreateRequest(Long boardId, Boolean anonymous, String title, String body, List<String> fileList, PostType postType, JobType position, String region, String field, LocalDateTime deadline) {
+        this.boardId = boardId;
+        this.anonymous = anonymous;
+        this.title = title;
+        this.body = body;
+        this.fileList = fileList;
+        this.postType = postType;
+        this.position = position;
+        this.region = region;
+        this.field = field;
+        this.deadline = deadline;
+    }
 }
