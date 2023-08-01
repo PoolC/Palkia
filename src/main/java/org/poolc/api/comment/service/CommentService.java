@@ -5,6 +5,7 @@ import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.comment.dto.CommentResponse;
 import org.poolc.api.comment.repository.CommentRepository;
 import org.poolc.api.comment.vo.CommentCreateValues;
+import org.poolc.api.comment.vo.CommentUpdateValues;
 import org.poolc.api.post.domain.GeneralPost;
 import org.springframework.stereotype.Service;
 
