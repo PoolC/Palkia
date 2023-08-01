@@ -40,13 +40,6 @@ public class JobPost extends Post {
 
     public JobPost() {}
 
-    public JobPost(JobType position, String region, String field, LocalDateTime deadline) {
-        this.position = position;
-        this.region = region;
-        this.field = field;
-        this.deadline = deadline;
-    }
-
     public JobPost(Long id, JobType position, String region, String field, LocalDateTime deadline) {
         this.id = id;
         this.position = position;
