@@ -47,6 +47,16 @@ public class Reply extends TimestampEntity {
 
     public Reply() {}
 
+    public Reply(Long id, QuestionPost questionPost, Member member, Boolean anonymous, String body, Boolean isDeleted, Long likeCount) {
+        this.id = id;
+        this.questionPost = questionPost;
+        this.member = member;
+        this.anonymous = anonymous;
+        this.body = body;
+        this.isDeleted = isDeleted;
+        this.likeCount = likeCount;
+    }
+
     public Reply(QuestionPost questionPost, Member member, Boolean anonymous, String body, Boolean isDeleted, Long likeCount) {
         this.questionPost = questionPost;
         this.member = member;
