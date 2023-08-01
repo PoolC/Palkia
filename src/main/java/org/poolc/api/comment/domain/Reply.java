@@ -1,6 +1,7 @@
 package org.poolc.api.comment.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Builder;
 import lombok.Getter;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
@@ -16,6 +17,7 @@ import static javax.persistence.FetchType.LAZY;
         sequenceName = "REPLY_SEQ"
 )
 @Getter
+@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Reply extends TimestampEntity {
     @Id
@@ -61,5 +63,7 @@ public class Reply extends TimestampEntity {
     public void deductLikeCount() {
         this.likeCount --;
     }
+
+    public void setIsDeleted() { this.isDeleted = true; }
 
 }
