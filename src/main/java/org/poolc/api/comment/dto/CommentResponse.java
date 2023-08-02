@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-@Builder
 @Setter(AccessLevel.PRIVATE)
 public class CommentResponse {
     private Long commentId;
@@ -37,7 +36,7 @@ public class CommentResponse {
             else response.setBody("삭제된 댓글입니다.");
         } else {
             response.setCommentId(comment.getId());
-            response.setGeneralPostId(comment.getGeneralPost().getId());
+            response.setGeneralPostId(comment.getPost().getId());
             response.setCreatedAt(comment.getCreatedAt());
             // 익명 아닌 댓글
             if (!comment.getAnonymous()) {
@@ -45,7 +44,7 @@ public class CommentResponse {
                 response.setWriterName(comment.getMember().getName());
             }
             // 답변은 좋아요 개수 포함
-            if (comment.getIsQuestion()) response.setLikeCount(comment.getLikeCount());
+            if (comment.getPost().getIsQuestion()) response.setLikeCount(comment.getLikeCount());
             if (comment.hasChildren()) {
                 response.setChildren(comment.getChildren()
                         .stream().map(CommentResponse::of)

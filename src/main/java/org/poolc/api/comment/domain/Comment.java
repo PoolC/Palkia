@@ -2,6 +2,7 @@ package org.poolc.api.comment.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.poolc.api.comment.vo.CommentCreateValues;
 import org.poolc.api.comment.vo.CommentUpdateValues;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
@@ -20,7 +21,6 @@ import static javax.persistence.FetchType.LAZY;
         sequenceName = "COMMENT_SEQ"
 )
 @Getter
-@Builder
 public class Comment extends TimestampEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "COMMENT_SEQ_GENERATOR")
@@ -71,6 +71,22 @@ public class Comment extends TimestampEntity {
         this.parent = parent;
         this.children = children;
         this.likeCount = likeCount;
+    }
+
+    public Comment(CommentCreateValues values) {
+        this.post = values.getPost();
+        this.member = values.getMember();
+        this.anonymous = values.getAnonymous();
+        this.body = values.getBody();
+        this.isDeleted = false;
+        this.parent = values.getParent();
+        if (parent != null) {
+            this.isChild = true;
+        } else {
+            this.isChild = false;
+        }
+        this.children = new ArrayList<>();
+        this.likeCount = 0L;
     }
 
     public void setIsDeleted() {

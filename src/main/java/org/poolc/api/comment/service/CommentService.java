@@ -16,35 +16,13 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
-    public CommentResponse createComment(CommentCreateValues values) {
-        Comment comment = Comment.builder()
-                .post(values.getPost())
-                .member(values.getMember())
-                .anonymous(values.getAnonymous())
-                .body(values.getBody())
-                .isDeleted(false)
-                .isChild(false)
-                .parent(null)
-                .build();
-        commentRepository.save(comment);
-        return CommentResponse.of(comment);
-    }
-
-    public CommentResponse createThread(Comment parent, CommentCreateValues values) {
-        if (parent.getIsChild()) {
-            return new CommentResponse();
+    public Comment createComment(CommentCreateValues values) {
+        if (values.getParent().getIsChild()) {
+            return null;
         } else {
-            Comment comment = Comment.builder()
-                    .post(values.getPost())
-                    .member(values.getMember())
-                    .anonymous(values.getAnonymous())
-                    .body(values.getBody())
-                    .isDeleted(false)
-                    .isChild(true)
-                    .parent(values.getParent())
-                    .build();
+            Comment comment = new Comment(values);
             commentRepository.save(comment);
-            return CommentResponse.of(comment);
+            return comment;
         }
     }
 
