@@ -1,7 +1,6 @@
 package org.poolc.api.member.service;
 
 import lombok.RequiredArgsConstructor;
-import org.poolc.api.mail.dto.MailDto;
 import org.poolc.api.member.dto.MailDto;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
