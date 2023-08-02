@@ -22,6 +22,7 @@ public class CommentService {
         } else {
             Comment comment = new Comment(values);
             commentRepository.save(comment);
+            comment.getPost().addCommentCount();
             return comment;
         }
     }
@@ -44,6 +45,7 @@ public class CommentService {
     public void deleteComment(Long commentId) {
         Comment comment = findById(commentId);
         comment.setIsDeleted();
+        comment.getPost().deductCommentCount();
     }
 
     public void updateComment(Long commentId, CommentUpdateValues commentUpdateValues) {
