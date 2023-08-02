@@ -59,23 +59,19 @@ public class Activity {
     private Boolean available;
 
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<ActivityTag> tags = new ArrayList<>();
 
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<Session> sessions = new ArrayList<>();
 
     @ElementCollection(fetch = EAGER)
     @CollectionTable(name = "activity_members", joinColumns = @JoinColumn(name = "activity_id"), uniqueConstraints = {@UniqueConstraint(columnNames = {"activity_id", "member_login_id"})})
     @Column(name = "member_login_id")
-    @Builder.Default
     private List<String> memberLoginIDs = new ArrayList<>();
 
     @ElementCollection(fetch = LAZY)
     @CollectionTable(name = "activity_file_list", joinColumns = @JoinColumn(name = "activity_id"), uniqueConstraints = {@UniqueConstraint(columnNames = {"activity_id", "file_uri"})})
     @Column(name = "file_uri", columnDefinition = "varchar(1024)")
-    @Builder.Default
     private List<String> fileList = new ArrayList<>();
 
     public Activity() {
