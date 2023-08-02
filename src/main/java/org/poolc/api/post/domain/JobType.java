@@ -21,5 +21,8 @@ public enum JobType {
     },
     COMPETITION {
         public String getDescription() { return "공모전"; }
-    }
+    },
+    OTHER {
+        public String getDescription() { return "기타"; }
+    };
 }

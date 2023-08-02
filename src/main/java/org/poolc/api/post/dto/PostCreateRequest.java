@@ -16,19 +16,21 @@ public class PostCreateRequest {
     private final String body;
     private final List<String> fileList;
     private final PostType postType;
+    private Boolean isQuestion;
     private JobType position;
     private String region;
     private String field;
     private LocalDateTime deadline;
 
     @JsonCreator
-    public PostCreateRequest(Long boardId, Boolean anonymous, String title, String body, List<String> fileList, PostType postType) {
+    public PostCreateRequest(Long boardId, Boolean anonymous, String title, String body, List<String> fileList, PostType postType, Boolean isQuestion) {
         this.boardId = boardId;
         this.anonymous = anonymous;
         this.title = title;
         this.body = body;
         this.fileList = fileList;
         this.postType = postType;
+        this.isQuestion = isQuestion;
     }
 
     @JsonCreator

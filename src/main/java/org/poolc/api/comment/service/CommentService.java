@@ -54,30 +54,30 @@ public class CommentService {
         return commentRepository.findAllByParent(parent);
     }
 
-    public Comment findOne(Long commentId) {
+    public Comment findById(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new NoSuchElementException("No comment found with given comment id."));
     }
 
     public void deleteComment(Long commentId) {
-        Comment comment = findOne(commentId);
+        Comment comment = findById(commentId);
         comment.setIsDeleted();
     }
 
     public void updateComment(Long commentId, CommentUpdateValues commentUpdateValues) {
-        Comment comment = findOne(commentId);
+        Comment comment = findById(commentId);
         if (!comment.getIsQuestion()) {
             comment.updateComment(commentUpdateValues);
         }
     }
 
     public void likeComment(Long commentId) {
-        Comment comment = findOne(commentId);
+        Comment comment = findById(commentId);
         if (comment.getIsQuestion()) comment.addLikeCount();
     }
 
     public void dislikeComment(Long commentId) {
-        Comment comment = findOne(commentId);
+        Comment comment = findById(commentId);
         if (comment.getIsQuestion()) comment.deductLikeCount();
     }
 }

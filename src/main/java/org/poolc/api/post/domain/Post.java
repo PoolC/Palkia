@@ -1,20 +1,35 @@
 package org.poolc.api.post.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import org.poolc.api.board.domain.Board;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
+import org.poolc.api.post.dto.PostCreateRequest;
+import org.poolc.api.post.vo.PostCreateValues;
+import org.poolc.api.post.vo.PostUpdateValues;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static javax.persistence.FetchType.EAGER;
 
 @Getter
-@MappedSuperclass
-public abstract class Post extends TimestampEntity {
+@Entity
+@SequenceGenerator(
+        name = "POST_GENERATOR",
+        sequenceName = "POST_SEQ"
+)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Post extends TimestampEntity {
+
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "POST_SEQ_GENERATOR")
+    private Long id;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,6 +58,13 @@ public abstract class Post extends TimestampEntity {
     @Column(name = "post_type", nullable = false)
     private PostType postType;
 
+    // 질문이면 수정 삭제 방지
+    @Column(name = "is_question", columnDefinition = "boolean default false")
+    private Boolean isQuestion;
+
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
+    private Boolean isDeleted;
+
     @Column(name = "like_count", columnDefinition = "bigint default 0")
     private Long likeCount;
 
@@ -51,6 +73,19 @@ public abstract class Post extends TimestampEntity {
 
     @Column(name = "comment_count", columnDefinition = "bigint default 0")
     private Long commentCount;
+
+    @Column(name = "position", nullable = false)
+    @Enumerated(EnumType.ORDINAL)
+    private JobType position;
+
+    @Column(name = "region", nullable = false, columnDefinition = "char(20)")
+    private String region;
+
+    @Column(name = "field", nullable = false, columnDefinition = "char(20)")
+    private String field;
+
+    @Column(name = "deadline")
+    private LocalDateTime deadline;
 
     public void addLikeCount() {
         this.likeCount ++;
@@ -70,15 +105,63 @@ public abstract class Post extends TimestampEntity {
 
     public Post() {}
 
-    public Post(Board board, Member member, Boolean anonymous, String title, String body) {
+    public Post(Board board, Member member, Boolean anonymous, String title, String body, List<String> fileList, PostType postType, Boolean isQuestion, Boolean isDeleted, Long likeCount, Long scrapCount, Long commentCount, JobType position, String region, String field, LocalDateTime deadline) {
         this.board = board;
         this.member = member;
         this.anonymous = anonymous;
         this.title = title;
         this.body = body;
+        this.fileList = fileList;
+        this.postType = postType;
+        this.isQuestion = isQuestion;
+        this.isDeleted = isDeleted;
+        this.likeCount = likeCount;
+        this.scrapCount = scrapCount;
+        this.commentCount = commentCount;
+        this.position = position;
+        this.region = region;
+        this.field = field;
+        this.deadline = deadline;
     }
 
-    public void setPostType(PostType postType) {
-        this.postType = postType;
+    public Post(Board board, Member member, PostCreateValues values) {
+        this.board = board;
+        this.member = member;
+        this.anonymous = values.getAnonymous();
+        this.title = values.getTitle();
+        this.body = values.getBody();
+        this.fileList = values.getFileList();
+        this.postType = values.getPostType();
+        this.isDeleted = false;
+        this.likeCount = 0L;
+        this.scrapCount = 0L;
+        this.commentCount = 0L;
+        if (values.getPostType() == PostType.JOB_POST) {
+            this.position = values.getPosition();
+            this.region = values.getRegion();
+            this.field = values.getField();
+            this.deadline = values.getDeadline();
+        } else {
+            this.isQuestion = values.getIsQuestion();
+        }
+    }
+
+    public void setIsDeleted() {
+        this.isDeleted = true;
+    }
+
+    public void updatePost(PostType postType, PostUpdateValues values) {
+        this.anonymous = values.getAnonymous();
+        this.title = values.getTitle();
+        this.body = values.getBody();
+        this.fileList = values.getFileList();
+        if (postType == PostType.JOB_POST) {
+            this.position = values.getPosition();
+            this.region = values.getRegion();
+            this.field = values.getField();
+            this.deadline = values.getDeadline();
+        } else {
+            this.isQuestion = values.getIsQuestion();
+        }
     }
 }

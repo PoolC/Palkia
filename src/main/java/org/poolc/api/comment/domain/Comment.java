@@ -5,7 +5,7 @@ import lombok.Getter;
 import org.poolc.api.comment.vo.CommentUpdateValues;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
-import org.poolc.api.post.domain.GeneralPost;
+import org.poolc.api.post.domain.Post;
 
 import javax.persistence.*;
 
@@ -28,8 +28,8 @@ public class Comment extends TimestampEntity {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "general_post_id", nullable = false, referencedColumnName = "ID")
-    private GeneralPost generalPost;
+    @JoinColumn(name = "post_id", nullable = false, referencedColumnName = "ID")
+    private Post post;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "author_uuid", nullable = false, referencedColumnName = "UUID")
@@ -37,10 +37,6 @@ public class Comment extends TimestampEntity {
 
     @Column(name = "anonymous", nullable = false, columnDefinition = "boolean default false")
     private Boolean anonymous;
-
-    // 질문이면 수정 삭제 방지
-    @Column(name = "is_question", nullable = false, columnDefinition = "boolean default false")
-    private Boolean isQuestion;
 
     @Column(name = "body", nullable = false, columnDefinition = "text")
     private String body;
@@ -65,20 +61,6 @@ public class Comment extends TimestampEntity {
 
     public Comment() {}
 
-    public Comment(Long id, GeneralPost generalPost, Member member, Boolean anonymous, Boolean isQuestion, String body, Boolean isDeleted, Boolean isChild, Comment parent, List<Comment> children) {
-        this.id = id;
-        this.generalPost = generalPost;
-        this.member = member;
-        this.anonymous = anonymous;
-        this.isQuestion = isQuestion;
-        this.body = body;
-        this.isDeleted = isDeleted;
-        this.isChild = isChild;
-        this.parent = parent;
-        this.children = children;
-        if (this.isQuestion) this.likeCount = 0L;
-    }
-
     public void setIsDeleted() {
         this.isDeleted = true;
     }
@@ -88,9 +70,9 @@ public class Comment extends TimestampEntity {
         this.body = commentUpdateValues.getBody();
     }
     public void addLikeCount() {
-        if (this.isQuestion) likeCount ++;
+        if (this.post.getIsQuestion()) likeCount ++;
     }
     public void deductLikeCount() {
-        if (this.isQuestion) likeCount --;
+        if (this.post.getIsQuestion()) likeCount --;
     }
 }

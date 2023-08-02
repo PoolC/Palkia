@@ -14,6 +14,7 @@ public class PostUpdateRequest {
     private final String title;
     private final String body;
     private final List<String> fileList;
+    private Boolean isQuestion;
 
     private JobType position;
     private String region;
@@ -21,13 +22,15 @@ public class PostUpdateRequest {
     private LocalDateTime deadline;
 
     @JsonCreator
-    public PostUpdateRequest(Boolean anonymous, String title, String body, List<String> fileList) {
+    public PostUpdateRequest(Boolean anonymous, String title, String body, List<String> fileList, Boolean isQuestion) {
         this.anonymous = anonymous;
         this.title = title;
         this.body = body;
         this.fileList = fileList;
+        this.isQuestion = isQuestion;
     }
 
+    @JsonCreator
     public PostUpdateRequest(Boolean anonymous, String title, String body, List<String> fileList, JobType position, String region, String field, LocalDateTime deadline) {
         this.anonymous = anonymous;
         this.title = title;
