@@ -53,7 +53,6 @@ public class Comment extends TimestampEntity {
     private Comment parent;
 
     @OneToMany(mappedBy = "parent")
-    @Builder.Default
     private List<Comment> children = new ArrayList<>();
 
     @Column(name = "like_count")

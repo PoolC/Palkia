@@ -59,7 +59,6 @@ public class Post extends TimestampEntity {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @Builder.Default
     private List<Comment> commentList = new ArrayList<>();
 
     @Column(name = "post_type", nullable = false)
