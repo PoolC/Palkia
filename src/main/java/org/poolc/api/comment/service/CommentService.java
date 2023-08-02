@@ -6,7 +6,7 @@ import org.poolc.api.comment.dto.CommentResponse;
 import org.poolc.api.comment.repository.CommentRepository;
 import org.poolc.api.comment.vo.CommentCreateValues;
 import org.poolc.api.comment.vo.CommentUpdateValues;
-import org.poolc.api.post.domain.GeneralPost;
+import org.poolc.api.post.domain.Post;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     public CommentResponse createComment(CommentCreateValues values) {
         Comment comment = Comment.builder()
-                .generalPost(values.getGeneralPost())
+                .post(values.getPost())
                 .member(values.getMember())
                 .anonymous(values.getAnonymous())
                 .body(values.getBody())
@@ -30,22 +30,26 @@ public class CommentService {
         return CommentResponse.of(comment);
     }
 
-    public CommentResponse createThread(CommentCreateValues values) {
-        Comment comment = Comment.builder()
-                .generalPost(values.getGeneralPost())
-                .member(values.getMember())
-                .anonymous(values.getAnonymous())
-                .body(values.getBody())
-                .isDeleted(false)
-                .isChild(true)
-                .parent(values.getParent())
-                .build();
-        commentRepository.save(comment);
-        return CommentResponse.of(comment);
+    public CommentResponse createThread(Comment parent, CommentCreateValues values) {
+        if (parent.getIsChild()) {
+            return new CommentResponse();
+        } else {
+            Comment comment = Comment.builder()
+                    .post(values.getPost())
+                    .member(values.getMember())
+                    .anonymous(values.getAnonymous())
+                    .body(values.getBody())
+                    .isDeleted(false)
+                    .isChild(true)
+                    .parent(values.getParent())
+                    .build();
+            commentRepository.save(comment);
+            return CommentResponse.of(comment);
+        }
     }
 
-    public List<Comment> findCommentsByGeneralPost(GeneralPost generalPost) {
-        return commentRepository.findAllByGeneralPost(generalPost);
+    public List<Comment> findCommentsByPost(Post post) {
+        return commentRepository.findAllByPost(post);
     }
 
     public List<Comment> findCommentsByParent(Long parentId) {
@@ -66,18 +70,16 @@ public class CommentService {
 
     public void updateComment(Long commentId, CommentUpdateValues commentUpdateValues) {
         Comment comment = findById(commentId);
-        if (!comment.getIsQuestion()) {
-            comment.updateComment(commentUpdateValues);
-        }
+        comment.updateComment(commentUpdateValues);
     }
 
     public void likeComment(Long commentId) {
         Comment comment = findById(commentId);
-        if (comment.getIsQuestion()) comment.addLikeCount();
+        if (comment.getPost().getIsQuestion()) comment.addLikeCount();
     }
 
     public void dislikeComment(Long commentId) {
         Comment comment = findById(commentId);
-        if (comment.getIsQuestion()) comment.deductLikeCount();
+        if (comment.getPost().getIsQuestion()) comment.deductLikeCount();
     }
 }

@@ -61,6 +61,18 @@ public class Comment extends TimestampEntity {
 
     public Comment() {}
 
+    public Comment(Post post, Member member, Boolean anonymous, String body, Boolean isDeleted, Boolean isChild, Comment parent, List<Comment> children, Long likeCount) {
+        this.post = post;
+        this.member = member;
+        this.anonymous = anonymous;
+        this.body = body;
+        this.isDeleted = isDeleted;
+        this.isChild = isChild;
+        this.parent = parent;
+        this.children = children;
+        this.likeCount = likeCount;
+    }
+
     public void setIsDeleted() {
         this.isDeleted = true;
     }
