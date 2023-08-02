@@ -2,7 +2,9 @@ package org.poolc.api.board.domain;
 
 
 import lombok.Getter;
+import org.poolc.api.board.vo.BoardCreateValues;
 import org.poolc.api.board.vo.BoardUpdateValues;
+import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.domain.MemberRoles;
 
@@ -37,22 +39,33 @@ public class Board {
     @Column(name = "write_permission", nullable = false, columnDefinition = "varchar(10)")
     private MemberRole writePermission;
 
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
+    private Boolean isDeleted;
+
     public Board() {}
 
-    public Board(Long id, String name, String urlPath, Long postCount, MemberRole readPermission, MemberRole writePermission) {
-        this.id = id;
+    public Board(String name, String urlPath, Long postCount, MemberRole readPermission, MemberRole writePermission, Boolean isDeleted) {
         this.name = name;
         this.urlPath = urlPath;
         this.postCount = postCount;
         this.readPermission = readPermission;
         this.writePermission = writePermission;
+        this.isDeleted = isDeleted;
+    }
+
+    public Board(BoardCreateValues values) {
+        this.name = values.getName();
+        this.urlPath = values.getUrlPath();
+        this.postCount = 0L;
+        this.readPermission = values.getReadPermission();
+        this.writePermission = values.getWritePermission();
     }
 
     public void addPostCount() {
         this.postCount ++;
     }
 
-    public void decreasePostCount() {
+    public void deductPostCount() {
         this.postCount --;
     }
 
@@ -69,6 +82,28 @@ public class Board {
 
     private boolean onlyMemberAllowed(MemberRole permission, MemberRoles roles) {
         return permission.equals(MemberRole.MEMBER) && !roles.isMember();
+    }
+
+    public boolean isPublicReadPermission() {
+        return this.readPermission.equals(MemberRole.PUBLIC);
+    }
+
+    public boolean memberHasWritePermissions(Member user) {
+        if (onlyAdminAllowed(writePermission, user.getRoles())) {
+            return false;
+        }
+        return !onlyMemberAllowed(writePermission, user.getRoles());
+    }
+
+    public boolean memberHasReadPermissions(MemberRoles roles) {
+        if (onlyAdminAllowed(readPermission, roles)) {
+            return false;
+        }
+        return !onlyMemberAllowed(readPermission, roles);
+    }
+
+    public void setIsDeleted() {
+        this.isDeleted = true;
     }
 
 }
