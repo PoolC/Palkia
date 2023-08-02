@@ -1,24 +1,24 @@
 package org.poolc.api.member.service;
 
 import lombok.RequiredArgsConstructor;
-import org.poolc.api.member.dto.MailDto;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.util.Properties;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
 public class MailService {
     private final JavaMailSender mailSender;
+    private final ResourceLoader resourceLoader;
     private static final String sender = "poolcmail@gmail.com";
 
     public void sendEmailPasswordResetToken(String email, String resetPasswordToken) throws MessagingException {
@@ -35,22 +35,26 @@ public class MailService {
         mailSender.send(message);
     }
 
-    @Async
-    public void sendMimeMessage(MailDto mailDto) {
-        Properties properties = System.getProperties();
-        properties.setProperty("mail.smtp.host", "smtp.gmail.com");
-        Session session = Session.getDefaultInstance(properties);
+    public void sendMessageNotification(String email, LocalDateTime sentDateTime, String messageSender, String messageReceiver) throws MessagingException, IOException {
+        String year = Integer.toString(sentDateTime.getYear());
+        String month = Integer.toString(sentDateTime.getMonthValue());
+        String day = Integer.toString(sentDateTime.getDayOfMonth());
 
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(mailDto.getReceiver()));
-            message.setFrom(new InternetAddress(sender));
-            message.setSubject(mailDto.getSubject());
-            message.setContent(mailDto.getText(), "text/html");
+        MimeMessage message = mailSender.createMimeMessage();
+        message.setFrom("poolcmail@gmail.com");
+        message.setSubject("[풀씨] 쪽지가 도착했습니다!");
+        message.setRecipients(MimeMessage.RecipientType.TO, email);
 
-            Transport.send(message);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+        Resource resource = new ClassPathResource("src/main/resources/template/mail.html");
+        String htmlText = new String(Files.readAllBytes(resource.getFile().toPath()));
+        htmlText = htmlText.replace("${year}", year);
+        htmlText = htmlText.replace("${month}", month);
+        htmlText = htmlText.replace("${day}", day);
+        htmlText = htmlText.replace("${messageReceiver}", messageReceiver);
+        htmlText = htmlText.replace("${messageSender}", messageSender);
+
+
+        message.setContent(htmlText, "text/html, charset=utf-8");
+        mailSender.send(message);
     }
 }
