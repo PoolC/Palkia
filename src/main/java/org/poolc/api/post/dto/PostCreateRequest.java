@@ -2,6 +2,7 @@ package org.poolc.api.post.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
+import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.post.domain.JobType;
 import org.poolc.api.post.domain.PostType;
 
@@ -15,6 +16,7 @@ public class PostCreateRequest {
     private final String title;
     private final String body;
     private final List<String> fileList;
+    private final List<Comment> commentList;
     private final PostType postType;
     private Boolean isQuestion;
     private JobType position;
@@ -23,23 +25,25 @@ public class PostCreateRequest {
     private LocalDateTime deadline;
 
     @JsonCreator
-    public PostCreateRequest(Long boardId, Boolean anonymous, String title, String body, List<String> fileList, PostType postType, Boolean isQuestion) {
+    public PostCreateRequest(Long boardId, Boolean anonymous, String title, String body, List<String> fileList, List<Comment> commentList, PostType postType, Boolean isQuestion) {
         this.boardId = boardId;
         this.anonymous = anonymous;
         this.title = title;
         this.body = body;
         this.fileList = fileList;
+        this.commentList = commentList;
         this.postType = postType;
         this.isQuestion = isQuestion;
     }
 
     @JsonCreator
-    public PostCreateRequest(Long boardId, Boolean anonymous, String title, String body, List<String> fileList, PostType postType, JobType position, String region, String field, LocalDateTime deadline) {
+    public PostCreateRequest(Long boardId, Boolean anonymous, String title, String body, List<String> fileList, List<Comment> commentList, PostType postType, JobType position, String region, String field, LocalDateTime deadline) {
         this.boardId = boardId;
         this.anonymous = anonymous;
         this.title = title;
         this.body = body;
         this.fileList = fileList;
+        this.commentList = commentList;
         this.postType = postType;
         this.position = position;
         this.region = region;

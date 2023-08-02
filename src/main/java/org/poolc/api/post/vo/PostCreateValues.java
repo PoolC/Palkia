@@ -2,6 +2,7 @@ package org.poolc.api.post.vo;
 
 import lombok.Getter;
 import org.poolc.api.board.domain.Board;
+import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.domain.JobType;
 import org.poolc.api.post.domain.PostType;
@@ -18,6 +19,7 @@ public class PostCreateValues {
     private final String title;
     private final String body;
     private final List<String> fileList;
+    private final List<Comment> commentList;
     private final PostType postType;
     private Boolean isQuestion;
     private JobType position;
@@ -33,6 +35,7 @@ public class PostCreateValues {
         this.title = request.getTitle();
         this.body = request.getBody();
         this.fileList = request.getFileList();
+        this.commentList = request.getCommentList();
         this.postType = request.getPostType();
         if (request.getPostType() == PostType.JOB_POST) {
             this.position = request.getPosition();

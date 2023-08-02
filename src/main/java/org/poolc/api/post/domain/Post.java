@@ -2,8 +2,10 @@ package org.poolc.api.post.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Builder;
 import lombok.Getter;
 import org.poolc.api.board.domain.Board;
+import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.dto.PostCreateRequest;
@@ -55,6 +57,11 @@ public class Post extends TimestampEntity {
     @Column(name = "file_uri", columnDefinition = "varchar(1024)")
     private List<String> fileList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @Builder.Default
+    private List<Comment> commentList = new ArrayList<>();
+
     @Column(name = "post_type", nullable = false)
     private PostType postType;
 
@@ -105,13 +112,14 @@ public class Post extends TimestampEntity {
 
     public Post() {}
 
-    public Post(Board board, Member member, Boolean anonymous, String title, String body, List<String> fileList, PostType postType, Boolean isQuestion, Boolean isDeleted, Long likeCount, Long scrapCount, Long commentCount, JobType position, String region, String field, LocalDateTime deadline) {
+    public Post(Board board, Member member, Boolean anonymous, String title, String body, List<String> fileList, List<Comment> commentList, PostType postType, Boolean isQuestion, Boolean isDeleted, Long likeCount, Long scrapCount, Long commentCount, JobType position, String region, String field, LocalDateTime deadline) {
         this.board = board;
         this.member = member;
         this.anonymous = anonymous;
         this.title = title;
         this.body = body;
         this.fileList = fileList;
+        this.commentList = commentList;
         this.postType = postType;
         this.isQuestion = isQuestion;
         this.isDeleted = isDeleted;
@@ -131,6 +139,7 @@ public class Post extends TimestampEntity {
         this.title = values.getTitle();
         this.body = values.getBody();
         this.fileList = values.getFileList();
+        this.commentList = values.getCommentList();
         this.postType = values.getPostType();
         this.isDeleted = false;
         this.likeCount = 0L;

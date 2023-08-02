@@ -1,6 +1,7 @@
 package org.poolc.api.post.vo;
 
 import lombok.Getter;
+import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.post.domain.JobType;
 import org.poolc.api.post.domain.PostType;
 import org.poolc.api.post.dto.PostUpdateRequest;
@@ -14,6 +15,7 @@ public class PostUpdateValues {
     private final String title;
     private final String body;
     private final List<String> fileList;
+    private final List<Comment> commentList;
     private Boolean isQuestion;
     private JobType position;
     private String region;
@@ -25,6 +27,7 @@ public class PostUpdateValues {
         this.title = request.getTitle();
         this.body = request.getBody();
         this.fileList = request.getFileList();
+        this.commentList = request.getCommentList();
         if (postType == PostType.GENERAL_POST) {
             this.isQuestion = request.getIsQuestion();
         } else {
