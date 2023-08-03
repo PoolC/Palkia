@@ -70,7 +70,7 @@ public class BoardController {
     @PutMapping("/{id}")
     public ResponseEntity<BoardResponse> updateBoard(@AuthenticationPrincipal Member member,
                                                      @PathVariable Long id,
-                                                     @RequestBody BoardUpdateRequest request) {
+                                                     @RequestBody @Valid BoardUpdateRequest request) {
         Board board = boardService.findById(id);
         checkWritePermissions(board, member);
         boardService.updateBoard(id, new BoardUpdateValues(request));
