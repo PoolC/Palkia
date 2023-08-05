@@ -128,6 +128,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT,"/room/*").hasAnyAuthority(MemberRole.MEMBER.name())
                 .antMatchers(HttpMethod.DELETE,"/room/*").hasAnyAuthority(MemberRole.MEMBER.name())
 
+                .antMatchers(HttpMethod.GET,"/badge").hasAnyAuthority(MemberRole.MEMBER.name())
+                .antMatchers(HttpMethod.POST,"/badge").hasAnyAuthority(MemberRole.ADMIN.name())
+                .antMatchers(HttpMethod.PUT,"/badge").hasAnyAuthority(MemberRole.ADMIN.name())
+                .antMatchers(HttpMethod.DELETE,"/badge").hasAnyAuthority(MemberRole.ADMIN.name())
+
                 .antMatchers(HttpMethod.POST, "/interview/application/*").hasAuthority(MemberRole.UNACCEPTED.name())
                 .antMatchers(HttpMethod.DELETE, "/interview/application/*").hasAnyAuthority(MemberRole.UNACCEPTED.name(), MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.GET, "/interview/slots").permitAll()

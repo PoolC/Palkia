@@ -3,6 +3,7 @@ package org.poolc.api.member.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import org.poolc.api.activity.dto.ActivityResponse;
+import org.poolc.api.badge.domain.Badge;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.project.dto.ProjectResponse;
 
@@ -25,9 +26,10 @@ public class MemberResponse implements Serializable {
     private final List<ActivityResponse> participantActivities;
     private final List<ProjectResponse> projects;
     private String role;
+    private final Badge badge;
 
     @JsonCreator
-    public MemberResponse(String loginID, String email, String phoneNumber, String name, String department, String studentID, String profileImageURL, String introduction, Boolean isActivated, Boolean isAdmin, List<ActivityResponse> hostActivities, List<ActivityResponse> participantActivities, List<ProjectResponse> projects, String role) {
+    public MemberResponse(String loginID, String email, String phoneNumber, String name, String department, String studentID, String profileImageURL, String introduction, Boolean isActivated, Boolean isAdmin, List<ActivityResponse> hostActivities, List<ActivityResponse> participantActivities, List<ProjectResponse> projects, String role, Badge badge) {
         this.loginID = loginID;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -42,6 +44,7 @@ public class MemberResponse implements Serializable {
         this.participantActivities = participantActivities;
         this.projects = projects;
         this.role = role;
+        this.badge = badge;
     }
 
     public MemberResponse(Member member, boolean isAdmin) {
@@ -60,6 +63,7 @@ public class MemberResponse implements Serializable {
             this.participantActivities = null;
             this.projects = null;
             this.role = null;
+            this.badge = member.getBadge();
         } else {
             this.loginID = member.getLoginID();
             this.email = null;
@@ -75,12 +79,13 @@ public class MemberResponse implements Serializable {
             this.participantActivities = null;
             this.projects = null;
             this.role = null;
+            this.badge = null;
         }
 
     }
 
     public static MemberResponse of(Member member) {
-        return new MemberResponse(member.getLoginID(), member.getEmail(), member.getPhoneNumber(), member.getName(), member.getDepartment(), member.getStudentID(), member.getProfileImageURL(), member.getIntroduction(), member.isMember(), member.isAdmin(), null, null, null, member.getRole());
+        return new MemberResponse(member.getLoginID(), member.getEmail(), member.getPhoneNumber(), member.getName(), member.getDepartment(), member.getStudentID(), member.getProfileImageURL(), member.getIntroduction(), member.isMember(), member.isAdmin(), null, null, null, member.getRole(), member.getBadge());
     }
 
     public static MemberResponse of(Member findMember, Member loginMember,
@@ -88,9 +93,9 @@ public class MemberResponse implements Serializable {
                                     List<ActivityResponse> participantActivities,
                                     List<ProjectResponse> projects) {
         if(findMember.equals(loginMember)) {
-            return new MemberResponse(findMember.getLoginID(), findMember.getEmail(), findMember.getPhoneNumber(), findMember.getName(), findMember.getDepartment(), findMember.getStudentID(), findMember.getProfileImageURL(), findMember.getIntroduction(), findMember.isMember(), findMember.isAdmin(), hostActivities, participantActivities, projects, findMember.getRole());
+            return new MemberResponse(findMember.getLoginID(), findMember.getEmail(), findMember.getPhoneNumber(), findMember.getName(), findMember.getDepartment(), findMember.getStudentID(), findMember.getProfileImageURL(), findMember.getIntroduction(), findMember.isMember(), findMember.isAdmin(), hostActivities, participantActivities, projects, findMember.getRole(),  findMember.getBadge());
         }else{
-            return new MemberResponse(findMember.getLoginID(), null, null, findMember.getName(), findMember.getDepartment(), null, findMember.getProfileImageURL(), findMember.getIntroduction(), findMember.isMember(), findMember.isAdmin(), hostActivities, participantActivities, projects, findMember.getRole());
+            return new MemberResponse(findMember.getLoginID(), null, null, findMember.getName(), findMember.getDepartment(), null, findMember.getProfileImageURL(), findMember.getIntroduction(), findMember.isMember(), findMember.isAdmin(), hostActivities, participantActivities, projects, findMember.getRole(),  findMember.getBadge());
         }
     }
 }

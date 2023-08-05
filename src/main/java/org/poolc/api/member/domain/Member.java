@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.Getter;
 import org.poolc.api.auth.exception.UnauthorizedException;
+import org.poolc.api.badge.domain.Badge;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.common.exception.ConflictException;
 import org.poolc.api.interview.domain.InterviewSlot;
@@ -68,6 +69,10 @@ public class Member extends TimestampEntity implements UserDetails {
     @ManyToOne
     @JoinColumn(name = "interview_table_id")
     private InterviewSlot interviewSlot;
+
+    @OneToOne
+    @JoinColumn(name = "id")
+    private Badge badge;
 
     protected Member() {
     }
@@ -268,5 +273,9 @@ public class Member extends TimestampEntity implements UserDetails {
 
     private boolean checkInterviewSlotExist() {
         return this.interviewSlot != null;
+    }
+
+    public void updateBadge(Badge badge){
+        this.badge = badge;
     }
 }
