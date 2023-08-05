@@ -44,7 +44,7 @@ public class Room {
         this.host = host;
     }
 
-    public Room() {
+    protected Room() {
 
     }
 
