@@ -37,7 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false);
         configuration.setAllowedOrigins(Arrays.asList("*"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control",
                 "Content-Type", "Accept", "Content-Length", "Accept-Encoding", "X-Requested-With"));
@@ -122,6 +122,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, "/activity/*").hasAuthority(MemberRole.MEMBER.name())
 
                 .antMatchers("/file").hasAuthority(MemberRole.MEMBER.name())
+
+                .antMatchers(HttpMethod.GET,"/room/*").hasAnyAuthority(MemberRole.MEMBER.name())
+                .antMatchers(HttpMethod.POST,"/room/*").hasAnyAuthority(MemberRole.MEMBER.name())
+                .antMatchers(HttpMethod.PUT,"/room/*").hasAnyAuthority(MemberRole.MEMBER.name())
+                .antMatchers(HttpMethod.DELETE,"/room/*").hasAnyAuthority(MemberRole.MEMBER.name())
+
+                .antMatchers(HttpMethod.GET,"/badge").hasAnyAuthority(MemberRole.MEMBER.name())
+                .antMatchers(HttpMethod.POST,"/badge").hasAnyAuthority(MemberRole.ADMIN.name())
+                .antMatchers(HttpMethod.PUT,"/badge").hasAnyAuthority(MemberRole.ADMIN.name())
+                .antMatchers(HttpMethod.DELETE,"/badge").hasAnyAuthority(MemberRole.ADMIN.name())
 
                 .antMatchers(HttpMethod.POST, "/interview/application/*").hasAuthority(MemberRole.UNACCEPTED.name())
                 .antMatchers(HttpMethod.DELETE, "/interview/application/*").hasAnyAuthority(MemberRole.UNACCEPTED.name(), MemberRole.ADMIN.name())

@@ -38,7 +38,7 @@ public class MemberService {
     private final PasswordHashProvider passwordHashProvider;
     private final MemberQueryRepository memberQueryRepository;
     private final ActivityService activityService;
-    private final MailService mailService;
+//    private final MailService mailService;
     private final PoolcService poolcService;
 
     public void create(MemberCreateValues values) {
@@ -181,7 +181,7 @@ public class MemberService {
         String email = request.getEmail();
         String resetPasswordToken = resetMemberPasswordToken(email);
 
-        mailService.sendEmailPasswordResetToken(email, resetPasswordToken);
+//        mailService.sendEmailPasswordResetToken(email, resetPasswordToken);
     }
 
     public void resetPassword(MemberResetRequest request) {
@@ -208,7 +208,7 @@ public class MemberService {
     }
 
     @Transactional
-    private List<Member> getAllMembersAndUpdateMemberIsExcepted() {
+    List<Member> getAllMembersAndUpdateMemberIsExcepted() {
         List<Member> members = getAllMembers();
         members.forEach(member -> {
             member.updateIsExcepted();
