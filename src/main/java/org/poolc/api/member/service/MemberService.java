@@ -146,6 +146,13 @@ public class MemberService {
         return list.stream().sorted(Comparator.comparing(o -> o.getMember().getName())).collect(Collectors.toList());
     }
 
+    public Long getMyHour(Member member){
+        YearSemester yearSemester = YearSemester.of(LocalDate.now());
+        LocalDate startDate = yearSemester.getFirstDateFromYearSemester();
+        LocalDate endDate = yearSemester.getLastDateFromYearSemester();
+        return memberQueryRepository.getMyHour(member, startDate, endDate);
+    }
+
     public void authorizeMember(String loginID) {
         Member findMember = getMemberByLoginID(loginID);
         findMember.acceptMember();
