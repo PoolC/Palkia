@@ -20,7 +20,7 @@ import static javax.persistence.FetchType.EAGER;
 @Getter
 @Entity
 @SequenceGenerator(
-        name = "POST_GENERATOR",
+        name = "POST_SEQ_GENERATOR",
         sequenceName = "POST_SEQ"
 )
 @JsonIgnoreProperties(ignoreUnknown = true)

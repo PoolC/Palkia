@@ -63,6 +63,7 @@ public class PostService {
         checkWritePermission(values.getMember(), board);
         Post post = new Post(board, values.getMember(), values);
         postRepository.save(post);
+        board.addPostCount();
         return post;
     }
 
