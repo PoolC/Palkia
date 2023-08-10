@@ -74,23 +74,6 @@ public class PostService {
         post.updatePost(post.getPostType(), values);
     }
 
-    private void checkWritePermission(Member member, Board board) {
-        if (!board.memberHasWritePermissions(member)) throw new UnauthorizedException("접근할 수 없습니다.");
-    }
-    private void checkReadPermission(Member user, Board board) {
-        if ((user == null && !board.isPublicReadPermission()) || (user != null && !board.memberHasReadPermissions(user.getRoles()))) {
-            throw new UnauthorizedException("접근할 수 없습니다.");
-        }
-    }
-
-    private void checkWriter(Member member, Post post) {
-        if (!post.getMember().equals(member)) throw new UnauthorizedException("접근할 수 없습니다.");
-    }
-
-    private void checkWriterOrAdmin(Member user, Post post) {
-        if (!post.getMember().equals(user) && !user.isAdmin()) throw new UnauthorizedException("접근할 수 없습니다.");
-    }
-
     public void likePost(Member member, Long postId) {
         Post post = findPostById(member, postId);
         checkNotWriter(member, post);
@@ -108,6 +91,23 @@ public class PostService {
         checkWriterOrAdmin(member, post);
         post.setIsDeleted();
         post.getBoard().deductPostCount();
+    }
+
+    private void checkWritePermission(Member member, Board board) {
+        if (!board.memberHasWritePermissions(member)) throw new UnauthorizedException("접근할 수 없습니다.");
+    }
+    private void checkReadPermission(Member user, Board board) {
+        if ((user == null && !board.isPublicReadPermission()) || (user != null && !board.memberHasReadPermissions(user.getRoles()))) {
+            throw new UnauthorizedException("접근할 수 없습니다.");
+        }
+    }
+
+    private void checkWriter(Member member, Post post) {
+        if (!post.getMember().equals(member)) throw new UnauthorizedException("접근할 수 없습니다.");
+    }
+
+    private void checkWriterOrAdmin(Member user, Post post) {
+        if (!post.getMember().equals(user) && !user.isAdmin()) throw new UnauthorizedException("접근할 수 없습니다.");
     }
 
     private void checkNotWriter(Member member, Post post) {
