@@ -2,13 +2,11 @@ package org.poolc.api.post.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Builder;
 import lombok.Getter;
 import org.poolc.api.board.domain.Board;
 import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
-import org.poolc.api.post.dto.PostCreateRequest;
 import org.poolc.api.post.vo.PostCreateValues;
 import org.poolc.api.post.vo.PostUpdateValues;
 
