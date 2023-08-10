@@ -33,7 +33,7 @@ public class PostController {
                                           @RequestBody @Valid PostCreateRequest request) {
         Board board = boardService.findById(request.getBoardId());
         postService.createPost(new PostCreateValues(board, member, request));
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/{postId}")
@@ -59,7 +59,7 @@ public class PostController {
     @PutMapping("/{postId}")
     public ResponseEntity<Void> updatePost(@AuthenticationPrincipal Member member,
                                            @PathVariable Long postId,
-                                           @RequestBody PostUpdateRequest request) {
+                                           @RequestBody @Valid PostUpdateRequest request) {
         Post post = postService.findPostById(member, postId);
         postService.updatePost(member, postId, new PostUpdateValues(post.getPostType(), request));
         return ResponseEntity.status(HttpStatus.OK).build();

@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/comment")
@@ -25,7 +27,7 @@ public class CommentController {
 
     @PostMapping
     public ResponseEntity<CommentResponse> createComment(@AuthenticationPrincipal Member member,
-                                                         @RequestBody CommentCreateRequest request) {
+                                                         @RequestBody @Valid CommentCreateRequest request) {
         Post post = postService.findPostById(member, request.getPostId());
 
         Comment parent;
