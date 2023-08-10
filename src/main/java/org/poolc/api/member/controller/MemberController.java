@@ -49,6 +49,14 @@ public class MemberController {
         return ResponseEntity.ok().body(Collections.singletonMap("data", responseList));
     }
 
+    @GetMapping(value = "/hour/me")
+    public ResponseEntity<MyActivityHourResponse> getMyActivityTime(@AuthenticationPrincipal Member member){
+        MyActivityHourResponse response = MyActivityHourResponse.builder()
+                .hour(memberService.getMyHour(member))
+                .build();
+        return ResponseEntity.ok().body(response);
+    }
+
     @GetMapping(value = "/me")
     public ResponseEntity<MemberResponse> getMe(@AuthenticationPrincipal Member loginMember) {
         memberService.checkMe(loginMember);

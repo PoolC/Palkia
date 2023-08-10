@@ -25,4 +25,11 @@ public class AuthService {
         }
         return jwtTokenProvider.createToken(member);
     }
+
+    public String reIssueAccessToken(Member member){
+        if (!member.isAcceptedMember() && !member.isMember()) {
+            throw new UnactivatedException("관리자 승인 전에는 로그인이 불가능합니다.");
+        }
+        return jwtTokenProvider.createToken(member);
+    }
 }
