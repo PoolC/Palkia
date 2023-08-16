@@ -5,6 +5,7 @@ import org.poolc.api.auth.exception.UnauthorizedException;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.room.domain.Room;
 import org.poolc.api.room.exception.BadRequestException;
+import org.poolc.api.room.exception.ConflictException;
 import org.poolc.api.room.exception.ForbiddenException;
 import org.poolc.api.room.repository.RoomRepository;
 import org.poolc.api.room.vo.RoomReservation;
@@ -12,7 +13,10 @@ import org.poolc.api.room.vo.RoomReservationSearch;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -23,6 +27,7 @@ public class RoomService {
     private final RoomRepository roomRepository;
 
     public List<RoomReservationSearch> findReservationByDate(LocalDate start, LocalDate end){
+        SearchDayDiffCheck(start, end);
         List<Room> roomReservationByDateRange = roomRepository.findRoomReservationByDateRange(start, end);
         List<RoomReservationSearch> searchList = new ArrayList<>();
         for (Room iter:roomReservationByDateRange) {
@@ -85,9 +90,18 @@ public class RoomService {
 //        }
 //        roomRepository.validCheck(roomReservation.getDate(), roomReservation.getStart(), roomReservation.getEnd()).ifPresent(a->{throw new RuntimeException("해당 시간에 예약이 존재합니다.");});
         if(roomRepository.validCheck(roomReservation.getDate(), roomReservation.getStart(), roomReservation.getEnd())>0){
-            throw new BadRequestException("해당 시간에 예약이 존재합니다.");
+            throw new ConflictException("해당 시간에 예약이 존재합니다.");
         }
 
+    }
+
+    private void SearchDayDiffCheck(LocalDate start, LocalDate end){
+        if(start.isAfter(end)){
+            throw new BadRequestException("시작일이 종료일 보다 이후입니다.");
+        }
+        if(ChronoUnit.DAYS.between(start, end)>365){
+            throw new BadRequestException("날짜 검색은 1년까지 가능합니다.");
+        }
     }
 
 

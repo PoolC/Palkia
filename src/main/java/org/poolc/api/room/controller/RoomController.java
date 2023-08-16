@@ -47,7 +47,7 @@ public class RoomController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping(path="{reservationId}")
+    @PutMapping(path="/{reservationId}")
     public ResponseEntity<Void> putRoomReservation(@AuthenticationPrincipal Member member,@PathVariable Long reservationId,@RequestBody RoomUpdateRequest roomUpdateRequest){
         roomService.updateReservation(RoomReservation.builder()
                         .host(member)
@@ -61,7 +61,7 @@ public class RoomController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(path="{reservationId}")
+    @DeleteMapping(path="/{reservationId}")
     public ResponseEntity<Void> deleteRoomReservation(@AuthenticationPrincipal Member member,@PathVariable Long reservationId){
         roomService.cancelReservation(member,reservationId);
         return ResponseEntity.ok().build();

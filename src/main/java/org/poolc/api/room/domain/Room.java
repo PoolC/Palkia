@@ -44,6 +44,15 @@ public class Room {
         this.host = host;
     }
 
+    @Builder
+    public Room(LocalDate date, LocalTime startTime, LocalTime endTime, String purpose, Member host) {
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.purpose = purpose;
+        this.host = host;
+    }
+
     protected Room() {
 
     }

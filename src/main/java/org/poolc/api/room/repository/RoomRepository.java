@@ -18,7 +18,7 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     @Query("select r from Room r where r.date=(:date)")
     List<Room> findRoomReservationByDate(@Param("date") LocalDate date);
 
-    @Query("select r from Room r where r.date between (:start) and (:end)")
+    @Query("select r from Room r where r.date >= (:start) and r.date<=(:end)")
     List<Room> findRoomReservationByDateRange(@Param("start") LocalDate startDate, @Param("end") LocalDate endDate);
 
     @Query("select r from Room r where r.id=(:id)")
