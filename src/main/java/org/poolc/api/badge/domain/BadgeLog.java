@@ -2,6 +2,8 @@ package org.poolc.api.badge.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.poolc.api.member.domain.Member;
 
 import javax.persistence.*;
@@ -21,10 +23,12 @@ public class BadgeLog {
 
     @ManyToOne
     @JoinColumn(name="member", nullable = false,referencedColumnName = "uuid")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
     @ManyToOne
     @JoinColumn(name="badge",nullable = false,referencedColumnName = "id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Badge badge;
 
     @Builder

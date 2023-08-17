@@ -11,6 +11,7 @@ import org.poolc.api.badge.vo.MyBadgeSearchResult;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.repository.MemberRepository;
 import org.poolc.api.room.exception.BadRequestException;
+import org.poolc.api.room.exception.ConflictException;
 import org.poolc.api.room.exception.ForbiddenException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +54,11 @@ public class BadgeService {
             throw new ForbiddenException("임원진만 뱃지를 삭제할 수 있습니다.");
         }
         Badge badge = badgeRepository.findBadgeById(badgeId).orElseThrow(() -> new NoSuchElementException("해당하는 뱃지가 없습니다."));
+        List<Member> badgeUser = memberRepository.findBadgeUser(badge.getId());
+        for (Member m:badgeUser) {
+            m.deleteBadge();
+            memberRepository.save(m);
+        }
         badgeRepository.delete(badge);
     }
 
@@ -82,7 +88,7 @@ public class BadgeService {
     }
 
     private void duplicateBadgeCheck(String name){
-        badgeRepository.findBadgeByName(name).ifPresent(a->{throw new DuplicateFormatFlagsException("이미 있는 뱃지 이름입니다.");});
+        badgeRepository.findBadgeByName(name).ifPresent(a->{throw new ConflictException("이미 있는 뱃지 이름입니다.");});
     }
 
     public void updateBadge(Member member,Long badgeId, UpdateBadgeRequest updateBadgeRequest) {

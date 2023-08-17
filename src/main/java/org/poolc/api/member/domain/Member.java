@@ -70,7 +70,7 @@ public class Member extends TimestampEntity implements UserDetails {
     @JoinColumn(name = "interview_table_id")
     private InterviewSlot interviewSlot;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id")
     private Badge badge;
 
@@ -277,5 +277,9 @@ public class Member extends TimestampEntity implements UserDetails {
 
     public void updateBadge(Badge badge){
         this.badge = badge;
+    }
+
+    public void deleteBadge(){
+        this.badge = null;
     }
 }
