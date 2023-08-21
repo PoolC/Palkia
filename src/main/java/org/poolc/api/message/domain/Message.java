@@ -40,10 +40,14 @@ public class Message extends TimestampEntity {
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     private Member receiver;
 
-    public Message(String content, Member sender, Member receiver) {
+    @Column(name = "anonymous", nullable = false, columnDefinition = "boolean default false")
+    private Boolean anonymous;
+
+    public Message(String content, Member sender, Member receiver, Boolean anonymous) {
         this.content = content;
         this.sender = sender;
         this.receiver = receiver;
+        this.anonymous = anonymous;
     }
 
     public Message() {}

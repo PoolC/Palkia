@@ -40,7 +40,7 @@ public class MessageService {
 
     @Transactional
     public Message write(MessageCreateValues values) {
-        Message message = new Message(values.getContent(), values.getSender(), values.getReceiver());
+        Message message = new Message(values.getContent(), values.getSender(), values.getReceiver(), values.getAnonymous());
         messageRepository.save(message);
         return message;
     }

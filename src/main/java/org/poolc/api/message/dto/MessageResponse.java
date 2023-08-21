@@ -1,7 +1,6 @@
 package org.poolc.api.message.dto;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.poolc.api.message.domain.Message;
