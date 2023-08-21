@@ -8,6 +8,8 @@ import org.poolc.api.message.dto.MessageCreateRequest;
 import org.poolc.api.message.dto.MessageResponse;
 import org.poolc.api.message.service.MessageService;
 import org.poolc.api.message.vo.MessageCreateValues;
+import org.poolc.api.notification.domain.NotificationType;
+import org.poolc.api.notification.service.NotificationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 public class MessageController {
     private final MessageService messageService;
     private final MemberService memberService;
+    private final NotificationService notificationService;
 
     @PostMapping("/new")
     public ResponseEntity<?> writeMessage(@AuthenticationPrincipal Member member,
@@ -31,6 +34,9 @@ public class MessageController {
         Member sender = memberService.findMemberByUUID(request.getSenderUUID());
         Member receiver = memberService.findMemberByUUID(request.getReceiverUUID());
         messageService.write(new MessageCreateValues(sender, receiver, request));
+
+        if (request.getAnonymous()) sender = null;
+        notificationService.createNotification(sender, receiver, NotificationType.MESSAGE);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
