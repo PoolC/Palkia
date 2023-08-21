@@ -5,6 +5,8 @@ import org.poolc.api.badge.dto.*;
 import org.poolc.api.badge.service.BadgeService;
 import org.poolc.api.badge.vo.MyBadgeSearchResult;
 import org.poolc.api.member.domain.Member;
+import org.poolc.api.notification.domain.NotificationType;
+import org.poolc.api.notification.service.NotificationService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +19,7 @@ import java.util.List;
 @RequestMapping(value="/badge", produces = MediaType.APPLICATION_JSON_VALUE)
 public class BadgeController {
     private final BadgeService badgeService;
+    private final NotificationService notificationService;
 
     @GetMapping
     public ResponseEntity<GetMyBadgeResponse> getMyBadge(@AuthenticationPrincipal Member member){
@@ -36,7 +39,8 @@ public class BadgeController {
 
     @PostMapping
     public ResponseEntity<Void> postBadge(@AuthenticationPrincipal Member member, @RequestBody PostBadgeRequest postBadgeRequest){
-        badgeService.createBadge(member,postBadgeRequest);
+        badgeService.createBadge(member, postBadgeRequest);
+        notificationService.createNotification(null, member, NotificationType.BADGE);
         return ResponseEntity.ok().build();
     }
 
