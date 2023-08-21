@@ -17,10 +17,9 @@ import java.util.stream.Collectors;
 public class NotificationService {
     private NotificationRepository notificationRepository;
 
-    public List<NotificationResponse> getUnreadNotificationsForMember(Member recipient) {
+    public List<Notification> getUnreadNotificationsForMember(Member recipient) {
         return notificationRepository.findByRecipientAndReadStatus(recipient, false)
                 .stream()
-                .map(NotificationResponse::of)
                 .collect(Collectors.toList());
     }
 
