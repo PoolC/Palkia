@@ -35,7 +35,7 @@ public class MessageController {
         Member receiver = memberService.findMemberByUUID(request.getReceiverUUID());
         messageService.write(new MessageCreateValues(sender, receiver, request));
 
-        if (request.getAnonymous()) sender = null;
+        if (request.getSenderAnonymous()) sender = null;
         notificationService.createNotification(sender, receiver, NotificationType.MESSAGE);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

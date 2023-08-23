@@ -18,9 +18,14 @@ public class MessageResponse {
     public static MessageResponse of(Message message) {
         MessageResponse response = new MessageResponse();
         response.setContent(message.getContent());
-        response.setSenderName(message.getSender().getName());
-        response.setReceiverName(message.getReceiver().getName());
         response.setSentAt(message.getCreatedAt());
+
+        if (message.getReceiverAnonymous()) response.setReceiverName("익명");
+        else response.setReceiverName(message.getReceiver().getName());
+
+        if (message.getSenderAnonymous()) response.setSenderName("익명");
+        else response.setReceiverName(message.getReceiver().getName());
+
         return response;
     }
 }

@@ -8,13 +8,15 @@ public class MessageCreateRequest {
     private final String content;
     private final String senderUUID;
     private final String receiverUUID;
-    private final Boolean anonymous;
+    private final Boolean senderAnonymous;
+    private final Boolean receiverAnonymous;
 
     @JsonCreator
-    public MessageCreateRequest(String content, String senderUUID, String receiverUUID, Boolean anonymous) {
+    public MessageCreateRequest(String content, String senderUUID, String receiverUUID, Boolean senderAnonymous, Boolean receiverAnonymous) {
         this.content = content;
         this.senderUUID = senderUUID;
         this.receiverUUID = receiverUUID;
-        this.anonymous = anonymous;
+        this.senderAnonymous = senderAnonymous;
+        this.receiverAnonymous = receiverAnonymous;
     }
 }
