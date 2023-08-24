@@ -3,13 +3,15 @@ package org.poolc.api.badge.service;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.badge.domain.Badge;
 import org.poolc.api.badge.domain.BadgeLog;
+import org.poolc.api.badge.dto.AssignBadgeRequest;
 import org.poolc.api.badge.dto.PostBadgeRequest;
 import org.poolc.api.badge.dto.UpdateBadgeRequest;
 import org.poolc.api.badge.repository.BadgeLogRepository;
 import org.poolc.api.badge.repository.BadgeRepository;
-import org.poolc.api.badge.vo.MyBadgeSearchResult;
+import org.poolc.api.badge.vo.*;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.repository.MemberRepository;
+import org.poolc.api.member.service.MemberService;
 import org.poolc.api.room.exception.BadRequestException;
 import org.poolc.api.room.exception.ConflictException;
 import org.poolc.api.room.exception.ForbiddenException;
@@ -17,9 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.DuplicateFormatFlagsException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,18 +32,32 @@ public class BadgeService {
     private final BadgeLogRepository badgeLogRepository;
     private final MemberRepository memberRepository;
 
+    //내가 받은 뱃지 조회
     public List<MyBadgeSearchResult> findMyBadge(Member member){
         return badgeLogRepository.findMyBadge(member.getUUID());
     }
 
+    //모든 뱃지 조회
     public List<Badge> findAllBadge(){
         return badgeRepository.findAllBadge();
     }
 
-    public void createBadge(Member member, PostBadgeRequest postBadgeRequest){
-        if(!member.isAdmin()){
-            throw new ForbiddenException("임원진만 뱃지를 만들 수 있습니다.");
+    //모든 뱃지 중에 내가 얻은 뱃지
+    public List<BadgeWithOwnCount> findAllBadgeWithOwnCount(Member member){
+        List<BadgeWithCount> allBadgeWithCount = badgeRepository.findAllBadgeWithCount();
+        List<BadgeWithOwnCount> data = badgeRepository.findAllBadgeWithOwn(member.getUUID()).stream().map(h -> new BadgeWithOwnCount(h)).collect(Collectors.toList());
+        for (BadgeWithOwnCount badge:data) {
+            allBadgeWithCount.stream().filter(c->c.getId().equals(badge.getId())).findFirst().ifPresent(c -> badge.setCount(c.getCount()));
         }
+        return data;
+    }
+
+    public List<BadgeWithOwn> findAllBadgeWithOwn(String loginId){
+        Member member = memberRepository.findByLoginID(loginId).orElseThrow(()-> new NoSuchElementException("해당하는 유저가 없습니다."));
+        return badgeRepository.findAllBadgeWithOwn(member.getUUID());
+    }
+
+    public void createBadge(PostBadgeRequest postBadgeRequest){
         duplicateBadgeCheck(postBadgeRequest.getName());
         Badge badge = Badge.builder()
                 .description(postBadgeRequest.getDescription())
@@ -49,10 +67,7 @@ public class BadgeService {
         badgeRepository.save(badge);
     }
 
-    public void deleteBadge(Member member, Long badgeId){
-        if(!member.isAdmin()){
-            throw new ForbiddenException("임원진만 뱃지를 삭제할 수 있습니다.");
-        }
+    public void deleteBadge(Long badgeId){
         Badge badge = badgeRepository.findBadgeById(badgeId).orElseThrow(() -> new NoSuchElementException("해당하는 뱃지가 없습니다."));
         List<Member> badgeUser = memberRepository.findBadgeUser(badge.getId());
         for (Member m:badgeUser) {
@@ -73,31 +88,44 @@ public class BadgeService {
     }
 
     @Transactional
-    public void assignBadge(Member loginMember,String loginId, Long badgeId){
-        if(!loginMember.isAdmin()){
-            throw new ForbiddenException("임원진만 뱃지를 삭제할 수 있습니다.");
-        }
-        Badge badge = badgeRepository.findBadgeById(badgeId).orElseThrow(()-> new NoSuchElementException("해당하는 뱃지가 없습니다."));
+    public void assignBadge(String loginId, List<AssignBadge> request){
         Member member = memberRepository.findByLoginID(loginId).orElseThrow(()-> new NoSuchElementException("해당하는 유저가 없습니다."));
-        BadgeLog badgeLog = BadgeLog.builder()
-                .date(LocalDate.now())
-                .badge(badge)
-                .member(member)
-                .build();
-        badgeLogRepository.save(badgeLog);
+        List<MyBadgeSearchResult> myBadge = findMyBadge(member);
+
+        for (AssignBadge ab:request) {
+            Badge badge = badgeRepository.findBadgeById(ab.getId()).get();
+            if(ab.getOwn() && !myBadge.stream().filter(b->b.getId().equals(ab.getId())).findFirst().isPresent()){
+                BadgeLog badgeLog = BadgeLog.builder()
+                        .badge(badge)
+                        .date(LocalDate.now())
+                        .member(member)
+                        .build();
+                badgeLogRepository.save(badgeLog);
+            }else if(!ab.getOwn() && myBadge.stream().filter(b->b.getId().equals(ab.getId())).findFirst().isPresent()){
+                BadgeLog badgeLog = badgeLogRepository.findBadgeLogByUUID(member.getUUID(), badge.getId()).get();
+                badgeLogRepository.delete(badgeLog);
+                if(member.getBadge().getId().equals(ab.getId())){
+                    member.deleteBadge();
+                    memberRepository.save(member);
+                }
+            }
+        }
     }
 
     private void duplicateBadgeCheck(String name){
         badgeRepository.findBadgeByName(name).ifPresent(a->{throw new ConflictException("이미 있는 뱃지 이름입니다.");});
     }
 
-    public void updateBadge(Member member,Long badgeId, UpdateBadgeRequest updateBadgeRequest) {
-        if(!member.isAdmin()){
-            throw new ForbiddenException("임원진만 뱃지를 수정할 수 있습니다.");
-        }
+    public void updateBadge(Long badgeId, UpdateBadgeRequest updateBadgeRequest) {
         duplicateBadgeCheck(updateBadgeRequest.getName());
         Badge badge = badgeRepository.findBadgeById(badgeId).orElseThrow(() -> new NoSuchElementException("해당하는 뱃지가 없습니다."));
         badge.updateBadge(updateBadgeRequest.getName(), updateBadgeRequest.getDescription(), updateBadgeRequest.getImageUrl());
         badgeRepository.save(badge);
+    }
+
+    public void adminCheck(Member member, String message){
+        if(!member.isAdmin()){
+            throw new ForbiddenException(message);
+        }
     }
 }

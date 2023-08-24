@@ -1,8 +1,10 @@
 package org.poolc.api.badge.controller;
 
+import io.swagger.models.Response;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.badge.dto.*;
 import org.poolc.api.badge.service.BadgeService;
+import org.poolc.api.badge.vo.BadgeWithOwn;
 import org.poolc.api.badge.vo.MyBadgeSearchResult;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.notification.domain.NotificationType;
@@ -30,17 +32,18 @@ public class BadgeController {
     }
 
     @GetMapping(path="/all")
-    public ResponseEntity<GetAllBadgeResponse> getAllBadge(){
+    public ResponseEntity<GetAllBadgeResponse> getAllBadge(@AuthenticationPrincipal Member member){
         GetAllBadgeResponse getAllBadgeResponse = GetAllBadgeResponse.builder()
-                .data(badgeService.findAllBadge())
+                .data(badgeService.findAllBadgeWithOwnCount(member))
                 .build();
         return ResponseEntity.ok().body(getAllBadgeResponse);
     }
 
     @PostMapping
     public ResponseEntity<Void> postBadge(@AuthenticationPrincipal Member member, @RequestBody PostBadgeRequest postBadgeRequest){
-        badgeService.createBadge(member, postBadgeRequest);
-        notificationService.createNotification(null, member, NotificationType.BADGE);
+        badgeService.adminCheck(member,"임원진만 뱃지를 만들 수 있습니다.");
+        badgeService.createBadge(postBadgeRequest);
+        //notificationService.createNotification(null, member, NotificationType.BADGE);
         return ResponseEntity.ok().build();
     }
 
@@ -50,21 +53,33 @@ public class BadgeController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/assign")
-    public ResponseEntity<Void> assignBadge(@AuthenticationPrincipal Member member, @RequestBody AssignBadgeRequest assignBadgeRequest){
-        badgeService.assignBadge(member, assignBadgeRequest.getLoginId(), assignBadgeRequest.getBadgeId());
+    @GetMapping("/assign/{loginId}")
+    public ResponseEntity<GetOtherBadgeResponse> getMemberBadge(@AuthenticationPrincipal Member admin, @PathVariable String loginId){
+        badgeService.adminCheck(admin,"임원진만 뱃지를 지급할 수 있습니다.");
+        GetOtherBadgeResponse response = GetOtherBadgeResponse.builder()
+                .data(badgeService.findAllBadgeWithOwn(loginId))
+                .build();
+        return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/assign/{loginId}")
+    public ResponseEntity<Void> assignBadge(@AuthenticationPrincipal Member member, @PathVariable String loginId, @RequestBody AssignBadgeRequest assignBadgeRequest){
+        badgeService.adminCheck(member,"임원진만 뱃지를 지급할 수 있습니다.");
+        badgeService.assignBadge(loginId, assignBadgeRequest.getData());
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping(path="/{badgeId}")
     public ResponseEntity<Void> deleteBadge(@AuthenticationPrincipal Member member, @PathVariable Long badgeId){
-        badgeService.deleteBadge(member,badgeId);
+        badgeService.adminCheck(member,"임원진만 뱃지를 삭제할 수 있습니다.");
+        badgeService.deleteBadge(badgeId);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(path="/{badgeId}")
     public ResponseEntity<Void> updateBadge(@AuthenticationPrincipal Member member, @PathVariable Long badgeId, @RequestBody UpdateBadgeRequest updateBadgeRequest){
-        badgeService.updateBadge(member, badgeId, updateBadgeRequest);
+        badgeService.adminCheck(member,"임원진만 뱃지를 수정할 수 있습니다.");
+        badgeService.updateBadge(badgeId, updateBadgeRequest);
         return ResponseEntity.ok().build();
     }
 
