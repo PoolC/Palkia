@@ -1,6 +1,7 @@
 package org.poolc.api.baekjoon.service;
 
 import lombok.RequiredArgsConstructor;
+import org.poolc.api.badge.service.BadgeConditionService;
 import org.poolc.api.baekjoon.domain.Baekjoon;
 import org.poolc.api.baekjoon.domain.Problem;
 import org.poolc.api.baekjoon.dto.BaekjoonResponse;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 public class BaekjoonService {
     private final BaekjoonRepository baekjoonRepository;
     private final ProblemRepository problemRepository;
+    private final BadgeConditionService badgeConditionService;
 
     public List<BaekjoonResponse> getMyBaekjoon(Member member){
         return baekjoonRepository.findMySolveLog(member.getUUID());
@@ -35,11 +37,11 @@ public class BaekjoonService {
                 .submissionId(submissionId)
                 .build();
         baekjoonRepository.save(baekjoon);
+        badgeConditionService.todayBaekjoon(member, level);
     }
 
     private void logDuplicateCheck(Long problemId, Member member){
-        baekjoonRepository.findMyBaekjoonByProblem(member.getUUID(), problemId).ifPresent(a->{throw new DuplicateBaekjoonException("이미 처리된 문제입니다.");
-        });
+        baekjoonRepository.findMyBaekjoonByProblem(member.getUUID(), problemId).ifPresent(a->{throw new DuplicateBaekjoonException("이미 처리된 문제입니다.");});
     }
 
     private boolean DuplicateProblemCheck(Long problemId){

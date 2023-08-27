@@ -3,7 +3,6 @@ package org.poolc.api.badge.service;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.badge.domain.BadgeCondition;
 import org.poolc.api.badge.repository.BadgeConditionRepository;
-import org.poolc.api.badge.service.BadgeService;
 import org.poolc.api.member.domain.Member;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,12 +18,20 @@ public class BadgeConditionService {
 
     @Transactional
     public void todayAttendance(Member member){
-        BadgeCondition attendance = myCondition(member);
-        if(!attendance.getLastAttendance().equals(LocalDate.now())){
-            attendance.addAttendance();
-            AttendanceBadge(member,attendance);
-            badgeConditionRepository.save(attendance);
+        BadgeCondition condition = myCondition(member);
+        if(!condition.getLastAttendance().equals(LocalDate.now())){
+            condition.addAttendance();
+            AttendanceBadge(member,condition);
+            badgeConditionRepository.save(condition);
         }
+    }
+
+    @Transactional
+    public void todayBaekjoon(Member member, String level){
+        BadgeCondition condition = myCondition(member);
+        condition.addBaekjoon(level);
+        BaekjoonBadge(member,condition);
+        badgeConditionRepository.save(condition);
     }
 
     public BadgeCondition myCondition(Member member){
@@ -40,16 +47,31 @@ public class BadgeConditionService {
         return attendance;
     }
 
-    public void AttendanceBadge(Member member, BadgeCondition attendance){
-        if(attendance.getAttendance().equals(10L))badgeService.badgeGiver(member,2L);
-        if(attendance.getAttendance().equals(20L))badgeService.badgeGiver(member,3L);
-        if(attendance.getAttendance().equals(30L))badgeService.badgeGiver(member,4L);
-        if(attendance.getAttendance().equals(40L))badgeService.badgeGiver(member,5L);
-        if(attendance.getAttendance().equals(50L))badgeService.badgeGiver(member,6L);
-        if(attendance.getAttendance().equals(60L))badgeService.badgeGiver(member,7L);
-        if(attendance.getAttendance().equals(70L))badgeService.badgeGiver(member,8L);
-        if(attendance.getAttendance().equals(80L))badgeService.badgeGiver(member,9L);
-        if(attendance.getAttendance().equals(90L))badgeService.badgeGiver(member,10L);
-        if(attendance.getAttendance().equals(100L))badgeService.badgeGiver(member,11L);
+    private void AttendanceBadge(Member member, BadgeCondition condition){
+        if(condition.getAttendance().equals(10L))badgeService.badgeGiver(member,2L);
+        if(condition.getAttendance().equals(20L))badgeService.badgeGiver(member,3L);
+        if(condition.getAttendance().equals(30L))badgeService.badgeGiver(member,4L);
+        if(condition.getAttendance().equals(40L))badgeService.badgeGiver(member,5L);
+        if(condition.getAttendance().equals(50L))badgeService.badgeGiver(member,6L);
+        if(condition.getAttendance().equals(60L))badgeService.badgeGiver(member,7L);
+        if(condition.getAttendance().equals(70L))badgeService.badgeGiver(member,8L);
+        if(condition.getAttendance().equals(80L))badgeService.badgeGiver(member,9L);
+        if(condition.getAttendance().equals(90L))badgeService.badgeGiver(member,10L);
+        if(condition.getAttendance().equals(100L))badgeService.badgeGiver(member,11L);
+    }
+
+    private void BaekjoonBadge(Member member, BadgeCondition condition){
+        if(condition.getBaekjoon().equals(3L))badgeService.badgeGiver(member,21L);
+        if(condition.getBaekjoon().equals(7L))badgeService.badgeGiver(member,22L);
+        if(condition.getBaekjoon().equals(14L))badgeService.badgeGiver(member,23L);
+        if(condition.getBaekjoon().equals(21L))badgeService.badgeGiver(member,24L);
+        if(condition.getBaekjoon().equals(28L))badgeService.badgeGiver(member,25L);
+
+        if(condition.getBronzeCount().equals(10L))badgeService.badgeGiver(member,31L);
+        if(condition.getSilverCount().equals(10L))badgeService.badgeGiver(member,32L);
+        if(condition.getGoldCount().equals(10L))badgeService.badgeGiver(member,33L);
+        if(condition.getPlatinumCount().equals(10L))badgeService.badgeGiver(member,34L);
+        if(condition.getDiamondCount().equals(10L))badgeService.badgeGiver(member,35L);
+        if(condition.getRubyCount().equals(10L))badgeService.badgeGiver(member,36L);
     }
 }
