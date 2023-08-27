@@ -1,7 +1,7 @@
 package org.poolc.api.auth.service;
 
 import lombok.RequiredArgsConstructor;
-import org.poolc.api.attendance.service.BadgeConditionService;
+import org.poolc.api.badge.service.BadgeConditionService;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.security.core.userdetails.UserDetails;

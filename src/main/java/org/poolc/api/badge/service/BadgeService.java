@@ -132,12 +132,14 @@ public class BadgeService {
         return badgeRepository.findBadgeById(badgeId).get();
     }
 
+    //뱃지가 존재하는 경우에만 지급함.
     public void badgeGiver(Member member, Long badgeId){
-        if(duplicateBadgeLogCheck(badgeId, member)){
+        if(duplicateBadgeLogCheck(badgeId, member)&&badgeRepository.findBadgeById(badgeId).isPresent()){
+            Badge badge = getBadgeByBadgeId(badgeId);
             badgeLogRepository.save(BadgeLog.builder()
                     .member(member)
                     .date(LocalDate.now())
-                    .badge(getBadgeByBadgeId(badgeId))
+                    .badge(badge)
                     .build());
         }
     }

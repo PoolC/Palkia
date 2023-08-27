@@ -1,12 +1,10 @@
-package org.poolc.api.attendance.service;
+package org.poolc.api.badge.service;
 
 import lombok.RequiredArgsConstructor;
-import org.poolc.api.attendance.domain.BadgeCondition;
-import org.poolc.api.attendance.repository.BadgeConditionRepository;
-import org.poolc.api.badge.repository.BadgeLogRepository;
+import org.poolc.api.badge.domain.BadgeCondition;
+import org.poolc.api.badge.repository.BadgeConditionRepository;
 import org.poolc.api.badge.service.BadgeService;
 import org.poolc.api.member.domain.Member;
-import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

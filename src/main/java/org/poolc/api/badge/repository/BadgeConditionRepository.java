@@ -1,6 +1,6 @@
-package org.poolc.api.attendance.repository;
+package org.poolc.api.badge.repository;
 
-import org.poolc.api.attendance.domain.BadgeCondition;
+import org.poolc.api.badge.domain.BadgeCondition;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

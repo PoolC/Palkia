@@ -1,4 +1,4 @@
-package org.poolc.api.attendance.domain;
+package org.poolc.api.badge.domain;
 
 import lombok.Builder;
 import lombok.Getter;
