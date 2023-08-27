@@ -3,7 +3,6 @@ package org.poolc.api.badge.service;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.badge.domain.Badge;
 import org.poolc.api.badge.domain.BadgeLog;
-import org.poolc.api.badge.dto.AssignBadgeRequest;
 import org.poolc.api.badge.dto.PostBadgeRequest;
 import org.poolc.api.badge.dto.UpdateBadgeRequest;
 import org.poolc.api.badge.repository.BadgeLogRepository;
@@ -11,16 +10,12 @@ import org.poolc.api.badge.repository.BadgeRepository;
 import org.poolc.api.badge.vo.*;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.repository.MemberRepository;
-import org.poolc.api.member.service.MemberService;
-import org.poolc.api.room.exception.BadRequestException;
 import org.poolc.api.room.exception.ConflictException;
 import org.poolc.api.room.exception.ForbiddenException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.DuplicateFormatFlagsException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -116,6 +111,10 @@ public class BadgeService {
         badgeRepository.findBadgeByName(name).ifPresent(a->{throw new ConflictException("이미 있는 뱃지 이름입니다.");});
     }
 
+    private boolean duplicateBadgeLogCheck(Long badgeId, Member member){
+        return !badgeLogRepository.findBadgeLogByUUID(member.getUUID(), badgeId).isPresent();
+    }
+
     public void updateBadge(Long badgeId, UpdateBadgeRequest updateBadgeRequest) {
         duplicateBadgeCheck(updateBadgeRequest.getName());
         Badge badge = badgeRepository.findBadgeById(badgeId).orElseThrow(() -> new NoSuchElementException("해당하는 뱃지가 없습니다."));
@@ -126,6 +125,20 @@ public class BadgeService {
     public void adminCheck(Member member, String message){
         if(!member.isAdmin()){
             throw new ForbiddenException(message);
+        }
+    }
+
+    public Badge getBadgeByBadgeId(Long badgeId){
+        return badgeRepository.findBadgeById(badgeId).get();
+    }
+
+    public void badgeGiver(Member member, Long badgeId){
+        if(duplicateBadgeLogCheck(badgeId, member)){
+            badgeLogRepository.save(BadgeLog.builder()
+                    .member(member)
+                    .date(LocalDate.now())
+                    .badge(getBadgeByBadgeId(badgeId))
+                    .build());
         }
     }
 }
