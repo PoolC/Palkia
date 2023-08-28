@@ -79,4 +79,12 @@ public class PostController {
         postService.deletePost(member, postId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @GetMapping("/post/search")
+    public ResponseEntity<List<PostResponse>> searchPost(@AuthenticationPrincipal Member member,
+                                                         @RequestParam String keyword,
+                                                         @RequestParam int page) {
+        List<PostResponse> postResponses = postService.searchPost(member, keyword, page);
+        return ResponseEntity.status(HttpStatus.OK).body(postResponses);
+    }
 }

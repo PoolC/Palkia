@@ -102,13 +102,23 @@ public class PostService {
         post.deductScrapCount();
     }
 
-
     public void deletePost(Member member, Long postId) {
         Post post = findPostById(member, postId);
         checkWriterOrAdmin(member, post);
         post.setIsDeleted();
         post.getBoard().deductPostCount();
     }
+
+    public List<PostResponse> searchPost(Member member, String keyword, int page) {
+        PageRequest pr = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findByTitleContainingOrBodyContaining(keyword, keyword, pr);
+        return posts.stream()
+                .filter(post -> checkReadPermissionBoolean(member, post.getBoard()))
+                .sorted(Comparator.comparing(Post::getCreatedAt).reversed())
+                .map(PostResponse::of)
+                .collect(Collectors.toList());
+    }
+
 
     private void checkWritePermission(Member member, Board board) {
         if (!board.memberHasWritePermissions(member)) throw new UnauthorizedException("접근할 수 없습니다.");
@@ -117,6 +127,10 @@ public class PostService {
         if ((user == null && !board.isPublicReadPermission()) || (user != null && !board.memberHasReadPermissions(user.getRoles()))) {
             throw new UnauthorizedException("접근할 수 없습니다.");
         }
+    }
+
+    private boolean checkReadPermissionBoolean(Member user, Board board) {
+        return (user == null && board.isPublicReadPermission()) || (user != null && !board.memberHasReadPermissions(user.getRoles()));
     }
 
     private void checkWriter(Member member, Post post) {
