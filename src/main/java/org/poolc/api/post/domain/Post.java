@@ -59,8 +59,9 @@ public class Post extends TimestampEntity {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private List<Comment> commentList = new ArrayList<>();
 
-    @Column(name = "post_type", nullable = false)
-    private PostType postType;
+    @Column(name = "post_type", nullable = true)
+    @Enumerated
+    private PostType postType = PostType.GENERAL_POST;
 
     // 질문이면 수정 삭제 방지
     @Column(name = "is_question", columnDefinition = "boolean default false")
@@ -78,17 +79,17 @@ public class Post extends TimestampEntity {
     @Column(name = "comment_count", columnDefinition = "bigint default 0")
     private Long commentCount;
 
-    @Column(name = "position", nullable = false)
+    @Column(name = "position", nullable = true)
     @Enumerated(EnumType.ORDINAL)
     private JobType position;
 
-    @Column(name = "region", columnDefinition = "char(20)")
+    @Column(name = "region", columnDefinition = "char(20)", nullable = true)
     private String region;
 
-    @Column(name = "field", columnDefinition = "char(20)")
+    @Column(name = "field", columnDefinition = "char(20)", nullable = true)
     private String field;
 
-    @Column(name = "deadline")
+    @Column(name = "deadline", nullable = true)
     private LocalDateTime deadline;
 
     public void addLikeCount() {
