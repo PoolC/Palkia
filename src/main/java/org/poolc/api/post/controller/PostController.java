@@ -43,7 +43,7 @@ public class PostController {
     }
 
     @GetMapping("/{boardId}")
-    public ResponseEntity<List<PostResponse>> viewPostByBoard(@AuthenticationPrincipal Member member,
+    public ResponseEntity<List<PostResponse>> viewPostsByBoard(@AuthenticationPrincipal Member member,
                                                               @PathVariable Long boardId,
                                                               @RequestParam int page) {
         Board board = boardService.findById(boardId);
