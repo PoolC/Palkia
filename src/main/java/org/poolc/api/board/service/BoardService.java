@@ -2,6 +2,7 @@ package org.poolc.api.board.service;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.board.domain.Board;
+import org.poolc.api.board.domain.BoardName;
 import org.poolc.api.board.repository.BoardRepository;
 import org.poolc.api.board.vo.BoardCreateValues;
 import org.poolc.api.board.vo.BoardUpdateValues;
@@ -29,7 +30,7 @@ public class BoardService {
     }
 
     public void createBoard(BoardCreateValues values) {
-        if (!boardRepository.existsByNameOrUrlPath(values.getName(), values.getUrlPath())) {
+        if (!boardRepository.existsByBoardNameOrUrlPath(values.getBoardName(), values.getUrlPath())) {
             boardRepository.save(new Board(values));
         }
     }
@@ -44,8 +45,8 @@ public class BoardService {
         board.setIsDeleted();
     }
 
-    public Board findByName(String name) {
-        return boardRepository.findByName(name)
+    public Board findByBoardName(BoardName boardName) {
+        return boardRepository.findByBoardName(boardName)
                 .orElseThrow(() -> new NoSuchElementException("No board with given name."));
 
     }

@@ -11,4 +11,13 @@ public enum BoardName {
     private BoardName(String description) { this.description = description; }
 
     public String getDescription() { return this.description; }
+
+    public static BoardName getByDescription(String description) {
+        for (BoardName boardName : BoardName.values()) {
+            if (boardName.getDescription().equals(description)) {
+                return boardName;
+            }
+        }
+        return null;
+    }
 }
