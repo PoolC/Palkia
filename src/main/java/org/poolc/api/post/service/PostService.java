@@ -115,4 +115,9 @@ public class PostService {
     private void checkNotWriter(Member member, Post post) {
         if (post.getMember().equals(member)) throw new UnauthorizedException("자신의 게시글을 좋아할 수 없습니다.");
     }
+
+    public Post findPostById(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new NoSuchElementException("No post with given id."));
+    }
 }
