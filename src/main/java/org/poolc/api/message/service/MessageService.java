@@ -49,6 +49,7 @@ public class MessageService {
     public List<MessageResponse> viewSentMessages(Member member) {
         List<Message> messages = messageRepository.findAllBySender(member);
         return messages.stream()
+                .sorted(Comparator.comparing(Message::getCreatedAt).reversed())
                 .map(MessageResponse::of)
                 .collect(Collectors.toList());
     }
@@ -57,6 +58,7 @@ public class MessageService {
     public List<MessageResponse> viewReceivedMessages(Member member) {
         List<Message> messages = messageRepository.findAllByReceiver(member);
         return messages.stream()
+                .sorted(Comparator.comparing(Message::getCreatedAt).reversed())
                 .map(MessageResponse::of)
                 .collect(Collectors.toList());
     }
@@ -65,7 +67,7 @@ public class MessageService {
     public List<Message> viewMessagesWith(Member current, Member particular) {
         List<Message> messages = messageRepository.findAllByConversation(current, particular);
         return messages.stream()
-                .sorted(Comparator.comparing(Message::getCreatedAt))
+                .sorted(Comparator.comparing(Message::getCreatedAt).reversed())
                 .collect(Collectors.toList());
     }
 

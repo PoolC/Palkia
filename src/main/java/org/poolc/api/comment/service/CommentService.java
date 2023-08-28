@@ -3,7 +3,6 @@ package org.poolc.api.comment.service;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.auth.exception.UnauthorizedException;
 import org.poolc.api.comment.domain.Comment;
-import org.poolc.api.comment.dto.CommentResponse;
 import org.poolc.api.comment.repository.CommentRepository;
 import org.poolc.api.comment.vo.CommentCreateValues;
 import org.poolc.api.comment.vo.CommentUpdateValues;
@@ -11,8 +10,10 @@ import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.domain.Post;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +31,9 @@ public class CommentService {
     }
 
     public List<Comment> findCommentsByPost(Post post) {
-        return commentRepository.findAllByPost(post);
+        return commentRepository.findAllByPost(post).stream()
+                .sorted(Comparator.comparing(Comment::getCreatedAt))
+                .collect(Collectors.toList());
     }
 
     public List<Comment> findCommentsByParent(Long parentId) {

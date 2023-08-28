@@ -42,6 +42,7 @@ public class PostService {
         Page<Post> posts = postRepository.findByMember(member, pr);
         if (posts.getNumberOfElements() == 0) return null;
         return posts.stream()
+                .sorted(Comparator.comparing(Post::getCreatedAt).reversed())
                 .map(PostResponse::of)
                 .collect(Collectors.toList());
     }
@@ -53,6 +54,7 @@ public class PostService {
         Page<Post> posts = postRepository.findByBoard(board, pr);
         if (posts.getNumberOfElements() == 0) return null;
         return posts.stream()
+                .sorted(Comparator.comparing(Post::getCreatedAt).reversed())
                 .map(PostResponse::of)
                 .collect(Collectors.toList());
     }
