@@ -23,10 +23,9 @@ public class NotificationService {
                 .collect(Collectors.toList());
     }
 
-    public List<NotificationResponse> getAllNotificationsForMember(Member recipient) {
+    public List<Notification> getAllNotificationsForMember(Member recipient) {
         return notificationRepository.findByRecipient(recipient)
                 .stream()
-                .map(NotificationResponse::of)
                 .collect(Collectors.toList());
     }
 
