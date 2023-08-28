@@ -7,6 +7,8 @@ import org.poolc.api.post.dto.PostResponse;
 import org.poolc.api.post.service.PostService;
 import org.poolc.api.scrap.domain.Scrap;
 import org.poolc.api.scrap.repository.ScrapRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,15 +35,16 @@ public class ScrapService {
         scrapRepository.deleteById(scrap.getId());
     }
 
-    public List<PostResponse> viewMyPosts(Member member) {
-        List<Scrap> scraps = scrapRepository.findAllByMemberId(member.getLoginID());
+    public List<PostResponse> viewMyPosts(Member member, int page) {
+        PageRequest pr = PageRequest.of(page, size);
+        Page<Scrap> scraps = scrapRepository.findAllByMemberId(member.getLoginID(), pr);
         return scraps.stream()
-                .map(this::scrapToPostResponse)
+                .map(s -> scrapToPostResponse(member, s))
                 .collect(Collectors.toList());
     }
 
-    private PostResponse scrapToPostResponse(Scrap scrap) {
-        Post post = postService.findPostById(scrap.getPostId());
+    private PostResponse scrapToPostResponse(Member member, Scrap scrap) {
+        Post post = postService.findPostById(member, scrap.getPostId());
         return PostResponse.of(post);
     }
 }

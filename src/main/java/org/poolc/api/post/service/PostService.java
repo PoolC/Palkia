@@ -6,6 +6,7 @@ import org.poolc.api.board.domain.Board;
 import org.poolc.api.board.service.BoardService;
 import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.member.domain.Member;
+import org.poolc.api.member.service.MemberService;
 import org.poolc.api.post.domain.Post;
 import org.poolc.api.post.dto.PostResponse;
 import org.poolc.api.post.repository.PostRepository;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
     private final BoardService boardService;
+    private final MemberService memberService;
     private static final int size = 15;
 
     public Post findPostById(Member member, Long postId) {
@@ -88,6 +90,19 @@ public class PostService {
         post.deductLikeCount();
     }
 
+    public void scrapPost(Member member, Long postId) {
+        Post post = findPostById(member, postId);
+        checkNotWriter(member, post);
+        post.addScrapCount();
+    }
+
+    public void unscrapPost(Member member, Long postId) {
+        Post post = findPostById(member, postId);
+        checkNotWriter(member, post);
+        post.deductScrapCount();
+    }
+
+
     public void deletePost(Member member, Long postId) {
         Post post = findPostById(member, postId);
         checkWriterOrAdmin(member, post);
@@ -114,10 +129,5 @@ public class PostService {
 
     private void checkNotWriter(Member member, Post post) {
         if (post.getMember().equals(member)) throw new UnauthorizedException("자신의 게시글을 좋아할 수 없습니다.");
-    }
-
-    public Post findPostById(Long postId) {
-        return postRepository.findById(postId)
-                .orElseThrow(() -> new NoSuchElementException("No post with given id."));
     }
 }
