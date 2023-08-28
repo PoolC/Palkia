@@ -25,7 +25,7 @@ public class Notification extends TimestampEntity {
     @JoinColumn(name = "receiver_id")
     private Member recipient;
 
-    @Column(name = "post_type", nullable = false)
+    @Column(name = "notification_type", nullable = false)
     private NotificationType notificationType;
 
     @Column(name = "read_status", nullable = false, columnDefinition = "boolean default false")
