@@ -17,13 +17,11 @@ public class Notification extends TimestampEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "NOTIFICATION_SEQ_GENERATOR")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sender_id")
-    private Member sender;
+    @Column(name = "sender_id", nullable = true)
+    private String senderId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiver_id")
-    private Member recipient;
+    @Column(name = "receiver_id", nullable = false)
+    private String receiverId;
 
     @Column(name = "notification_type", nullable = false)
     private NotificationType notificationType;
@@ -33,9 +31,9 @@ public class Notification extends TimestampEntity {
 
     protected Notification() {}
 
-    public Notification(Member sender, Member recipient, NotificationType notificationType) {
-        this.sender = sender;
-        this.recipient = recipient;
+    public Notification(String senderId, String receiverId, NotificationType notificationType) {
+        this.senderId = senderId;
+        this.receiverId = receiverId;
         this.notificationType = notificationType;
     }
 

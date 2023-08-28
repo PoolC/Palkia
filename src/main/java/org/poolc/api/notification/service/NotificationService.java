@@ -30,8 +30,8 @@ public class NotificationService {
                 .collect(Collectors.toList());
     }
 
-    public void createNotification(Member sender, Member recipient, NotificationType notificationType) {
-        Notification notification = new Notification(sender, recipient, notificationType);
+    public void createNotification(String senderId, String receiverId, NotificationType notificationType) {
+        Notification notification = new Notification(senderId, receiverId, notificationType);
         notificationRepository.save(notification);
     }
 

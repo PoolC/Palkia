@@ -42,8 +42,8 @@ public class CommentController {
         // 대댓글을 달면 댓글쓴 사람한테 알림
         // 댓글 달면 포스트 쓴 사람한테 알림
 
-        if (parent == null) notificationService.createNotification(member, post.getMember(), NotificationType.COMMENT);
-        else notificationService.createNotification(member, parent.getMember(), NotificationType.RECOMMENT);
+        if (parent == null) notificationService.createNotification(member.getUUID(), post.getMember().getUUID(), NotificationType.COMMENT);
+        else notificationService.createNotification(member.getUUID(), parent.getMember().getUUID(), NotificationType.RECOMMENT);
         return ResponseEntity.status(HttpStatus.CREATED).body(CommentResponse.of(newComment));
     }
 

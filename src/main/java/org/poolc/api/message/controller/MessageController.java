@@ -31,12 +31,17 @@ public class MessageController {
     @PostMapping("/new")
     public ResponseEntity<?> writeMessage(@AuthenticationPrincipal Member member,
                                           @RequestBody @Valid MessageCreateRequest request) {
-        Member sender = memberService.findMemberByUUID(request.getSenderUUID());
-        Member receiver = memberService.findMemberByUUID(request.getReceiverUUID());
+        String senderId = request.getSenderUUID();
+        String receiverId = request.getReceiverUUID();
+
+        Member sender = memberService.findMemberByUUID(senderId);
+        Member receiver = memberService.findMemberByUUID(receiverId);
         messageService.write(new MessageCreateValues(sender, receiver, request));
 
-        if (request.getSenderAnonymous()) sender = null;
-        notificationService.createNotification(sender, receiver, NotificationType.MESSAGE);
+        if (request.getSenderAnonymous()) senderId = "익명";
+        if (request.getReceiverAnonymous()) receiverId = "익명";
+
+        notificationService.createNotification(senderId, receiverId, NotificationType.MESSAGE);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
