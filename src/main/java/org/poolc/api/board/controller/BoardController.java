@@ -3,11 +3,9 @@ package org.poolc.api.board.controller;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.auth.exception.UnauthorizedException;
 import org.poolc.api.board.domain.Board;
-import org.poolc.api.board.dto.BoardCreateRequest;
 import org.poolc.api.board.dto.BoardResponse;
 import org.poolc.api.board.dto.BoardUpdateRequest;
 import org.poolc.api.board.service.BoardService;
-import org.poolc.api.board.vo.BoardCreateValues;
 import org.poolc.api.board.vo.BoardUpdateValues;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
@@ -31,11 +29,11 @@ import java.util.stream.Collectors;
 public class BoardController {
     private final BoardService boardService;
 
-    @PostMapping("/new")
+    /*@PostMapping("/new")
     public ResponseEntity<?> registerBoard(@RequestBody @Valid BoardCreateRequest request) {
         boardService.createBoard(new BoardCreateValues(request));
         return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
+    }*/
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<BoardResponse>> viewBoardList(@AuthenticationPrincipal Member member) {
@@ -56,9 +54,9 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(boardResponseList);
     }
 
-    @GetMapping(value = "/{boardId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BoardResponse> viewBoard(@AuthenticationPrincipal Member member, @PathVariable Long boardId) {
-        Board board = boardService.findById(boardId);
+    @GetMapping(value = "/{boardName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<BoardResponse> viewBoard(@AuthenticationPrincipal Member member, @PathVariable String boardName) {
+        Board board = boardService.findByName(boardName);
 
         if (member == null) {
             checkReadPermissions(board, new MemberRoles(Set.of(MemberRole.PUBLIC)));
@@ -68,21 +66,21 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(BoardResponse.of(board));
     }
 
-    @PutMapping("/{boardId}")
+    @PutMapping("/{boardName}")
     public ResponseEntity<BoardResponse> updateBoard(@AuthenticationPrincipal Member member,
-                                                     @PathVariable Long boardId,
+                                                     @PathVariable String boardName,
                                                      @RequestBody @Valid BoardUpdateRequest request) {
-        Board board = boardService.findById(boardId);
+        Board board = boardService.findByName(boardName);
         checkWritePermissions(board, member);
-        boardService.updateBoard(boardId, new BoardUpdateValues(request));
+        boardService.updateBoard(board.getId(), new BoardUpdateValues(request));
         return ResponseEntity.status(HttpStatus.OK).body(BoardResponse.of(board));
     }
 
-    @DeleteMapping("/{boardId}")
-    public ResponseEntity<Void> deleteBoard(@AuthenticationPrincipal Member member, @PathVariable Long boardId) {
-        Board board = boardService.findById(boardId);
+    @DeleteMapping("/{boardName}")
+    public ResponseEntity<Void> deleteBoard(@AuthenticationPrincipal Member member, @PathVariable String boardName) {
+        Board board = boardService.findByName(boardName);
         checkWritePermissions(board, member);
-        boardService.deleteBoard(boardId);
+        boardService.deleteBoard(board.getId());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

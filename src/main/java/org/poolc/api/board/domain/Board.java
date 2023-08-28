@@ -22,8 +22,8 @@ public class Board {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name", unique = true, nullable = false, columnDefinition = "varchar(40)")
-    private String name;
+    @Column(name = "name", unique = true, nullable = false)
+    private BoardName boardName;
 
     @Column(name = "url_path", unique = true, nullable = false, columnDefinition = "varchar(40)")
     private String urlPath;
@@ -44,8 +44,8 @@ public class Board {
 
     public Board() {}
 
-    public Board(String name, String urlPath, Long postCount, MemberRole readPermission, MemberRole writePermission, Boolean isDeleted) {
-        this.name = name;
+    public Board(BoardName boardName, String urlPath, Long postCount, MemberRole readPermission, MemberRole writePermission, Boolean isDeleted) {
+        this.boardName = boardName;
         this.urlPath = urlPath;
         this.postCount = postCount;
         this.readPermission = readPermission;
@@ -54,7 +54,7 @@ public class Board {
     }
 
     public Board(BoardCreateValues values) {
-        this.name = values.getName();
+        this.boardName = values.getBoardName();
         this.urlPath = values.getUrlPath();
         this.postCount = 0L;
         this.readPermission = values.getReadPermission();
@@ -70,7 +70,6 @@ public class Board {
     }
 
     public void updateBoard(BoardUpdateValues boardUpdateValues) {
-        this.name = boardUpdateValues.getName();
         this.urlPath = boardUpdateValues.getUrlPath();
         this.readPermission = boardUpdateValues.getReadPermission();
         this.writePermission = boardUpdateValues.getWritePermission();

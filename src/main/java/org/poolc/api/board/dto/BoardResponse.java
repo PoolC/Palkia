@@ -18,7 +18,7 @@ public class BoardResponse {
     public static BoardResponse of(Board board) {
         return BoardResponse.builder()
                 .boardId(board.getId())
-                .name(board.getName())
+                .name(board.getBoardName().getDescription())
                 .urlPath(board.getUrlPath())
                 .postCount(board.getPostCount())
                 .readPermission(board.getReadPermission())
