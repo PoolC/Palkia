@@ -24,20 +24,16 @@ public class NotificationController {
     @GetMapping("/unread")
     public ResponseEntity<List<NotificationResponse>> getUnreadNotifications(@AuthenticationPrincipal Member member) {
         List<Notification> notifications = notificationService.getUnreadNotificationsForMember(member);
-        notifications.forEach(Notification::memberReads);
         List<NotificationResponse> responses = notifications.stream()
                 .map(NotificationResponse::of)
                 .collect(Collectors.toList());
-        member.resetNotificationCount();
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<NotificationResponse>> getAllNotifications(@AuthenticationPrincipal Member member) {
         List<Notification> notifications = notificationService.getAllNotificationsForMember(member);
-        notifications.stream()
-                .filter(n -> !n.getReadStatus())
-                .forEach(Notification::memberReads);
+        member.resetNotificationCount();
         List<NotificationResponse> responses = notifications.stream()
                 .map(NotificationResponse::of)
                 .collect(Collectors.toList());
