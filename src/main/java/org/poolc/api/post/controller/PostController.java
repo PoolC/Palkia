@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.auth.exception.UnauthorizedException;
 import org.poolc.api.board.domain.Board;
+import org.poolc.api.board.domain.BoardName;
 import org.poolc.api.board.service.BoardService;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.domain.Post;
@@ -49,7 +50,8 @@ public class PostController {
     public ResponseEntity<List<PostResponse>> viewPostsByBoard(@AuthenticationPrincipal Member member,
                                                               @PathVariable String boardTitle,
                                                               @RequestParam int page) {
-        Board board = boardService.findByName(boardTitle);
+        BoardName boardName = BoardName.getByDescription(boardTitle);
+        Board board = boardService.findByBoardName(boardName);
         List<PostResponse> posts = postService.findPostsByBoard(member, board, page);
         return ResponseEntity.status(HttpStatus.OK).body(posts);
     }
