@@ -13,6 +13,7 @@ import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.domain.MemberRoles;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
@@ -36,7 +37,7 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<BoardResponse>> viewBoardList(@AuthenticationPrincipal Member member) {
         List<Board> boards = boardService.findAll();
         List<BoardResponse> boardResponseList;
@@ -55,9 +56,9 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(boardResponseList);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<BoardResponse> viewBoard(@AuthenticationPrincipal Member member, @PathVariable Long id) {
-        Board board = boardService.findById(id);
+    @GetMapping(value = "/{boardId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<BoardResponse> viewBoard(@AuthenticationPrincipal Member member, @PathVariable Long boardId) {
+        Board board = boardService.findById(boardId);
 
         if (member == null) {
             checkReadPermissions(board, new MemberRoles(Set.of(MemberRole.PUBLIC)));
@@ -67,21 +68,21 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(BoardResponse.of(board));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{boardId}")
     public ResponseEntity<BoardResponse> updateBoard(@AuthenticationPrincipal Member member,
-                                                     @PathVariable Long id,
+                                                     @PathVariable Long boardId,
                                                      @RequestBody @Valid BoardUpdateRequest request) {
-        Board board = boardService.findById(id);
+        Board board = boardService.findById(boardId);
         checkWritePermissions(board, member);
-        boardService.updateBoard(id, new BoardUpdateValues(request));
+        boardService.updateBoard(boardId, new BoardUpdateValues(request));
         return ResponseEntity.status(HttpStatus.OK).body(BoardResponse.of(board));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBoard(@AuthenticationPrincipal Member member, @PathVariable Long id) {
-        Board board = boardService.findById(id);
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<Void> deleteBoard(@AuthenticationPrincipal Member member, @PathVariable Long boardId) {
+        Board board = boardService.findById(boardId);
         checkWritePermissions(board, member);
-        boardService.deleteBoard(id);
+        boardService.deleteBoard(boardId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
