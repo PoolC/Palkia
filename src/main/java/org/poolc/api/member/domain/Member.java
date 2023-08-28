@@ -71,7 +71,7 @@ public class Member extends TimestampEntity implements UserDetails {
     private InterviewSlot interviewSlot;
 
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "badge_id")
     private Badge badge;
 
     protected Member() {

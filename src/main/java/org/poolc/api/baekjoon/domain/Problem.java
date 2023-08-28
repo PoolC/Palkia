@@ -9,7 +9,6 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "problem")
-@Builder
 public class Problem {
     @Id
     @GeneratedValue
@@ -29,7 +28,7 @@ public class Problem {
     @CollectionTable(name = "problem_tags",joinColumns = @JoinColumn(name = "id", referencedColumnName = "id"))
     private List<String> tags;
 
-
+    @Builder
     public Problem(Long problemId, String title, String level, List<String> tags) {
         this.problemId = problemId;
         this.title = title;

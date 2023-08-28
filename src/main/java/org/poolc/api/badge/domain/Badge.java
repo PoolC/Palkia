@@ -2,6 +2,7 @@ package org.poolc.api.badge.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.poolc.api.badge.vo.BadgeCategory;
 
 import javax.persistence.*;
 
@@ -23,12 +24,16 @@ public class Badge {
     @Column(name="image_url", nullable = false)
     private String imageUrl;
 
+    @Column(name="category")
+    private BadgeCategory category;
+
     @Builder
     public Badge(Long id, String name, String description, String imageUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
+        this.category = BadgeCategory.ETC;
     }
 
     public void updateBadge(String name, String description, String imageUrl){
