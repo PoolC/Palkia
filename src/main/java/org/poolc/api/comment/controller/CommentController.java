@@ -8,6 +8,8 @@ import org.poolc.api.comment.dto.CommentUpdateRequest;
 import org.poolc.api.comment.service.CommentService;
 import org.poolc.api.comment.vo.CommentCreateValues;
 import org.poolc.api.comment.vo.CommentUpdateValues;
+import org.poolc.api.like.domain.Subject;
+import org.poolc.api.like.service.LikeService;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.notification.service.NotificationService;
 import org.poolc.api.post.domain.Post;
@@ -26,6 +28,7 @@ public class CommentController {
     private final PostService postService;
     private final CommentService commentService;
     private final NotificationService notificationService;
+    private final LikeService likeService;
 
     @PostMapping
     public ResponseEntity<CommentResponse> createComment(@AuthenticationPrincipal Member member,
@@ -58,6 +61,14 @@ public class CommentController {
     @DeleteMapping("/{commentId}")
     public ResponseEntity<Void> deleteComment(@AuthenticationPrincipal Member member, @PathVariable Long commentId) {
         commentService.deleteComment(member, commentId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("/{commentId}/like")
+    public ResponseEntity<Void> likeComment(@AuthenticationPrincipal Member member, @PathVariable Long commentId) {
+        Comment comment = commentService.findById(commentId);
+        if (!member.equals(comment.getMember())) likeService.like(member.getLoginID(), Subject.COMMENT, commentId);
+        else throw new IllegalArgumentException("본인의 댓글은 좋아할 수 없습니다.");
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

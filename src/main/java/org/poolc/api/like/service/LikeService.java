@@ -20,7 +20,7 @@ public class LikeService {
         }
     }
 
-    public boolean checkIfLiked(String memberId, Subject subject, Long subjectId) {
+    private boolean checkIfLiked(String memberId, Subject subject, Long subjectId) {
         return likeRepository.existsByMemberIdAndSubjectAndSubjectId(memberId, subject, subjectId);
     }
 }
