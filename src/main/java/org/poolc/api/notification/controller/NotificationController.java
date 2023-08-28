@@ -33,7 +33,6 @@ public class NotificationController {
     @GetMapping("/all")
     public ResponseEntity<List<NotificationResponse>> getAllNotifications(@AuthenticationPrincipal Member member) {
         List<Notification> notifications = notificationService.getAllNotificationsForMember(member);
-        member.resetNotificationCount();
         List<NotificationResponse> responses = notifications.stream()
                 .map(NotificationResponse::of)
                 .collect(Collectors.toList());
