@@ -2,7 +2,9 @@ package org.poolc.api.badge.controller;
 
 import io.swagger.models.Response;
 import lombok.RequiredArgsConstructor;
+import org.poolc.api.badge.domain.BadgeCondition;
 import org.poolc.api.badge.dto.*;
+import org.poolc.api.badge.service.BadgeConditionService;
 import org.poolc.api.badge.service.BadgeService;
 import org.poolc.api.badge.vo.BadgeWithOwn;
 import org.poolc.api.badge.vo.MyBadgeSearchResult;
@@ -22,6 +24,7 @@ import java.util.List;
 public class BadgeController {
     private final BadgeService badgeService;
     private final NotificationService notificationService;
+    private final BadgeConditionService badgeConditionService;
 
     @GetMapping
     public ResponseEntity<GetMyBadgeResponse> getMyBadge(@AuthenticationPrincipal Member member){
@@ -33,8 +36,10 @@ public class BadgeController {
 
     @GetMapping(path="/all")
     public ResponseEntity<GetAllBadgeResponse> getAllBadge(@AuthenticationPrincipal Member member){
+        BadgeCondition badgeCondition = badgeConditionService.myCondition(member);
         GetAllBadgeResponse getAllBadgeResponse = GetAllBadgeResponse.builder()
                 .data(badgeService.findAllBadgeWithOwnCount(member))
+                .condition(badgeCondition)
                 .build();
         return ResponseEntity.ok().body(getAllBadgeResponse);
     }
