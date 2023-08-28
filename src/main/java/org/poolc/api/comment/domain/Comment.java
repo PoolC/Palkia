@@ -35,7 +35,7 @@ public class Comment extends TimestampEntity {
     @JoinColumn(name = "author_uuid", nullable = false, referencedColumnName = "UUID")
     private Member member;
 
-    @Column(name = "anonymous", nullable = false, columnDefinition = "boolean default false")
+    @Column(name = "anonymous", nullable = false, columnDefinition = "boolean default true")
     private Boolean anonymous;
 
     @Column(name = "body", nullable = false, columnDefinition = "text")

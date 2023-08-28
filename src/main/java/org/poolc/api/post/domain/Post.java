@@ -41,8 +41,8 @@ public class Post extends TimestampEntity {
     @JoinColumn(name = "author_uuid", nullable = false, referencedColumnName = "UUID")
     private Member member;
 
-    @Column(name = "anonymous", nullable = false)
-    private Boolean anonymous = false;
+    @Column(name = "anonymous", nullable = false, columnDefinition = "boolean default true")
+    private Boolean anonymous;
 
     @Column(name = "title", nullable = false, columnDefinition = "char(255)")
     private String title;
