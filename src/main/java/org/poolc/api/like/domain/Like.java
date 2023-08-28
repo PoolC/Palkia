@@ -4,7 +4,7 @@ import lombok.Getter;
 
 import javax.persistence.*;
 
-@Entity(name = "LIKE")
+@Entity(name = "USER_LIKE")
 @SequenceGenerator(
         name = "LIKE_SEQ_GENERATOR",
         sequenceName = "LIKE_SEQ"
