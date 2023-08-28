@@ -43,4 +43,10 @@ public class BoardService {
         Board board = findById(boardId);
         board.setIsDeleted();
     }
+
+    public Board findByName(String name) {
+        return boardRepository.findByName(name)
+                .orElseThrow(() -> new NoSuchElementException("No board with given name."));
+
+    }
 }

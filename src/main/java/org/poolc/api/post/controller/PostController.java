@@ -14,21 +14,24 @@ import org.poolc.api.post.service.PostService;
 import org.poolc.api.post.vo.PostCreateValues;
 import org.poolc.api.post.vo.PostUpdateValues;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/post")
 public class PostController {
     private final PostService postService;
     private final BoardService boardService;
 
-    @PostMapping("/new")
+    @PostMapping("/post/new")
     public ResponseEntity<?> registerPost(@AuthenticationPrincipal Member member,
                                           @RequestBody @Valid PostCreateRequest request) {
         Board board = boardService.findById(request.getBoardId());
@@ -36,17 +39,17 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/{postId}")
+    @GetMapping("/post/{postId}")
     public ResponseEntity<PostResponse> viewPost(@AuthenticationPrincipal Member member, @PathVariable Long postId) {
         Post post = postService.findPostById(member, postId);
         return ResponseEntity.status(HttpStatus.OK).body(PostResponse.of(post));
     }
 
-    @GetMapping("/{boardId}")
+    @GetMapping("/board/{boardTitle}")
     public ResponseEntity<List<PostResponse>> viewPostsByBoard(@AuthenticationPrincipal Member member,
-                                                              @PathVariable Long boardId,
+                                                              @PathVariable String boardTitle,
                                                               @RequestParam int page) {
-        Board board = boardService.findById(boardId);
+        Board board = boardService.findByName(boardTitle);
         List<PostResponse> posts = postService.findPostsByBoard(member, board, page);
         return ResponseEntity.status(HttpStatus.OK).body(posts);
     }
@@ -56,7 +59,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(postService.findPostsByMember(member, page));
     }
 
-    @PutMapping("/{postId}")
+    @PutMapping("/post/{postId}")
     public ResponseEntity<Void> updatePost(@AuthenticationPrincipal Member member,
                                            @PathVariable Long postId,
                                            @RequestBody @Valid PostUpdateRequest request) {
@@ -65,7 +68,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @DeleteMapping("/{postId}")
+    @DeleteMapping("/post/{postId}")
     public ResponseEntity<Void> deletePost(@AuthenticationPrincipal Member member, @PathVariable Long postId) {
         postService.deletePost(member, postId);
         return ResponseEntity.status(HttpStatus.OK).build();
