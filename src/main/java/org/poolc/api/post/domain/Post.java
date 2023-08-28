@@ -82,10 +82,10 @@ public class Post extends TimestampEntity {
     @Enumerated(EnumType.ORDINAL)
     private JobType position;
 
-    @Column(name = "region", nullable = false, columnDefinition = "char(20)")
+    @Column(name = "region", columnDefinition = "char(20)")
     private String region;
 
-    @Column(name = "field", nullable = false, columnDefinition = "char(20)")
+    @Column(name = "field", columnDefinition = "char(20)")
     private String field;
 
     @Column(name = "deadline")
