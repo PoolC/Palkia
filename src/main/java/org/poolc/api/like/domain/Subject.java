@@ -1,2 +1,6 @@
-package org.poolc.api.like.domain;public enum Subject {
+package org.poolc.api.like.domain;
+
+public enum Subject {
+    POST,
+    COMMENT;
 }
