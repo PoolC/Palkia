@@ -22,7 +22,7 @@ public class Board {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name", unique = true, nullable = false)
+    @Column(name = "board_name", unique = true, nullable = false)
     private BoardName boardName;
 
     @Column(name = "url_path", unique = true, nullable = false, columnDefinition = "varchar(40)")
