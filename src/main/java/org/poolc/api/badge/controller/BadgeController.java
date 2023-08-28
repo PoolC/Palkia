@@ -48,7 +48,7 @@ public class BadgeController {
     public ResponseEntity<Void> postBadge(@AuthenticationPrincipal Member member, @RequestBody PostBadgeRequest postBadgeRequest){
         badgeService.adminCheck(member,"임원진만 뱃지를 만들 수 있습니다.");
         badgeService.createBadge(postBadgeRequest);
-        notificationService.createNotification(null, member.getUUID(), NotificationType.BADGE);
+        notificationService.createBadgeNotification(member.getLoginID());
         return ResponseEntity.ok().build();
     }
 

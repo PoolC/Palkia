@@ -9,7 +9,6 @@ import org.poolc.api.comment.service.CommentService;
 import org.poolc.api.comment.vo.CommentCreateValues;
 import org.poolc.api.comment.vo.CommentUpdateValues;
 import org.poolc.api.member.domain.Member;
-import org.poolc.api.notification.domain.NotificationType;
 import org.poolc.api.notification.service.NotificationService;
 import org.poolc.api.post.domain.Post;
 import org.poolc.api.post.service.PostService;
@@ -39,11 +38,12 @@ public class CommentController {
 
         CommentCreateValues values = new CommentCreateValues(post, member, request.getAnonymous(), request.getBody(), parent);
         Comment newComment = commentService.createComment(values);
-        // 대댓글을 달면 댓글쓴 사람한테 알림
-        // 댓글 달면 포스트 쓴 사람한테 알림
 
-        if (parent == null) notificationService.createNotification(member.getUUID(), post.getMember().getUUID(), NotificationType.COMMENT);
-        else notificationService.createNotification(member.getUUID(), parent.getMember().getUUID(), NotificationType.RECOMMENT);
+        // 댓글 달면 포스트 쓴 사람한테 알림
+        if (parent == null) notificationService.createCommentNotification(member.getUUID(), post.getMember().getUUID(), post.getId());
+        // 대댓글 달면 댓글 쓴 사람한테 알림
+        else notificationService.createRecommentNotification(member.getLoginID(), parent.getMember().getLoginID(), post.getId(), parent.getId());
+
         return ResponseEntity.status(HttpStatus.CREATED).body(CommentResponse.of(newComment));
     }
 

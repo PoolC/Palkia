@@ -107,11 +107,6 @@ public class MemberService {
         return memberRepository.findAllMembersByLoginIDList(members);
     }
 
-    public Member findMemberByUUID(String UUID) {
-        return memberRepository.findByUUID(UUID)
-                .orElseThrow(() -> new NoSuchElementException("No member found with given UUID"));
-    }
-
     public void checkGetRoles(Member loginMember) {
         Poolc poolc = poolcService.get();
         if (!poolc.checkSubscriptionPeriod() && !loginMember.isAcceptedMember()) {

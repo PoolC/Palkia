@@ -6,16 +6,16 @@ import lombok.Getter;
 @Getter
 public class MessageCreateRequest {
     private final String content;
-    private final String senderUUID;
-    private final String receiverUUID;
+    private final String senderId;
+    private final String receiverId;
     private final Boolean senderAnonymous;
     private final Boolean receiverAnonymous;
 
     @JsonCreator
-    public MessageCreateRequest(String content, String senderUUID, String receiverUUID, Boolean senderAnonymous, Boolean receiverAnonymous) {
+    public MessageCreateRequest(String content, String senderId, String receiverId, Boolean senderAnonymous, Boolean receiverAnonymous) {
         this.content = content;
-        this.senderUUID = senderUUID;
-        this.receiverUUID = receiverUUID;
+        this.senderId = senderId;
+        this.receiverId = receiverId;
         this.senderAnonymous = senderAnonymous;
         this.receiverAnonymous = receiverAnonymous;
     }

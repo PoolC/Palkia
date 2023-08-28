@@ -39,11 +39,31 @@ public class NotificationService {
         return notifications;
     }
 
-    public void createNotification(String senderId, String receiverId, NotificationType notificationType) {
-        Notification notification = new Notification(senderId, receiverId, notificationType);
-        Member member = memberService.getMemberByLoginID(receiverId);
-        member.addNotification();
-        notificationRepository.save(notification);
+    public void createBadgeNotification(String receiverId) {
+        Member receiver = memberService.getMemberByLoginID(receiverId);
+        notificationRepository.save(new Notification(receiverId, NotificationType.BADGE));
+        receiver.addNotification();
+    }
+
+    public void createMessageNotification(String senderId, String receiverId) {
+        Member sender = memberService.getMemberByLoginID(senderId);
+        Member receiver = memberService.getMemberByLoginID(receiverId);
+        notificationRepository.save(new Notification(senderId, receiverId, sender.getName(), NotificationType.MESSAGE));
+        receiver.addNotification();
+    }
+
+    public void createCommentNotification(String senderId, String receiverId, Long postId) {
+        Member sender = memberService.getMemberByLoginID(senderId);
+        Member receiver = memberService.getMemberByLoginID(receiverId);
+        notificationRepository.save(new Notification(senderId, receiverId, sender.getName(), postId, NotificationType.COMMENT));
+        receiver.addNotification();
+    }
+
+    public void createRecommentNotification(String senderId, String receiverId, Long postId, Long parentCommentId) {
+        Member sender = memberService.getMemberByLoginID(senderId);
+        Member receiver = memberService.getMemberByLoginID(receiverId);
+        notificationRepository.save(new Notification(senderId, receiverId, sender.getName(), postId, parentCommentId, NotificationType.RECOMMENT));
+        receiver.addNotification();
     }
 
     public void readNotification(Long notificationId) {

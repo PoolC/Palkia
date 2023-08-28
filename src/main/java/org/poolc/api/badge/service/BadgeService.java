@@ -10,6 +10,7 @@ import org.poolc.api.badge.repository.BadgeRepository;
 import org.poolc.api.badge.vo.*;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.repository.MemberRepository;
+import org.poolc.api.notification.service.NotificationService;
 import org.poolc.api.room.exception.ConflictException;
 import org.poolc.api.room.exception.ForbiddenException;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class BadgeService {
     private final BadgeRepository badgeRepository;
     private final BadgeLogRepository badgeLogRepository;
     private final MemberRepository memberRepository;
+    private final NotificationService notificationService;
 
     //내가 받은 뱃지 조회
     public List<MyBadgeSearchResult> findMyBadge(Member member){

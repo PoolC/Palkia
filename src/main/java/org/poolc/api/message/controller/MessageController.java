@@ -31,17 +31,17 @@ public class MessageController {
     @PostMapping("/new")
     public ResponseEntity<?> writeMessage(@AuthenticationPrincipal Member member,
                                           @RequestBody @Valid MessageCreateRequest request) {
-        String senderId = request.getSenderUUID();
-        String receiverId = request.getReceiverUUID();
+        String senderId = request.getSenderId();
+        String receiverId = request.getReceiverId();
 
-        Member sender = memberService.findMemberByUUID(senderId);
-        Member receiver = memberService.findMemberByUUID(receiverId);
+        Member sender = memberService.getMemberByLoginID(senderId);
+        Member receiver = memberService.getMemberByLoginID(receiverId);
         messageService.write(new MessageCreateValues(sender, receiver, request));
 
         if (request.getSenderAnonymous()) senderId = "익명";
         if (request.getReceiverAnonymous()) receiverId = "익명";
 
-        notificationService.createNotification(senderId, receiverId, NotificationType.MESSAGE);
+        notificationService.createMessageNotification(senderId, receiverId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -49,7 +49,7 @@ public class MessageController {
     public ResponseEntity<MessageResponse> viewMessage(@AuthenticationPrincipal Member member,
                                                        @PathVariable String memberUUID,
                                                        @PathVariable Long messageId) {
-        Member other = memberService.findMemberByUUID(memberUUID);
+        Member other = memberService.getMemberByLoginID(memberUUID);
         Message message = messageService.findMessageBySenderAndReceiverAndId(member, other, messageId);
         return ResponseEntity.status(HttpStatus.OK).body(MessageResponse.of(message));
     }
@@ -58,7 +58,7 @@ public class MessageController {
     public ResponseEntity<Void> deleteMessage(@AuthenticationPrincipal Member member,
                                               @PathVariable String memberUUID,
                                               @PathVariable Long messageId) {
-        Member other = memberService.findMemberByUUID(memberUUID);
+        Member other = memberService.getMemberByLoginID(memberUUID);
         Message message = messageService.findMessageById(member, messageId);
         if (message.getSender().equals(member)) messageService.deleteMessageBySender(member, messageId);
         else messageService.deleteMessageByReceiver(member, messageId);
@@ -68,7 +68,7 @@ public class MessageController {
     @GetMapping("/{memberUUID}")
     public ResponseEntity<List<MessageResponse>> viewConversation(@AuthenticationPrincipal Member member,
                                                                   @PathVariable String UUID) {
-        Member other = memberService.findMemberByUUID(UUID);
+        Member other = memberService.getMemberByLoginID(UUID);
         List<Message> conversation = messageService.viewMessagesWith(member, other);
         List<MessageResponse> conversationResponse = conversation.stream()
                 .map(MessageResponse::of)
@@ -78,7 +78,7 @@ public class MessageController {
     @DeleteMapping("/{memberUUID}")
     public ResponseEntity<Void> deleteConversation(@AuthenticationPrincipal Member member,
                                               @PathVariable String memberUUID) {
-        Member other = memberService.findMemberByUUID(memberUUID);
+        Member other = memberService.getMemberByLoginID(memberUUID);
         List<Message> conversation = messageService.viewMessagesWith(member, other);
         conversation.stream()
                 .map(message ->
