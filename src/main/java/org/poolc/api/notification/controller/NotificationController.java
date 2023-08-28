@@ -23,7 +23,7 @@ public class NotificationController {
 
     @GetMapping("/unread")
     public ResponseEntity<List<NotificationResponse>> getUnreadNotifications(@AuthenticationPrincipal Member member) {
-        List<Notification> notifications = notificationService.getUnreadNotificationsForMember(member);
+        List<Notification> notifications = notificationService.getUnreadNotificationsForMember(member.getLoginID());
         List<NotificationResponse> responses = notifications.stream()
                 .map(NotificationResponse::of)
                 .collect(Collectors.toList());
@@ -32,7 +32,7 @@ public class NotificationController {
 
     @GetMapping("/all")
     public ResponseEntity<List<NotificationResponse>> getAllNotifications(@AuthenticationPrincipal Member member) {
-        List<Notification> notifications = notificationService.getAllNotificationsForMember(member);
+        List<Notification> notifications = notificationService.getAllNotificationsForMember(member.getLoginID());
         List<NotificationResponse> responses = notifications.stream()
                 .map(NotificationResponse::of)
                 .collect(Collectors.toList());

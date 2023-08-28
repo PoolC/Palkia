@@ -19,22 +19,24 @@ public class NotificationService {
     private NotificationRepository notificationRepository;
     private MemberService memberService;
 
-    public List<Notification> getUnreadNotificationsForMember(Member recipient) {
-        List<Notification> notifications = notificationRepository.findByRecipientAndReadStatus(recipient, false)
+    public List<Notification> getUnreadNotificationsForMember(String receiverId) {
+        List<Notification> notifications = notificationRepository.findByReceiverIdAndReadStatus(receiverId, false)
                 .stream()
                 .sorted(Comparator.comparing(Notification::getCreatedAt).reversed())
                 .collect(Collectors.toList());
         notifications.forEach(Notification::memberReads);
+        Member recipient = memberService.getMemberByLoginID(receiverId);
         recipient.resetNotificationCount();
         return notifications;
     }
 
-    public List<Notification> getAllNotificationsForMember(Member recipient) {
-        List<Notification> notifications = notificationRepository.findByRecipient(recipient)
+    public List<Notification> getAllNotificationsForMember(String receiverId) {
+        List<Notification> notifications = notificationRepository.findAllByReceiverId(receiverId)
                 .stream()
                 .sorted(Comparator.comparing(Notification::getCreatedAt).reversed())
                 .collect(Collectors.toList());
         notifications.forEach(Notification::memberReads);
+        Member recipient = memberService.getMemberByLoginID(receiverId);
         recipient.resetNotificationCount();
         return notifications;
     }
