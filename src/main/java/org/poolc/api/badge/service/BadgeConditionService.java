@@ -27,7 +27,7 @@ public class BadgeConditionService {
     }
 
     @Transactional
-    public void todayBaekjoon(Member member, String level){
+    public void todayBaekjoon(Member member, Long level){
         BadgeCondition condition = myCondition(member);
         condition.addBaekjoon(level);
         BaekjoonBadge(member,condition);

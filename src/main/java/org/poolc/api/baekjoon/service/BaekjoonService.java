@@ -26,7 +26,7 @@ public class BaekjoonService {
         return baekjoonRepository.findMySolveLog(member.getUUID());
     }
 
-    public void solveProblem(Member member, Long problemId, Long submissionId, String title, String level, List<String> problemTags, String language){
+    public void solveProblem(Member member, Long problemId, Long submissionId, String title, Long level, List<String> problemTags, String language){
         Problem problem = makeProblem(problemId,title,level,problemTags);
         logDuplicateCheck(problemId, member);
         Baekjoon baekjoon = Baekjoon.builder()
@@ -48,7 +48,7 @@ public class BaekjoonService {
         return problemRepository.findProblemByProblemId(problemId).isEmpty();
     }
 
-    private Problem makeProblem(Long problemId, String title, String level, List<String> problemTags){
+    private Problem makeProblem(Long problemId, String title, Long level, List<String> problemTags){
         Problem problemResult = problemRepository.findProblemByProblemId(problemId).orElseGet(() -> {
             Problem problem = Problem.builder()
                     .problemId(problemId)

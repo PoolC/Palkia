@@ -22,21 +22,21 @@ public class Problem {
     private String title;
 
     @Column(name = "level")
-    private String level;
+    private Long level;
 
     @ElementCollection
     @CollectionTable(name = "problem_tags",joinColumns = @JoinColumn(name = "id", referencedColumnName = "id"))
     private List<String> tags;
 
     @Builder
-    public Problem(Long problemId, String title, String level, List<String> tags) {
+    public Problem(Long problemId, String title, Long level, List<String> tags) {
         this.problemId = problemId;
         this.title = title;
         this.level = level;
         this.tags = tags;
     }
 
-    public Problem(Long id, Long problemId, String title, String level, List<String> tags) {
+    public Problem(Long id, Long problemId, String title, Long level, List<String> tags) {
         this.id = id;
         this.problemId = problemId;
         this.title = title;

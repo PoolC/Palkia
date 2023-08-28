@@ -65,7 +65,7 @@ public class BadgeCondition {
         this.attendance++;
     }
 
-    public void addBaekjoon(String level){
+    public void addBaekjoon(Long level){
         if(this.lastBaekjoon.equals(LocalDate.now().minusDays(1L))){
             this.baekjoon++;
         }else if(this.lastBaekjoon.isBefore(LocalDate.now())){
@@ -73,12 +73,12 @@ public class BadgeCondition {
         }
         this.lastBaekjoon=LocalDate.now();
 
-        if(level.equals("bronze")) this.bronzeCount++;
-        if(level.equals("silver")) this.silverCount++;
-        if(level.equals("gold")) this.goldCount++;
-        if(level.equals("platinum")) this.platinumCount++;
-        if(level.equals("diamond")) this.diamondCount++;
-        if(level.equals("ruby")) this.rubyCount++;
+        if(level <=5) this.bronzeCount++;
+        if(6<=level && level <=10) this.silverCount++;
+        if(11<=level && level <=15) this.goldCount++;
+        if(16<=level && level <=20) this.platinumCount++;
+        if(21<=level && level <=25) this.diamondCount++;
+        if(26<=level) this.rubyCount++;
     }
 
 

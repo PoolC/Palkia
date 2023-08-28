@@ -11,7 +11,7 @@ public class PostBaekjoonRequest {
     private final Long problemId;
     private final Long submissionId;
     private final String title;
-    private final String level;
+    private final Long level;
     private final List<String> problemTags;
     private final String language;
 }

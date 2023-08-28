@@ -10,11 +10,9 @@ import java.time.LocalDate;
 public class BaekjoonResponse {
     private final LocalDate date;
     private final Long problemId;
-    private final String level;
 
-    public BaekjoonResponse(LocalDate date, Long problemId, String level) {
+    public BaekjoonResponse(LocalDate date, Long problemId) {
         this.date = date;
         this.problemId = problemId;
-        this.level = level;
     }
 }
