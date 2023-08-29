@@ -13,8 +13,6 @@ import org.poolc.api.member.repository.MemberRepository;
 import org.poolc.api.poolc.dto.CreatePoolcRequest;
 import org.poolc.api.poolc.service.PoolcService;
 import org.poolc.api.poolc.vo.PoolcCreateValues;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -22,17 +20,31 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-@Profile("badgeTest")
-public class BadgeDataLoader implements CommandLineRunner {
+public class BadgeDataController {
 
     private final MemberRepository memberRepository;
     private final BadgeRepository badgeRepository;
-    private final PoolcService poolcService;
     private final PasswordHashProvider passwordHashProvider;
     private final BadgeLogRepository badgeLogRepository;
+    private final PoolcService poolcService;
 
-    @Override
-    public void run(String... args) throws Exception {
+    public void dataInitial(){
+        poolcService.createPoolc(new PoolcCreateValues(new CreatePoolcRequest(
+                "안유진",
+                "01012341234",
+                "공학관",
+                "",
+                "풀씨",
+                "",
+                false,
+                ""
+        )));
+    }
+
+    public void dataReset(){
+        memberRepository.deleteAll();
+        badgeRepository.deleteAll();
+        badgeLogRepository.deleteAll();
         Member member = Member.builder()
                 .UUID(UUID.randomUUID().toString())
                 .loginID("MEMBER_ID")
@@ -84,16 +96,6 @@ public class BadgeDataLoader implements CommandLineRunner {
         memberRepository.save(member);
         memberRepository.save(member2);
         memberRepository.save(member3);
-        poolcService.createPoolc(new PoolcCreateValues(new CreatePoolcRequest(
-                "안유진",
-                "01012341234",
-                "공학관",
-                "",
-                "풀씨",
-                "",
-                false,
-                ""
-        )));
         Badge badge1 = Badge.builder()
                 .name("test")
                 .imageUrl("image.png")
