@@ -6,6 +6,7 @@ import org.poolc.api.badge.domain.Badge;
 import org.poolc.api.badge.domain.BadgeLog;
 import org.poolc.api.badge.repository.BadgeLogRepository;
 import org.poolc.api.badge.repository.BadgeRepository;
+import org.poolc.api.badge.service.BadgeService;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.domain.MemberRoles;
@@ -16,6 +17,7 @@ import org.poolc.api.poolc.vo.PoolcCreateValues;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -24,6 +26,7 @@ public class BadgeDataController {
 
     private final MemberRepository memberRepository;
     private final BadgeRepository badgeRepository;
+    private final BadgeService badgeService;
     private final PasswordHashProvider passwordHashProvider;
     private final BadgeLogRepository badgeLogRepository;
     private final PoolcService poolcService;
@@ -42,9 +45,12 @@ public class BadgeDataController {
     }
 
     public void dataReset(){
-        memberRepository.deleteAll();
-        badgeRepository.deleteAll();
         badgeLogRepository.deleteAll();
+        List<Badge> allBadge = badgeRepository.findAllBadge();
+        for(Badge badge:allBadge){
+            badgeService.deleteBadge(badge.getId());
+        }
+        memberRepository.deleteAll();
         Member member = Member.builder()
                 .UUID(UUID.randomUUID().toString())
                 .loginID("MEMBER_ID")

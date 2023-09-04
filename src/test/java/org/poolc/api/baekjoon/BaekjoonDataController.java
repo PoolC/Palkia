@@ -2,8 +2,11 @@ package org.poolc.api.baekjoon;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.auth.infra.PasswordHashProvider;
+import org.poolc.api.badge.domain.Badge;
 import org.poolc.api.badge.repository.BadgeConditionRepository;
 import org.poolc.api.badge.repository.BadgeLogRepository;
+import org.poolc.api.badge.repository.BadgeRepository;
+import org.poolc.api.badge.service.BadgeService;
 import org.poolc.api.baekjoon.domain.Baekjoon;
 import org.poolc.api.baekjoon.domain.Problem;
 import org.poolc.api.baekjoon.repository.BaekjoonRepository;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -31,6 +35,8 @@ public class BaekjoonDataController {
     private final MemberRepository memberRepository;
     private final BadgeLogRepository badgeLogRepository;
     private final BadgeConditionRepository badgeConditionRepository;
+    private final BadgeService badgeService;
+    private final BadgeRepository badgeRepository;
 
     public void dataInitial(){
         poolcService.createPoolc(new PoolcCreateValues(new CreatePoolcRequest(
@@ -50,6 +56,10 @@ public class BaekjoonDataController {
         badgeLogRepository.deleteAll();
         baekjoonRepository.deleteAll();
         problemRepository.deleteAll();
+        List<Badge> allBadge = badgeRepository.findAllBadge();
+        for(Badge badge:allBadge){
+            badgeService.deleteBadge(badge.getId());
+        }
         memberRepository.deleteAll();
         Member member = Member.builder()
                 .UUID(UUID.randomUUID().toString())

@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.poolc.api.auth.AuthAcceptanceTest.adminLogin;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 
 @ActiveProfiles("memberTest")
@@ -19,9 +20,7 @@ public class ToolAcceptanceTest extends AcceptanceTest {
     @Test
     void Qr생성() {
         String testString = "https://docs.google.com/forms/d/e/1FAIpQLSfvL9hfDUDK2LdpOc9uythXcs2Os8vTcE-y42nE1LZKCTu1yg/viewform";
-        String accessToken = loginRequest("ADMIN_ID", "ADMIN_PASSWORD")
-                .as(AuthResponse.class)
-                .getAccessToken();
+        String accessToken = adminLogin();
 
         ExtractableResponse<Response> response = createQrRequest(accessToken, testString);
 
