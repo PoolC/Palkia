@@ -35,10 +35,10 @@ jobs:
       #with:
       #  arguments: build
       run: ./gradlew clean build --exclude-task test
-    #- name: make directory for transfer
-    #  run: mkdir deploy
-    #- name: Copy Jar
-    #  run: cp ./build/libs/*.jar ./deploy/
+    - name: make directory for transfer
+      run: mkdir deploy
+    - name: Copy Jar
+      run: cp ./build/libs/*.jar ./deploy/
     - name: copy file via ssh password
       uses: appleboy/scp-action@v0.1.4
       with:
