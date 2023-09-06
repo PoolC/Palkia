@@ -2,11 +2,9 @@ package org.poolc.api.post.service;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.auth.exception.UnauthorizedException;
-import org.poolc.api.board.domain.Board;
-import org.poolc.api.board.service.BoardService;
 import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.member.domain.Member;
-import org.poolc.api.member.service.MemberService;
+import org.poolc.api.post.domain.BoardType;
 import org.poolc.api.post.domain.Post;
 import org.poolc.api.post.dto.PostResponse;
 import org.poolc.api.post.repository.PostRepository;
@@ -26,14 +24,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
-    private final BoardService boardService;
-    private final MemberService memberService;
     private static final int size = 15;
 
     public Post findPostById(Member member, Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NoSuchElementException("No post found with given post id."));
-        checkReadPermission(member, post.getBoard());
+        checkReadPermission(member, post.getBoardType());
         post.getCommentList().sort(Comparator.comparing(Comment::getCreatedAt));
         return post;
     }
@@ -50,10 +46,10 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> findPostsByBoard(Member member, Board board, int page) {
-        checkReadPermission(member, board);
+    public List<PostResponse> findPostsByBoard(Member member, BoardType boardType, int page) {
+        checkReadPermission(member, boardType);
         PageRequest pr = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findByBoard(board, pr);
+        Page<Post> posts = postRepository.findByBoardType(boardType, pr);
         if (posts.getNumberOfElements() == 0) return null;
         return posts.stream()
                 .sorted(Comparator.comparing(Post::getCreatedAt).reversed())
@@ -62,13 +58,12 @@ public class PostService {
     }
 
     @Transactional
-    public Post createPost(PostCreateValues values) {
-        Board board = boardService.findById(values.getBoard().getId());
-        checkWritePermission(values.getMember(), board);
-        Post post = new Post(board, values.getMember(), values);
+    public void createPost(PostCreateValues values) {
+        checkWritePermission(values.getMember(), values.getBoardType());
+        Post post = new Post(values.getMember(), values);
+        System.out.println(post.getTitle());
         postRepository.save(post);
-        board.addPostCount();
-        return post;
+        System.out.println("saved");
     }
 
     @Transactional
@@ -105,32 +100,33 @@ public class PostService {
     public void deletePost(Member member, Long postId) {
         Post post = findPostById(member, postId);
         checkWriterOrAdmin(member, post);
-        post.setIsDeleted();
-        post.getBoard().deductPostCount();
+        if (!post.getIsQuestion()) {
+            post.setIsDeleted();
+        }
     }
 
     public List<PostResponse> searchPost(Member member, String keyword, int page) {
         PageRequest pr = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findByTitleContainingOrBodyContaining(keyword, keyword, pr);
         return posts.stream()
-                .filter(post -> checkReadPermissionBoolean(member, post.getBoard()))
+                .filter(post -> checkReadPermissionBoolean(member, post.getBoardType()))
                 .sorted(Comparator.comparing(Post::getCreatedAt).reversed())
                 .map(PostResponse::of)
                 .collect(Collectors.toList());
     }
 
 
-    private void checkWritePermission(Member member, Board board) {
-        if (!board.memberHasWritePermissions(member)) throw new UnauthorizedException("접근할 수 없습니다.");
+    private void checkWritePermission(Member member, BoardType board) {
+        if (checkReadPermissionBoolean(member, board) || (board == BoardType.NOTICE && !member.isAdmin())) throw new UnauthorizedException("접근할 수 없습니다.");
     }
-    private void checkReadPermission(Member user, Board board) {
-        if ((user == null && !board.isPublicReadPermission()) || (user != null && !board.memberHasReadPermissions(user.getRoles()))) {
+    private void checkReadPermission(Member user, BoardType board) {
+        if (user == null && board != BoardType.NOTICE) {
             throw new UnauthorizedException("접근할 수 없습니다.");
         }
     }
 
-    private boolean checkReadPermissionBoolean(Member user, Board board) {
-        return (user == null && board.isPublicReadPermission()) || (user != null && !board.memberHasReadPermissions(user.getRoles()));
+    private boolean checkReadPermissionBoolean(Member user, BoardType board) {
+        return (user == null && board == BoardType.NOTICE) || (user != null && board != BoardType.NOTICE);
     }
 
     private void checkWriter(Member member, Post post) {

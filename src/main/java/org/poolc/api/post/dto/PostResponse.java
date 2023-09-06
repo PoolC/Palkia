@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.poolc.api.comment.dto.CommentResponse;
+import org.poolc.api.post.domain.BoardType;
 import org.poolc.api.post.domain.JobType;
 import org.poolc.api.post.domain.Post;
 import org.poolc.api.post.domain.PostType;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 public class PostResponse {
 
     private Long postId;
-    private Long boardId;
+    private BoardType boardType;
     private String writerLoginId;
     private String writerName;
     private String title;
@@ -46,7 +47,7 @@ public class PostResponse {
         if (post.getPostType() == PostType.GENERAL_POST) response.setIsQuestion(post.getIsQuestion());
 
         response.setPostId(post.getId());
-        response.setBoardId(post.getBoard().getId());
+        response.setBoardType(post.getBoardType());
         response.setTitle(post.getTitle());
         response.setBody(post.getBody());
         response.setCreatedAt(post.getCreatedAt());

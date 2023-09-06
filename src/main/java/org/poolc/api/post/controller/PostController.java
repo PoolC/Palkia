@@ -1,12 +1,11 @@
 package org.poolc.api.post.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.poolc.api.board.domain.Board;
-import org.poolc.api.board.domain.BoardName;
-import org.poolc.api.board.service.BoardService;
+
 import org.poolc.api.like.domain.Subject;
 import org.poolc.api.like.service.LikeService;
 import org.poolc.api.member.domain.Member;
+import org.poolc.api.post.domain.BoardType;
 import org.poolc.api.post.domain.Post;
 import org.poolc.api.post.dto.PostCreateRequest;
 import org.poolc.api.post.dto.PostResponse;
@@ -27,14 +26,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
-    private final BoardService boardService;
     private final LikeService likeService;
 
-    @PostMapping("/post/new")
-    public ResponseEntity<?> registerPost(@AuthenticationPrincipal Member member,
-                                          @RequestBody @Valid PostCreateRequest request) {
-        Board board = boardService.findById(request.getBoardId());
-        postService.createPost(new PostCreateValues(board, member, request));
+    @PostMapping(value = "/post/new")
+    public ResponseEntity<Void> registerPost(@AuthenticationPrincipal Member member,
+                                          @RequestBody PostCreateRequest request) {
+        postService.createPost(new PostCreateValues(member, request));
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -48,9 +45,8 @@ public class PostController {
     public ResponseEntity<List<PostResponse>> viewPostsByBoard(@AuthenticationPrincipal Member member,
                                                               @PathVariable String boardTitle,
                                                               @RequestParam int page) {
-        BoardName boardName = BoardName.getByDescription(boardTitle);
-        Board board = boardService.findByBoardName(boardName);
-        List<PostResponse> posts = postService.findPostsByBoard(member, board, page);
+        BoardType boardType = BoardType.getBoardTypeByName(boardTitle);
+        List<PostResponse> posts = postService.findPostsByBoard(member, boardType, page);
         return ResponseEntity.status(HttpStatus.OK).body(posts);
     }
 

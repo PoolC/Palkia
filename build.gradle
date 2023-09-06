@@ -24,6 +24,7 @@ ext {
 }
 
 dependencies {
+    implementation 'org.jetbrains:annotations:24.0.0'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.26'

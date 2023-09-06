@@ -1,9 +1,9 @@
 package org.poolc.api.post.vo;
 
 import lombok.Getter;
-import org.poolc.api.board.domain.Board;
 import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.member.domain.Member;
+import org.poolc.api.post.domain.BoardType;
 import org.poolc.api.post.domain.JobType;
 import org.poolc.api.post.domain.PostType;
 import org.poolc.api.post.dto.PostCreateRequest;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @Getter
 public class PostCreateValues {
-    private final Board board;
+    private final BoardType boardType;
     private final Member member;
     private final Boolean anonymous;
     private final String title;
@@ -28,8 +28,8 @@ public class PostCreateValues {
     private LocalDateTime deadline;
 
 
-    public PostCreateValues(Board board, Member member, PostCreateRequest request) {
-        this.board = board;
+    public PostCreateValues(Member member, PostCreateRequest request) {
+        this.boardType = request.getBoardType();
         this.member = member;
         this.anonymous = request.getAnonymous();
         this.title = request.getTitle();

@@ -3,7 +3,6 @@ package org.poolc.api.post.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
-import org.poolc.api.board.domain.Board;
 import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
@@ -31,10 +30,8 @@ public class Post extends TimestampEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "POST_SEQ_GENERATOR")
     private Long id;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id", nullable = false, referencedColumnName = "ID")
-    private Board board;
+    @JoinColumn(name = "board_type", nullable = false, referencedColumnName = "ID")
+    private BoardType boardType;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -59,7 +56,7 @@ public class Post extends TimestampEntity {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private List<Comment> commentList = new ArrayList<>();
 
-    @Column(name = "post_type", nullable = true)
+    @Column(name = "post_type")
     @Enumerated
     private PostType postType = PostType.GENERAL_POST;
 
@@ -79,17 +76,17 @@ public class Post extends TimestampEntity {
     @Column(name = "comment_count", columnDefinition = "bigint default 0")
     private Long commentCount;
 
-    @Column(name = "position", nullable = true)
+    @Column(name = "position")
     @Enumerated(EnumType.ORDINAL)
     private JobType position;
 
-    @Column(name = "region", columnDefinition = "char(20)", nullable = true)
+    @Column(name = "region", columnDefinition = "char(20)")
     private String region;
 
-    @Column(name = "field", columnDefinition = "char(20)", nullable = true)
+    @Column(name = "field", columnDefinition = "char(20)")
     private String field;
 
-    @Column(name = "deadline", nullable = true)
+    @Column(name = "deadline")
     private LocalDateTime deadline;
 
     public void addLikeCount() {
@@ -108,10 +105,10 @@ public class Post extends TimestampEntity {
 
     public void deductCommentCount() { this.commentCount --; }
 
-    public Post() {}
+    protected Post() {}
 
-    public Post(Board board, Member member, Boolean anonymous, String title, String body, List<String> fileList, List<Comment> commentList, PostType postType, Boolean isQuestion, Boolean isDeleted, Long likeCount, Long scrapCount, Long commentCount, JobType position, String region, String field, LocalDateTime deadline) {
-        this.board = board;
+    public Post(BoardType boardType, Member member, Boolean anonymous, String title, String body, List<String> fileList, List<Comment> commentList, PostType postType, Boolean isQuestion, Boolean isDeleted, Long likeCount, Long scrapCount, Long commentCount, JobType position, String region, String field, LocalDateTime deadline) {
+        this.boardType = boardType;
         this.member = member;
         this.anonymous = anonymous;
         this.title = title;
@@ -130,8 +127,8 @@ public class Post extends TimestampEntity {
         this.deadline = deadline;
     }
 
-    public Post(Board board, Member member, PostCreateValues values) {
-        this.board = board;
+    public Post(Member member, PostCreateValues values) {
+        this.boardType = values.getBoardType();
         this.member = member;
         this.anonymous = values.getAnonymous();
         this.title = values.getTitle();
