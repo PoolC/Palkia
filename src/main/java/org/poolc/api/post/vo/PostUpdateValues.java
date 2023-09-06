@@ -16,7 +16,6 @@ public class PostUpdateValues {
     private final String body;
     private final List<String> fileList;
     private final List<Comment> commentList;
-    private Boolean isQuestion;
     private JobType position;
     private String region;
     private String field;
@@ -28,9 +27,7 @@ public class PostUpdateValues {
         this.body = request.getBody();
         this.fileList = request.getFileList();
         this.commentList = request.getCommentList();
-        if (postType == PostType.GENERAL_POST) {
-            this.isQuestion = request.getIsQuestion();
-        } else {
+        if (postType != PostType.GENERAL_POST) {
             this.position = request.getPosition();
             this.region = request.getRegion();
             this.field = request.getField();
