@@ -164,8 +164,6 @@ public class Post extends TimestampEntity {
             this.region = values.getRegion();
             this.field = values.getField();
             this.deadline = values.getDeadline();
-        } else {
-            this.isQuestion = values.getIsQuestion();
         }
     }
 }
