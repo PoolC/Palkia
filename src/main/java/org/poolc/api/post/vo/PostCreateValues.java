@@ -9,6 +9,7 @@ import org.poolc.api.post.domain.PostType;
 import org.poolc.api.post.dto.PostCreateRequest;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -35,7 +36,7 @@ public class PostCreateValues {
         this.title = request.getTitle();
         this.body = request.getBody();
         this.fileList = request.getFileList();
-        this.commentList = request.getCommentList();
+        this.commentList = new ArrayList<>();
         this.postType = request.getPostType();
         if (request.getPostType() == PostType.JOB_POST) {
             this.position = request.getPosition();

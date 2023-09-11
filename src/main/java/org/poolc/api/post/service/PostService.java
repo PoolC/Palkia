@@ -63,7 +63,6 @@ public class PostService {
         Post post = new Post(values.getMember(), values);
         System.out.println(post.getTitle());
         postRepository.save(post);
-        System.out.println("saved");
     }
 
     @Transactional

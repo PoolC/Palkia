@@ -17,7 +17,6 @@ public class PostCreateRequest {
     private final String title;
     private final String body;
     private final List<String> fileList;
-    private final List<Comment> commentList;
     private final PostType postType;
     private Boolean isQuestion;
     private JobType position;
@@ -26,14 +25,13 @@ public class PostCreateRequest {
     private LocalDateTime deadline;
     @JsonCreator
     public PostCreateRequest(BoardType boardType, Boolean anonymous, String title, String body, List<String> fileList,
-                             List<Comment> commentList, PostType postType, Boolean isQuestion,
+                              PostType postType, Boolean isQuestion,
                              JobType position, String region, String field, LocalDateTime deadline) {
         this.boardType = boardType;
         this.anonymous = anonymous;
         this.title = title;
         this.body = body;
         this.fileList = fileList;
-        this.commentList = commentList;
         this.postType = postType;
         if (postType == PostType.JOB_POST) {
             this.position = position;
