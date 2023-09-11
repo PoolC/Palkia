@@ -76,6 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/comment/**").hasAuthority(MemberRole.MEMBER.name())
 
                 .antMatchers(HttpMethod.GET, "/post").permitAll()
+                .antMatchers(HttpMethod.POST, "/post/new").hasAnyAuthority(MemberRole.MEMBER.name())
                 .antMatchers(HttpMethod.GET, "/post/board/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/post/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/post/search").permitAll()
