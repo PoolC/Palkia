@@ -63,6 +63,7 @@ public class PostService {
         Post post = new Post(values.getMember(), values);
         System.out.println(post.getTitle());
         postRepository.save(post);
+        BoardType.addPostCount(values.getBoardType());
     }
 
     @Transactional
@@ -102,6 +103,7 @@ public class PostService {
         if (!post.getIsQuestion()) {
             post.setIsDeleted();
         }
+        BoardType.removePostCount(post.getBoardType());
     }
 
     public List<PostResponse> searchPost(Member member, String keyword, int page) {

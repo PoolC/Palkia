@@ -28,6 +28,7 @@ public class PostResponse {
     private List<CommentResponse> commentList;
     private PostType postType;
     private Boolean isQuestion;
+    private Long boardPostCount;
     private Long likeCount;
     private Long scrapCount;
     private Long commentCount;
@@ -62,7 +63,7 @@ public class PostResponse {
         response.setRegion(post.getRegion());
         response.setField(post.getField());
         response.setDeadline(post.getDeadline());
-
+        response.setBoardPostCount(response.getBoardType().getPostCount());
         return response;
     }
 }
