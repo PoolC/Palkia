@@ -29,6 +29,7 @@ public class PostResponse {
     private PostType postType;
     private Boolean isQuestion;
     private Long boardPostCount;
+    private Long boardPageNum;
     private Long likeCount;
     private Long scrapCount;
     private Long commentCount;
@@ -64,6 +65,7 @@ public class PostResponse {
         response.setField(post.getField());
         response.setDeadline(post.getDeadline());
         response.setBoardPostCount(response.getBoardType().getPostCount());
+        response.setBoardPageNum(response.getBoardPostCount() / 15 + 1);
         return response;
     }
 }
