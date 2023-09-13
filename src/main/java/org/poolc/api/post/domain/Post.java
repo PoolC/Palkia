@@ -30,7 +30,7 @@ public class Post extends TimestampEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "POST_SEQ_GENERATOR")
     private Long id;
 
-    @JoinColumn(name = "board_type", nullable = false, referencedColumnName = "ID")
+    @Enumerated(EnumType.STRING)
     private BoardType boardType;
 
     @JsonIgnore
