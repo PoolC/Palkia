@@ -31,8 +31,3 @@ security:
       expire-length: ${EXPIRE_LENGTH_IN_MILLISECONDS}
 file:
   file-dir: ${FILE_DIR}
-search:
-  post:
-    url: 172.26.14.223
-    port: 9200
-    scheme: http
