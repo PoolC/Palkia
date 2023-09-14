@@ -118,8 +118,8 @@ public class BadgeService {
     }
 
     public void updateBadge(Long badgeId, UpdateBadgeRequest updateBadgeRequest) {
-        duplicateBadgeCheck(updateBadgeRequest.getName());
         Badge badge = badgeRepository.findBadgeById(badgeId).orElseThrow(() -> new NoSuchElementException("해당하는 뱃지가 없습니다."));
+        if(!badge.getName().equals(updateBadgeRequest.getName())) duplicateBadgeCheck(updateBadgeRequest.getName());
         badge.updateBadge(updateBadgeRequest.getName(), updateBadgeRequest.getDescription(), updateBadgeRequest.getImageUrl());
         badgeRepository.save(badge);
     }

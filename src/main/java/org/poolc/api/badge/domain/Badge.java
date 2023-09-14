@@ -8,10 +8,15 @@ import javax.persistence.*;
 
 @Entity
 @Getter
+@SequenceGenerator(
+        name= "BADGE_SEQ_GENERATOR",
+        sequenceName = "BADGE_SEQ",
+        initialValue = 100
+)
 @Table(name = "Badge")
 public class Badge {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BADGE_SEQ_GENERATOR")
     @Column(name="id",unique = true,nullable = false)
     private Long id;
 
