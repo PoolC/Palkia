@@ -75,7 +75,7 @@ public class Member extends TimestampEntity implements UserDetails {
     private Badge badge;
 
     @Column(name = "notification_count", columnDefinition = "bigint default 0")
-    private Long notificationCount;
+    private Long notificationCount=0L;
 
     protected Member() {
     }

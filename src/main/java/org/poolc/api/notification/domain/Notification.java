@@ -36,7 +36,7 @@ public class Notification extends TimestampEntity {
     private NotificationType notificationType;
 
     @Column(name = "read_status", nullable = false, columnDefinition = "boolean default false")
-    private Boolean readStatus;
+    private Boolean readStatus = false;
 
     protected Notification() {}
 
