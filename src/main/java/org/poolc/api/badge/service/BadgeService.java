@@ -66,6 +66,7 @@ public class BadgeService {
 
     public void deleteBadge(Long badgeId){
         Badge badge = badgeRepository.findBadgeById(badgeId).orElseThrow(() -> new NoSuchElementException("해당하는 뱃지가 없습니다."));
+        if(!badge.getCategory().equals(BadgeCategory.ETC)) throw new ForbiddenException("해당 배지는 삭제할 수 없습니다.");
         List<Member> badgeUser = memberRepository.findBadgeUser(badge.getId());
         for (Member m:badgeUser) {
             m.deleteBadge();
