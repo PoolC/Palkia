@@ -34,6 +34,21 @@ public class BadgeConditionService {
         badgeConditionRepository.save(condition);
     }
 
+    @Transactional
+    public void like(Member member){
+        BadgeCondition condition = myCondition(member);
+        condition.addLike();
+        LikeBadge(member,condition);
+        badgeConditionRepository.save(condition);
+    }
+
+    @Transactional
+    public void dislike(Member member){
+        BadgeCondition condition = myCondition(member);
+        condition.dislike();
+        badgeConditionRepository.save(condition);
+    }
+
     public BadgeCondition myCondition(Member member){
         return badgeConditionRepository.myAttendance(member.getUUID()).orElseGet(()->newCondition(member));
     }
@@ -73,5 +88,18 @@ public class BadgeConditionService {
         if(condition.getPlatinumCount().equals(10L))badgeService.badgeGiver(member,34L);
         if(condition.getDiamondCount().equals(10L))badgeService.badgeGiver(member,35L);
         if(condition.getRubyCount().equals(10L))badgeService.badgeGiver(member,36L);
+    }
+
+    private void LikeBadge(Member member, BadgeCondition condition){
+        if(condition.getLikeCount().equals(10L))badgeService.badgeGiver(member,51L);
+        if(condition.getLikeCount().equals(20L))badgeService.badgeGiver(member,52L);
+        if(condition.getLikeCount().equals(30L))badgeService.badgeGiver(member,53L);
+        if(condition.getLikeCount().equals(40L))badgeService.badgeGiver(member,54L);
+        if(condition.getLikeCount().equals(50L))badgeService.badgeGiver(member,55L);
+        if(condition.getLikeCount().equals(60L))badgeService.badgeGiver(member,56L);
+        if(condition.getLikeCount().equals(70L))badgeService.badgeGiver(member,57L);
+        if(condition.getLikeCount().equals(80L))badgeService.badgeGiver(member,58L);
+        if(condition.getLikeCount().equals(90L))badgeService.badgeGiver(member,59L);
+        if(condition.getLikeCount().equals(100L))badgeService.badgeGiver(member,60L);
     }
 }

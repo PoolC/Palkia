@@ -2,6 +2,7 @@ package org.poolc.api.post.service;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.auth.exception.UnauthorizedException;
+import org.poolc.api.badge.service.BadgeConditionService;
 import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.domain.BoardType;
@@ -25,6 +26,8 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
     private static final int size = 15;
+    //좋아요 수에 따라 뱃지 자동지급 용도
+    private final BadgeConditionService badgeConditionService;
 
     public Post findPostById(Member member, Long postId) {
         Post post = postRepository.findById(postId)
@@ -77,12 +80,14 @@ public class PostService {
         Post post = findPostById(member, postId);
         checkNotWriter(member, post);
         post.addLikeCount();
+        badgeConditionService.like(post.getMember());
     }
 
     public void dislikePost(Member member, Long postId) {
         Post post = findPostById(member, postId);
         checkNotWriter(member, post);
         post.deductLikeCount();
+        badgeConditionService.dislike(post.getMember());
     }
 
     public void scrapPost(Member member, Long postId) {

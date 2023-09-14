@@ -45,6 +45,9 @@ public class BadgeCondition {
     @Column(name = "ruby_count")
     private Long rubyCount;
 
+    @Column(name = "like_count")
+    private Long likeCount;
+
     @Builder
     public BadgeCondition(Member member){
         this.uuid=member.getUUID();
@@ -58,6 +61,7 @@ public class BadgeCondition {
         this.platinumCount=0L;
         this.diamondCount=0L;
         this.rubyCount=0L;
+        this.likeCount=0L;
     }
 
     public void addAttendance(){
@@ -81,7 +85,13 @@ public class BadgeCondition {
         if(26<=level) this.rubyCount++;
     }
 
+    public void addLike(){
+        this.likeCount++;
+    }
 
+    public void dislike(){
+        this.likeCount--;
+    }
 
     protected BadgeCondition(){}
 }

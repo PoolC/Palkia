@@ -2,6 +2,8 @@ package org.poolc.api.comment.service;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.auth.exception.UnauthorizedException;
+import org.poolc.api.badge.service.BadgeConditionService;
+import org.poolc.api.badge.service.BadgeService;
 import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.comment.repository.CommentRepository;
 import org.poolc.api.comment.vo.CommentCreateValues;
@@ -19,6 +21,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
+    //좋아요 수에 따라 뱃지 자동지급을 위함
+    private final BadgeConditionService badgeConditionService;
     public Comment createComment(CommentCreateValues values) {
         if (values.getParent().getIsChild()) {
             return null;
@@ -63,13 +67,19 @@ public class CommentService {
     public void likeComment(Member member, Long commentId) {
         Comment comment = findById(commentId);
         checkNotWriter(member, comment);
-        if (comment.getPost().getIsQuestion()) comment.addLikeCount();
+        if (comment.getPost().getIsQuestion()){
+            comment.addLikeCount();
+            badgeConditionService.like(comment.getMember());
+        }
     }
 
     public void dislikeComment(Member member, Long commentId) {
         Comment comment = findById(commentId);
         checkNotWriter(member, comment);
-        if (comment.getPost().getIsQuestion()) comment.deductLikeCount();
+        if (comment.getPost().getIsQuestion()){
+            comment.deductLikeCount();
+            badgeConditionService.dislike(comment.getMember());
+        }
     }
 
     private void checkWriterOrAdmin(Member member, Comment comment) {
