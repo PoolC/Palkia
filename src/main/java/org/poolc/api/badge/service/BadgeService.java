@@ -89,7 +89,7 @@ public class BadgeService {
     public void assignBadge(String loginId, List<AssignBadge> request){
         Member member = memberRepository.findByLoginID(loginId).orElseThrow(()-> new NoSuchElementException("해당하는 유저가 없습니다."));
         List<MyBadgeSearchResult> myBadge = findMyBadge(member);
-
+        boolean check=false;
         for (AssignBadge ab:request) {
             Badge badge = badgeRepository.findBadgeById(ab.getId()).get();
             if(ab.getOwn() && !myBadge.stream().filter(b->b.getId().equals(ab.getId())).findFirst().isPresent()){
@@ -99,6 +99,7 @@ public class BadgeService {
                         .member(member)
                         .build();
                 badgeLogRepository.save(badgeLog);
+                check=true;
             }else if(!ab.getOwn() && myBadge.stream().filter(b->b.getId().equals(ab.getId())).findFirst().isPresent()){
                 BadgeLog badgeLog = badgeLogRepository.findBadgeLogByUUID(member.getUUID(), badge.getId()).get();
                 badgeLogRepository.delete(badgeLog);
@@ -106,8 +107,10 @@ public class BadgeService {
                     member.deleteBadge();
                     memberRepository.save(member);
                 }
+                check=true;
             }
         }
+        if(check)notificationService.createBadgeNotification(member);
     }
 
     private void duplicateBadgeCheck(String name){
@@ -144,6 +147,7 @@ public class BadgeService {
                     .date(LocalDate.now())
                     .badge(badge)
                     .build());
+            notificationService.createBadgeNotification(member);
         }
     }
 }

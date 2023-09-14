@@ -41,9 +41,8 @@ public class NotificationService {
         return notifications;
     }
 
-    public void createBadgeNotification(String receiverId) {
-        Member receiver = memberService.getMemberByLoginID(receiverId);
-        notificationRepository.save(new Notification(receiverId, NotificationType.BADGE));
+    public void createBadgeNotification(Member receiver) {
+        notificationRepository.save(new Notification(receiver.getLoginID(), NotificationType.BADGE));
         receiver.addNotification();
     }
 
