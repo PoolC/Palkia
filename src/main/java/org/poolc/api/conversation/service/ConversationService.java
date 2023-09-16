@@ -23,9 +23,21 @@ public class ConversationService {
         return conversation.getId();
     }
 
-    public Conversation findConversationById(String conversationId) {
-        return conversationRepository.findById(conversationId)
+    public ConversationCreateValues convertToConversationCreateValues(ConversationCreateRequest request) {
+        String receiverName = checkValidParties(request.getSenderLoginID(), request.getReceiverLoginID());
+        String senderName = memberRepository.findByLoginID(request.getSenderLoginID()).get().getName();
+        return new ConversationCreateValues(
+                request.getSenderLoginID(), request.getReceiverLoginID(),
+                senderName, receiverName,
+                request.isSenderAnonymous(), request.isReceiverAnonymous()
+        );
+    }
+
+    public Conversation findConversationById(String conversationId, String loginID) {
+        Conversation conversation = conversationRepository.findById(conversationId)
                 .orElseThrow(() -> new NoSuchElementException("No conversation found with the given id."));
+        checkWhetherInvolved(conversation, loginID);
+        return conversation;
     }
 
     public Conversation findConversationByReceiverAndSender(String senderLoginID, String receiverLoginID) {
@@ -34,11 +46,12 @@ public class ConversationService {
     }
 
     public void deleteConversation(String conversationId, String loginID) {
-        Conversation conversation = findConversationById(conversationId);
+        Conversation conversation = findConversationById(conversationId, loginID);
         checkWhetherInvolved(conversation, loginID);
         boolean sender = findWhetherSenderOrReceiver(conversation, loginID);
         if (sender) conversation.setSenderDeleted();
         else conversation.setReceiverDeleted();
+        // message 완성한 다음에 stream해서 삭제된 것들은 싹 삭제해야 함
     }
 
     private boolean findWhetherSenderOrReceiver(Conversation conversation, String loginID) {
