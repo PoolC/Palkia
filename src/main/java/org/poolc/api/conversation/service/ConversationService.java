@@ -9,6 +9,7 @@ import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,8 +18,10 @@ public class ConversationService {
     private final MemberRepository memberRepository;
 
     public String createConversation(ConversationCreateValues values) {
-        String receiverName = checkValidParties(values.getSenderLoginID(), values.getReceiverLoginID());
-        conversationRepository.save(new Conversation(values));
+        checkValidParties(values.getSenderLoginID(), values.getReceiverLoginID());
+        String conversationId = checkExistingConversation(values.getSenderLoginID(), values.getReceiverLoginID());
+        if (conversationId != null) return conversationId;
+        else conversationRepository.save(new Conversation(values));
         Conversation conversation = findConversationByReceiverAndSender(values.getSenderLoginID(), values.getReceiverLoginID());
         return conversation.getId();
     }
@@ -75,5 +78,17 @@ public class ConversationService {
         if (!conversation.getSenderLoginID().equals(loginID) && !conversation.getReceiverLoginID().equals(loginID)) {
             throw new IllegalArgumentException("You are not involved in this conversation.");
         }
+    }
+
+    private String checkExistingConversation(String senderLoginID, String receiverLoginID) {
+        Optional<Conversation> conversationOptional = conversationRepository.findBySenderLoginIDAndReceiverLoginID(senderLoginID, receiverLoginID);
+        if (conversationOptional.isPresent() &&
+                !conversationOptional.get().isSenderDeleted() &&
+                !conversationOptional.get().isSenderAnonymous() &&
+                !conversationOptional.get().isReceiverAnonymous()
+        ) {
+            return conversationOptional.get().getId();
+        }
+        return null;
     }
 }
