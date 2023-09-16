@@ -3,6 +3,7 @@ package org.poolc.api.conversation.domain;
 import lombok.Getter;
 import org.hibernate.annotations.GenericGenerator;
 import org.poolc.api.common.domain.TimestampEntity;
+import org.poolc.api.conversation.vo.ConversationCreateValues;
 
 import javax.persistence.*;
 
@@ -42,10 +43,22 @@ public class Conversation extends TimestampEntity {
 
     protected Conversation() {}
 
-    public Conversation(String senderLoginID, String receiverLoginID, String receiverName) {
+    public Conversation(String senderLoginID, String receiverLoginID, String senderName, String receiverName, boolean senderAnonymous, boolean receiverAnonymous) {
         this.senderLoginID = senderLoginID;
         this.receiverLoginID = receiverLoginID;
+        this.senderName = senderName;
         this.receiverName = receiverName;
+        this.senderAnonymous = senderAnonymous;
+        this.receiverAnonymous = receiverAnonymous;
+    }
+
+    public Conversation(ConversationCreateValues values) {
+        this.senderLoginID = values.getSenderLoginID();
+        this.receiverLoginID = values.getReceiverLoginID();
+        this.senderName = values.getSenderName();
+        this.receiverName = values.getReceiverName();
+        this.senderAnonymous = values.isSenderAnonymous();
+        this.receiverAnonymous = values.isReceiverAnonymous();
     }
 
     public void setSenderDeleted() {

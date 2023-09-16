@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.poolc.api.conversation.domain.Conversation;
 import org.poolc.api.conversation.dto.ConversationCreateRequest;
 import org.poolc.api.conversation.repository.ConversationRepository;
+import org.poolc.api.conversation.vo.ConversationCreateValues;
 import org.poolc.api.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,14 +16,21 @@ public class ConversationService {
     private final ConversationRepository conversationRepository;
     private final MemberRepository memberRepository;
 
-    public void createConversation(ConversationCreateRequest request) {
-        String receiverName = checkValidParties(request.getSenderLoginID(), request.getReceiverLoginID());
-        conversationRepository.save(new Conversation(request.getSenderLoginID(), request.getReceiverLoginID(), receiverName));
+    public String createConversation(ConversationCreateValues values) {
+        String receiverName = checkValidParties(values.getSenderLoginID(), values.getReceiverLoginID());
+        conversationRepository.save(new Conversation(values));
+        Conversation conversation = findConversationByReceiverAndSender(values.getSenderLoginID(), values.getReceiverLoginID());
+        return conversation.getId();
     }
 
     public Conversation findConversationById(String conversationId) {
         return conversationRepository.findById(conversationId)
                 .orElseThrow(() -> new NoSuchElementException("No conversation found with the given id."));
+    }
+
+    public Conversation findConversationByReceiverAndSender(String senderLoginID, String receiverLoginID) {
+        return conversationRepository.findBySenderLoginIDAndReceiverLoginID(senderLoginID, receiverLoginID)
+                .orElseThrow(() -> new NoSuchElementException("No conversation found with the given parties."));
     }
 
     public void deleteConversation(String conversationId, String loginID) {
