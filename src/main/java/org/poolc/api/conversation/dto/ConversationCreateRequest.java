@@ -8,13 +8,15 @@ import lombok.Getter;
 public class ConversationCreateRequest {
     private String senderLoginID;
     private String receiverLoginID;
-    private String receiverName;
+    private boolean senderAnonymous;
+    private boolean receiverAnonymous;
 
     protected ConversationCreateRequest() {}
-    public ConversationCreateRequest(String senderLoginID, String receiverLoginID, String receiverName) {
+    public ConversationCreateRequest(String senderLoginID, String receiverLoginID, boolean senderAnonymous, boolean receiverAnonymous) {
         this.senderLoginID = senderLoginID;
         this.receiverLoginID = receiverLoginID;
-        this.receiverName = receiverName;
+        this.senderAnonymous = senderAnonymous;
+        this.receiverAnonymous = receiverAnonymous;
     }
 
 }

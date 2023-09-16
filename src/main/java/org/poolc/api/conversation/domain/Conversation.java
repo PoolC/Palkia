@@ -22,8 +22,17 @@ public class Conversation extends TimestampEntity {
     @Column(name = "receiver_login_id", nullable = false)
     private String receiverLoginID;
 
+    @Column(name = "sender_name", nullable = false)
+    private String senderName;
+
     @Column(name = "receiver_name", nullable = false)
     private String receiverName;
+
+    @Column(name = "sender_anonymous", nullable = false)
+    private boolean senderAnonymous;
+
+    @Column(name = "receiver_anonymous", nullable = false)
+    private boolean receiverAnonymous;
 
     @Column(name = "sender_deleted")
     private boolean senderDeleted = false;
