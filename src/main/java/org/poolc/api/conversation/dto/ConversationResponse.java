@@ -1,10 +1,13 @@
 package org.poolc.api.conversation.dto;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.poolc.api.conversation.domain.Conversation;
 
 @Getter
+@Setter(AccessLevel.PRIVATE)
 public class ConversationResponse {
 
     private String id;
@@ -12,17 +15,18 @@ public class ConversationResponse {
     private String receiverNameOrAnonymous;
 
     protected ConversationResponse() {}
-    public ConversationResponse(Conversation conversation) {
-        this.id = conversation.getId();
+    public static ConversationResponse of(Conversation conversation) {
+        ConversationResponse conversationResponse = new ConversationResponse();
+        conversationResponse.setId(conversation.getId());
         if (conversation.isSenderAnonymous()) {
-            this.senderNameOrAnonymous = "익명";
+            conversationResponse.setSenderNameOrAnonymous("익명");
         } else {
-            this.senderNameOrAnonymous = conversation.getSenderName();
+            conversationResponse.setSenderNameOrAnonymous(conversation.getSenderName());
         }
         if (conversation.isReceiverAnonymous()) {
-            this.receiverNameOrAnonymous = "익명";
+            conversationResponse.setReceiverNameOrAnonymous("익명");
         } else {
-            this.receiverNameOrAnonymous = conversation.getReceiverName();
+            conversationResponse.setReceiverNameOrAnonymous(conversation.getReceiverName());
         }
     }
 }
