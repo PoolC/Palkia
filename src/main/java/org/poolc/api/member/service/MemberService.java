@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
 import org.poolc.api.activity.dto.ActivityResponse;
 import org.poolc.api.activity.service.ActivityService;
-import org.poolc.api.auth.exception.UnauthenticatedException;
 import org.poolc.api.auth.exception.UnauthorizedException;
 import org.poolc.api.auth.infra.PasswordHashProvider;
 import org.poolc.api.common.domain.YearSemester;
@@ -97,14 +96,17 @@ public class MemberService {
     }
 
     public List<ActivityResponse> getHostActivityResponses(Member findMember) {
-        List<ActivityResponse> activitiesByHost = activityService.findActivitiesByHost(findMember)
+        return activityService.findActivitiesByHost(findMember)
                 .stream().map(ActivityResponse::of)
                 .collect(Collectors.toList());
-        return activitiesByHost;
     }
 
     public List<Member> findMembers(List<String> members) {
         return memberRepository.findAllMembersByLoginIDList(members);
+    }
+
+    public boolean checkMemberExistsByLoginID(String loginID) {
+        return !memberRepository.existsByLoginID(loginID);
     }
 
     public void checkGetRoles(Member loginMember) {
