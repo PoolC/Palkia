@@ -62,19 +62,19 @@ public class Post extends TimestampEntity {
 
     // 질문이면 수정 삭제 방지
     @Column(name = "is_question", columnDefinition = "boolean default false")
-    private Boolean isQuestion;
+    private Boolean isQuestion = false;
 
     @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 
     @Column(name = "like_count", columnDefinition = "bigint default 0")
-    private Long likeCount;
+    private Long likeCount = 0L;
 
     @Column(name = "scrap_count", columnDefinition = "bigint default 0")
-    private Long scrapCount;
+    private Long scrapCount = 0L;
 
     @Column(name = "comment_count", columnDefinition = "bigint default 0")
-    private Long commentCount;
+    private Long commentCount = 0L;
 
     @Column(name = "position")
     @Enumerated(EnumType.ORDINAL)

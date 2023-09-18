@@ -66,6 +66,7 @@ public class BadgeService {
 
     public void deleteBadge(Long badgeId){
         Badge badge = badgeRepository.findBadgeById(badgeId).orElseThrow(() -> new NoSuchElementException("해당하는 뱃지가 없습니다."));
+        if(!badge.getCategory().equals(BadgeCategory.ETC)) throw new ForbiddenException("해당 배지는 삭제할 수 없습니다.");
         List<Member> badgeUser = memberRepository.findBadgeUser(badge.getId());
         for (Member m:badgeUser) {
             m.deleteBadge();
@@ -88,7 +89,7 @@ public class BadgeService {
     public void assignBadge(String loginId, List<AssignBadge> request){
         Member member = memberRepository.findByLoginID(loginId).orElseThrow(()-> new NoSuchElementException("해당하는 유저가 없습니다."));
         List<MyBadgeSearchResult> myBadge = findMyBadge(member);
-
+        boolean check=false;
         for (AssignBadge ab:request) {
             Badge badge = badgeRepository.findBadgeById(ab.getId()).get();
             if(ab.getOwn() && !myBadge.stream().filter(b->b.getId().equals(ab.getId())).findFirst().isPresent()){
@@ -98,6 +99,7 @@ public class BadgeService {
                         .member(member)
                         .build();
                 badgeLogRepository.save(badgeLog);
+                check=true;
             }else if(!ab.getOwn() && myBadge.stream().filter(b->b.getId().equals(ab.getId())).findFirst().isPresent()){
                 BadgeLog badgeLog = badgeLogRepository.findBadgeLogByUUID(member.getUUID(), badge.getId()).get();
                 badgeLogRepository.delete(badgeLog);
@@ -105,8 +107,10 @@ public class BadgeService {
                     member.deleteBadge();
                     memberRepository.save(member);
                 }
+                check=true;
             }
         }
+        if(check)notificationService.createBadgeNotification(member);
     }
 
     private void duplicateBadgeCheck(String name){
@@ -118,8 +122,8 @@ public class BadgeService {
     }
 
     public void updateBadge(Long badgeId, UpdateBadgeRequest updateBadgeRequest) {
-        duplicateBadgeCheck(updateBadgeRequest.getName());
         Badge badge = badgeRepository.findBadgeById(badgeId).orElseThrow(() -> new NoSuchElementException("해당하는 뱃지가 없습니다."));
+        if(!badge.getName().equals(updateBadgeRequest.getName())) duplicateBadgeCheck(updateBadgeRequest.getName());
         badge.updateBadge(updateBadgeRequest.getName(), updateBadgeRequest.getDescription(), updateBadgeRequest.getImageUrl());
         badgeRepository.save(badge);
     }
@@ -143,6 +147,7 @@ public class BadgeService {
                     .date(LocalDate.now())
                     .badge(badge)
                     .build());
+            notificationService.createBadgeNotification(member);
         }
     }
 }
