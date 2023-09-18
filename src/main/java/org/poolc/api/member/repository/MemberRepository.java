@@ -28,5 +28,5 @@ public interface MemberRepository extends JpaRepository<Member, String> {
     @Query("select m from Member m where m.badge.id = (:badgeID)")
     List<Member> findBadgeUser(@Param("badgeID")Long badgeId);
 
-    boolean existsByLoginId(String senderLoginId);
+    boolean existsByLoginID(String loginID);
 }
