@@ -217,7 +217,7 @@ public class MemberService {
     }
 
     @Transactional
-    List<Member> getAllMembersAndUpdateMemberIsExcepted() {
+    public List<Member> getAllMembersAndUpdateMemberIsExcepted() {
         List<Member> members = getAllMembers();
         members.forEach(member -> {
             member.updateIsExcepted();
