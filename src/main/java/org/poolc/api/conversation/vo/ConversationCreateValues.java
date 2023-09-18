@@ -4,22 +4,22 @@ import lombok.Getter;
 
 @Getter
 public class ConversationCreateValues {
-    private String senderLoginID;
-    private String receiverLoginID;
-    private String senderName;
-    private String receiverName;
-    private boolean senderAnonymous;
-    private boolean receiverAnonymous;
+    private String starterLoginID;
+    private String otherLoginID;
+    private String starterName;
+    private String otherName;
+    private boolean starterAnonymous;
+    private boolean otherAnonymous;
 
     protected ConversationCreateValues() {}
 
-    public ConversationCreateValues(String senderLoginID, String receiverLoginID, String senderName, String receiverName, boolean senderAnonymous, boolean receiverAnonymous) {
-        this.senderLoginID = senderLoginID;
-        this.receiverLoginID = receiverLoginID;
-        this.senderName = senderName;
-        this.receiverName = receiverName;
-        this.senderAnonymous = senderAnonymous;
-        this.receiverAnonymous = receiverAnonymous;
+    public ConversationCreateValues(String starterLoginID, String otherLoginID, String starterName, String otherName, boolean starterAnonymous, boolean otherAnonymous) {
+        this.starterLoginID = starterLoginID;
+        this.otherLoginID = otherLoginID;
+        this.starterName = starterName;
+        this.otherName = otherName;
+        this.starterAnonymous = starterAnonymous;
+        this.otherAnonymous = otherAnonymous;
     }
 
 }

@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.poolc.api.common.domain.TimestampEntity;
+import org.poolc.api.conversation.domain.Conversation;
 import org.poolc.api.member.domain.Member;
 
 import javax.persistence.*;
@@ -24,50 +25,53 @@ public class Message extends TimestampEntity {
     @Column(name = "content", nullable = false)
     private String content;
 
+    @Column(name = "starter_is_sender")
+    private boolean starterIsSender;
+
     @Column(name = "deleted_by_sender", nullable = false, columnDefinition = "boolean default false")
-    private Boolean deletedBySender;
+    private Boolean deletedByStarter;
 
-    @Column(name = "deleted_by_receiver", nullable = false, columnDefinition = "boolean default false")
-    private Boolean deletedByReceiver;
+    @Column(name = "deleted_by_other", nullable = false, columnDefinition = "boolean default false")
+    private Boolean deletedByOther;
 
-    @Column(name = "conversation_id", nullable = false)
-    private String conversationId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "conversation", referencedColumnName = "conversation_id")
+    private Conversation conversation;
 
-    @Column(name = "sender_anonymous", nullable = false)
-    private Boolean senderAnonymous;
+    @Column(name = "starter_anonymous", nullable = false)
+    private Boolean starterAnonymous;
 
-    @Column(name = "receiver_anonymous", nullable = false)
-    private Boolean receiverAnonymous;
+    @Column(name = "other_anonymous", nullable = false)
+    private Boolean otherAnonymous;
 
-    @Column(name = "sender_name")
-    private String senderName;
+    @Column(name = "starter_name")
+    private String starterName;
 
-    @Column(name = "receiver_name")
-    private String receiverName;
+    @Column(name = "other_name")
+    private String otherName;
 
     protected Message() {}
 
-    public Message(String content, String conversationId, Boolean senderAnonymous, Boolean receiverAnonymous, String senderName, String receiverName) {
+    public Message(String content, boolean starterIsSender, Conversation conversation, Boolean starterAnonymous, Boolean otherAnonymous, String starterName, String otherName) {
         this.content = content;
-        this.conversationId = conversationId;
-        this.senderAnonymous = senderAnonymous;
-        this.receiverAnonymous = receiverAnonymous;
-        this.senderName = senderName;
-        this.receiverName = receiverName;
-        this.deletedBySender = false;
-        this.deletedByReceiver = false;
+        this.starterIsSender = starterIsSender;
+        this.conversation = conversation;
+        this.starterAnonymous = starterAnonymous;
+        this.otherAnonymous = otherAnonymous;
+        this.starterName = starterName;
+        this.otherName = otherName;
     }
 
-    public void senderDeletes() {
-        this.deletedBySender = true;
+    public void starterDeletes() {
+        this.deletedByStarter = true;
     }
 
-    public void receiverDeletes() {
-        this.deletedByReceiver = true;
+    public void otherDeletes() {
+        this.deletedByOther = true;
     }
 
     public boolean isDeleted() {
-        return deletedByReceiver && deletedBySender;
+        return this.deletedByStarter && this.deletedByOther;
     }
 
 

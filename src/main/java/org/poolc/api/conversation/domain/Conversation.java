@@ -17,55 +17,55 @@ public class Conversation extends TimestampEntity {
     @Column(name = "conversation_id", columnDefinition = "CHAR(32)")
     private String id;
 
-    @Column(name = "sender_login_id", nullable = false)
-    private String senderLoginID;
+    @Column(name = "starter_login_id", nullable = false)
+    private String starterLoginID;
 
-    @Column(name = "receiver_login_id", nullable = false)
-    private String receiverLoginID;
+    @Column(name = "other_login_id", nullable = false)
+    private String otherLoginID;
 
-    @Column(name = "sender_name", nullable = false)
-    private String senderName;
+    @Column(name = "starter_name", nullable = false)
+    private String starterName;
 
-    @Column(name = "receiver_name", nullable = false)
-    private String receiverName;
+    @Column(name = "other_name", nullable = false)
+    private String otherName;
 
-    @Column(name = "sender_anonymous", nullable = false)
-    private boolean senderAnonymous;
+    @Column(name = "starter_anonymous", nullable = false)
+    private boolean starterAnonymous;
 
-    @Column(name = "receiver_anonymous", nullable = false)
-    private boolean receiverAnonymous;
+    @Column(name = "other_anonymous", nullable = false)
+    private boolean otherAnonymous;
 
-    @Column(name = "sender_deleted")
-    private boolean senderDeleted = false;
+    @Column(name = "starter_deleted")
+    private boolean starterDeleted = false;
 
-    @Column(name = "receiver_deleted")
-    private boolean receiverDeleted = false;
+    @Column(name = "other_deleted")
+    private boolean otherDeleted = false;
 
     protected Conversation() {}
 
-    public Conversation(String senderLoginID, String receiverLoginID, String senderName, String receiverName, boolean senderAnonymous, boolean receiverAnonymous) {
-        this.senderLoginID = senderLoginID;
-        this.receiverLoginID = receiverLoginID;
-        this.senderName = senderName;
-        this.receiverName = receiverName;
-        this.senderAnonymous = senderAnonymous;
-        this.receiverAnonymous = receiverAnonymous;
+    public Conversation(String starterLoginID, String otherLoginID, String starterName, String otherName, boolean starterAnonymous, boolean otherAnonymous) {
+        this.starterLoginID = starterLoginID;
+        this.otherLoginID = otherLoginID;
+        this.starterName = starterName;
+        this.otherName = otherName;
+        this.starterAnonymous = starterAnonymous;
+        this.otherAnonymous = otherAnonymous;
     }
 
     public Conversation(ConversationCreateValues values) {
-        this.senderLoginID = values.getSenderLoginID();
-        this.receiverLoginID = values.getReceiverLoginID();
-        this.senderName = values.getSenderName();
-        this.receiverName = values.getReceiverName();
-        this.senderAnonymous = values.isSenderAnonymous();
-        this.receiverAnonymous = values.isReceiverAnonymous();
+        this.starterLoginID = values.getSenderLoginID();
+        this.otherLoginID = values.getReceiverLoginID();
+        this.starterName = values.getSenderName();
+        this.otherName = values.getReceiverName();
+        this.starterAnonymous = values.isSenderAnonymous();
+        this.otherAnonymous = values.isReceiverAnonymous();
     }
 
     public void setSenderDeleted() {
-        this.senderDeleted = true;
+        this.starterDeleted = true;
     }
 
     public void setReceiverDeleted() {
-        this.receiverDeleted = true;
+        this.otherDeleted = true;
     }
 }

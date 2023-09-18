@@ -19,28 +19,29 @@ public class ConversationService {
     private final MemberService memberService;
 
     public String createConversation(ConversationCreateValues values) {
-        checkValidParties(values.getSenderLoginID(), values.getReceiverLoginID());
-        String conversationId = checkExistingConversation(values.getSenderLoginID(), values.getReceiverLoginID());
+        checkValidParties(values.getStarterLoginID(), values.getOtherLoginID());
+        String conversationId = checkExistingConversation(values.getStarterLoginID(), values.getOtherLoginID());
         if (conversationId != null) return conversationId;
         else conversationRepository.save(new Conversation(values));
-        Conversation conversation = findConversationByReceiverAndSender(values.getSenderLoginID(), values.getReceiverLoginID());
+        Conversation conversation = findConversationByReceiverAndSender(values.getStarterLoginID(), values.getOtherLoginID());
         return conversation.getId();
     }
 
     public ConversationCreateValues convertToConversationCreateValues(ConversationCreateRequest request) {
-        String receiverName = checkValidParties(request.getSenderLoginID(), request.getReceiverLoginID());
-        String senderName = memberService.getMemberByLoginID(request.getSenderLoginID()).getName();
+        String receiverName = checkValidParties(request.getStarterLoginID(), request.getOtherLoginID());
+        String senderName = memberService.getMemberByLoginID(request.getOtherLoginID()).getName();
         return new ConversationCreateValues(
-                request.getSenderLoginID(), request.getReceiverLoginID(),
+                request.getStarterLoginID(), request.getOtherLoginID(),
                 senderName, receiverName,
-                request.isSenderAnonymous(), request.isReceiverAnonymous()
+                request.isStarterAnonymous(), request.isOtherAnonymous()
         );
     }
 
     public Conversation findConversationById(String conversationId, String loginID) {
-        checkWhetherInvolved(conversationId, loginID);
-        return conversationRepository.findById(conversationId)
+        Conversation conversation = conversationRepository.findById(conversationId)
                 .orElseThrow(() -> new NoSuchElementException("No conversation found with the given id."));
+        checkWhetherInvolved(conversation, loginID);
+        return conversation;
     }
 
     public Conversation findConversationByReceiverAndSender(String senderLoginID, String receiverLoginID) {
@@ -50,22 +51,19 @@ public class ConversationService {
 
     public void deleteConversation(String conversationId, String loginID) {
         Conversation conversation = findConversationById(conversationId, loginID);
-        checkWhetherInvolved(conversationId, loginID);
-        boolean sender = findWhetherSenderOrReceiver(conversationId, loginID);
+        checkWhetherInvolved(conversation, loginID);
+        boolean sender = findWhetherSenderOrReceiver(conversation, loginID);
         if (sender) conversation.setSenderDeleted();
         else conversation.setReceiverDeleted();
-        // message 완성한 다음에 stream해서 삭제된 것들은 싹 삭제해야 함
     }
 
-    public void checkWhetherInvolved(String conversationId, String loginID) {
-        Conversation conversation = findConversationById(conversationId, loginID);
-        if (!conversation.getSenderLoginID().equals(loginID) && !conversation.getReceiverLoginID().equals(loginID)) {
+    public void checkWhetherInvolved(Conversation conversation, String loginID) {
+        if (!conversation.getStarterLoginID().equals(loginID) && !conversation.getOtherLoginID().equals(loginID)) {
             throw new IllegalArgumentException("You are not involved in this conversation.");
         }
     }
-    public boolean findWhetherSenderOrReceiver(String conversationId, String loginID) {
-        Conversation conversation = findConversationById(conversationId, loginID);
-        return conversation.getSenderLoginID().equals(loginID);
+    public boolean findWhetherSenderOrReceiver(Conversation conversation, String loginID) {
+        return conversation.getStarterLoginID().equals(loginID);
     }
 
     private String checkValidParties(String senderLoginId, String receiverLoginId) {
@@ -84,9 +82,9 @@ public class ConversationService {
     private String checkExistingConversation(String senderLoginID, String receiverLoginID) {
         Optional<Conversation> conversationOptional = conversationRepository.findBySenderLoginIDAndReceiverLoginID(senderLoginID, receiverLoginID);
         if (conversationOptional.isPresent() &&
-                !conversationOptional.get().isSenderDeleted() &&
-                !conversationOptional.get().isSenderAnonymous() &&
-                !conversationOptional.get().isReceiverAnonymous()
+                !conversationOptional.get().isStarterDeleted() &&
+                !conversationOptional.get().isStarterAnonymous() &&
+                !conversationOptional.get().isOtherAnonymous()
         ) {
             return conversationOptional.get().getId();
         }
