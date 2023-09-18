@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Setter(AccessLevel.PRIVATE)
 public class MessageResponse {
     private String content;
-    private String senderName;
     private String receiverName;
     private LocalDateTime sentAt;
 
@@ -21,10 +20,7 @@ public class MessageResponse {
         response.setSentAt(message.getCreatedAt());
 
         if (message.getReceiverAnonymous()) response.setReceiverName("익명");
-        else response.setReceiverName(message.getReceiver().getName());
-
-        if (message.getSenderAnonymous()) response.setSenderName("익명");
-        else response.setReceiverName(message.getReceiver().getName());
+        else response.setReceiverName(message.getReceiverName());
 
         return response;
     }

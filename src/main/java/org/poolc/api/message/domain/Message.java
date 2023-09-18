@@ -30,15 +30,8 @@ public class Message extends TimestampEntity {
     @Column(name = "deleted_by_receiver", nullable = false, columnDefinition = "boolean default false")
     private Boolean deletedByReceiver;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sender_id")
-    @OnDelete(action = OnDeleteAction.NO_ACTION)
-    private Member sender;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiver_id")
-    @OnDelete(action = OnDeleteAction.NO_ACTION)
-    private Member receiver;
+    @Column(name = "conversation_id", nullable = false)
+    private String conversationId;
 
     @Column(name = "sender_anonymous", nullable = false)
     private Boolean senderAnonymous;
@@ -46,15 +39,24 @@ public class Message extends TimestampEntity {
     @Column(name = "receiver_anonymous", nullable = false)
     private Boolean receiverAnonymous;
 
-    public Message(String content, Member sender, Member receiver, Boolean senderAnonymous, Boolean receiverAnonymous) {
+    @Column(name = "sender_name")
+    private String senderName;
+
+    @Column(name = "receiver_name")
+    private String receiverName;
+
+    protected Message() {}
+
+    public Message(String content, String conversationId, Boolean senderAnonymous, Boolean receiverAnonymous, String senderName, String receiverName) {
         this.content = content;
-        this.sender = sender;
-        this.receiver = receiver;
+        this.conversationId = conversationId;
         this.senderAnonymous = senderAnonymous;
         this.receiverAnonymous = receiverAnonymous;
+        this.senderName = senderName;
+        this.receiverName = receiverName;
+        this.deletedBySender = false;
+        this.deletedByReceiver = false;
     }
-
-    public Message() {}
 
     public void senderDeletes() {
         this.deletedBySender = true;
