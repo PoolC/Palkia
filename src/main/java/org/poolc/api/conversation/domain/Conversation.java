@@ -53,12 +53,12 @@ public class Conversation extends TimestampEntity {
     }
 
     public Conversation(ConversationCreateValues values) {
-        this.starterLoginID = values.getSenderLoginID();
-        this.otherLoginID = values.getReceiverLoginID();
-        this.starterName = values.getSenderName();
-        this.otherName = values.getReceiverName();
-        this.starterAnonymous = values.isSenderAnonymous();
-        this.otherAnonymous = values.isReceiverAnonymous();
+        this.starterLoginID = values.getStarterLoginID();
+        this.otherLoginID = values.getOtherLoginID();
+        this.starterName = values.getStarterName();
+        this.otherName = values.getOtherName();
+        this.starterAnonymous = values.isStarterAnonymous();
+        this.otherAnonymous = values.isOtherAnonymous();
     }
 
     public void setSenderDeleted() {

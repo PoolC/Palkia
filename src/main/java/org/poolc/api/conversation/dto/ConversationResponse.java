@@ -17,15 +17,15 @@ public class ConversationResponse {
     public static ConversationResponse of(Conversation conversation) {
         ConversationResponse response = new ConversationResponse();
         response.setId(conversation.getId());
-        if (conversation.isSenderAnonymous()) {
+        if (conversation.isStarterAnonymous()) {
             response.setSenderNameOrAnonymous("익명");
         } else {
-            response.setSenderNameOrAnonymous(conversation.getSenderName());
+            response.setSenderNameOrAnonymous(conversation.getStarterName());
         }
-        if (conversation.isReceiverAnonymous()) {
+        if (conversation.isOtherAnonymous()) {
             response.setReceiverNameOrAnonymous("익명");
         } else {
-            response.setReceiverNameOrAnonymous(conversation.getReceiverName());
+            response.setReceiverNameOrAnonymous(conversation.getOtherName());
         }
         return response;
     }

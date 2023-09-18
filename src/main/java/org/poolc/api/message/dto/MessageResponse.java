@@ -19,8 +19,8 @@ public class MessageResponse {
         response.setContent(message.getContent());
         response.setSentAt(message.getCreatedAt());
 
-        if (message.getReceiverAnonymous()) response.setReceiverName("익명");
-        else response.setReceiverName(message.getReceiverName());
+        if (message.getOtherAnonymous()) response.setReceiverName("익명");
+        else response.setReceiverName(message.getOtherName());
 
         return response;
     }
