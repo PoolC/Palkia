@@ -44,8 +44,8 @@ public class ConversationService {
         return conversation;
     }
 
-    public Conversation findConversationByReceiverAndSender(String senderLoginID, String receiverLoginID) {
-        return conversationRepository.findBySenderLoginIDAndReceiverLoginID(senderLoginID, receiverLoginID)
+    public Conversation findConversationByReceiverAndSender(String starterLoginID, String otherLoginID) {
+        return conversationRepository.findByStarterLoginIDAndOtherLoginID(starterLoginID, otherLoginID)
                 .orElseThrow(() -> new NoSuchElementException("No conversation found with the given parties."));
     }
 
@@ -79,8 +79,8 @@ public class ConversationService {
         return memberService.getMemberByLoginID(receiverLoginId).getName();
     }
 
-    private String checkExistingConversation(String senderLoginID, String receiverLoginID) {
-        Optional<Conversation> conversationOptional = conversationRepository.findBySenderLoginIDAndReceiverLoginID(senderLoginID, receiverLoginID);
+    private String checkExistingConversation(String starterLoginID, String otherLoginID) {
+        Optional<Conversation> conversationOptional = conversationRepository.findByStarterLoginIDAndOtherLoginID(starterLoginID, otherLoginID);
         if (conversationOptional.isPresent() &&
                 !conversationOptional.get().isStarterDeleted() &&
                 !conversationOptional.get().isStarterAnonymous() &&
