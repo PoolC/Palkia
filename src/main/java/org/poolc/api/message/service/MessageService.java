@@ -32,7 +32,7 @@ public class MessageService {
     }
 
     public List<Message> findMessagesByConversationId(Member member, String conversationId) {
-        List<Message> messageList = messageRepository.findAllByConversationID(conversationId);
+        List<Message> messageList = messageRepository.findAllByConversationId(conversationId);
         Conversation conversation = conversationService.findConversationById(conversationId, member.getLoginID());
         conversationService.checkWhetherInvolved(conversation, member.getLoginID());
         return messageList.stream()
