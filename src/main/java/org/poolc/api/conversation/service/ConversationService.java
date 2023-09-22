@@ -66,17 +66,17 @@ public class ConversationService {
         return conversation.getStarterLoginID().equals(loginID);
     }
 
-    private String checkValidParties(String senderLoginId, String receiverLoginId) {
-        if (senderLoginId.equals(receiverLoginId)) {
+    private String checkValidParties(String starterLoginID, String otherLoginID) {
+        if (starterLoginID.equals(otherLoginID)) {
             throw new IllegalArgumentException("Sender and receiver cannot be the same person.");
         }
-        if (memberService.checkMemberExistsByLoginID(senderLoginId)) {
+        if (memberService.checkMemberExistsByLoginID(starterLoginID)) {
             throw new NoSuchElementException("Sender is not found.");
         }
-        if (memberService.checkMemberExistsByLoginID(receiverLoginId)) {
+        if (memberService.checkMemberExistsByLoginID(otherLoginID)) {
             throw new NoSuchElementException("Receiver is not found.");
         }
-        return memberService.getMemberByLoginID(receiverLoginId).getName();
+        return memberService.getMemberByLoginID(otherLoginID).getName();
     }
 
     private String checkExistingConversation(String starterLoginID, String otherLoginID) {
