@@ -6,7 +6,6 @@ import org.poolc.api.conversation.dto.ConversationCreateRequest;
 import org.poolc.api.conversation.repository.ConversationRepository;
 import org.poolc.api.conversation.vo.ConversationCreateValues;
 import org.poolc.api.member.service.MemberService;
-import org.poolc.api.message.service.MessageService;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
