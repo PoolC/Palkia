@@ -13,9 +13,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
   mail:
     default-encoding: UTF-8
     host: smtp.naver.com
