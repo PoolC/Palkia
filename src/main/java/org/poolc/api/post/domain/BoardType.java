@@ -1,16 +1,20 @@
 package org.poolc.api.post.domain;
 
+import java.util.Arrays;
+
 public enum BoardType {
-    NOTICE(0L),
-    FREE(0L),
-    JOB(0L),
-    PROJECT(0L),
-    CS(0L);
+    NOTICE(0L, "공지 게시판"),
+    FREE(0L, "자유 게시판"),
+    JOB(0L, "취업 게시판"),
+    PROJECT(0L, "프로젝트 게시판"),
+    CS(0L, "CS 게시판");
 
     private Long postCount;
+    private final String boardName;
 
-    private BoardType(Long postCount) {
+    private BoardType(Long postCount, String boardName) {
         this.postCount = postCount;
+        this.boardName = boardName;
     }
 
     public Long getPostCount() {
@@ -18,12 +22,10 @@ public enum BoardType {
     }
 
     public static BoardType getBoardTypeByName(String name) {
-        for (BoardType boardType : BoardType.values()) {
-            if (boardType.toString().equals(name)) {
-                return boardType;
-            }
-        }
-        throw new IllegalArgumentException("존재하지 않는 게시판입니다.");
+        return Arrays.stream(BoardType.values())
+                .filter(boardType -> boardType.boardName.equals(name))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No board type found with given name."));
     }
 
     public static void addPostCount(BoardType boardType) {
