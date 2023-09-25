@@ -3,7 +3,6 @@ package org.poolc.api.comment.service;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.auth.exception.UnauthorizedException;
 import org.poolc.api.badge.service.BadgeConditionService;
-import org.poolc.api.badge.service.BadgeService;
 import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.comment.repository.CommentRepository;
 import org.poolc.api.comment.vo.CommentCreateValues;
