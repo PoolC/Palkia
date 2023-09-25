@@ -26,8 +26,9 @@ public class CommentService {
     private final BadgeConditionService badgeConditionService;
     private final NotificationService notificationService;
     public Comment createComment(CommentCreateValues values) {
-        Comment parent = findById(values.getParentId());
-        if (parent.getIsChild()) {
+        Comment parent = null;
+        if (values.getParentId() != 0 && values.getParentId() != null) parent = findById(values.getParentId());
+        if (parent != null && parent.getIsChild()) {
             throw new IllegalArgumentException("대댓글에 대댓글을 달 수 없습니다.");
         } else {
             Comment comment = new Comment(parent, values);
