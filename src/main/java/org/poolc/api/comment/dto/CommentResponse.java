@@ -49,7 +49,7 @@ public class CommentResponse {
                         .stream().map(CommentResponse::of)
                         .collect(Collectors.toList()));
             }
-            if (comment.getIsChild()) response.setParentCommentId(comment.getParentId());
+            if (comment.getIsChild()) response.setParentCommentId(comment.getParent().getId());
         }
         return response;
     }

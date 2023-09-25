@@ -30,7 +30,7 @@ public class CommentService {
         if (parent.getIsChild()) {
             throw new IllegalArgumentException("대댓글에 대댓글을 달 수 없습니다.");
         } else {
-            Comment comment = new Comment(values);
+            Comment comment = new Comment(parent, values);
             commentRepository.save(comment);
             comment.getPost().addCommentCount();
             if (parent != null) notificationService.createCommentNotification(values.getMember().getUUID(), values.getPost().getMember().getUUID(), values.getPost().getId());

@@ -47,9 +47,11 @@ public class Comment extends TimestampEntity {
     @Column(name = "is_child", nullable = false)
     private Boolean isChild;
 
-    @Column(name = "parent_id")
-    private Long parentId;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "parent_id", referencedColumnName = "ID")
+    private Comment parent;
 
+    @OneToMany(mappedBy = "parent")
     private List<Comment> children = new ArrayList<>();
 
     @Column(name = "like_count")
@@ -57,26 +59,26 @@ public class Comment extends TimestampEntity {
 
     public Comment() {}
 
-    public Comment(Post post, Member member, Boolean anonymous, String body, Boolean isDeleted, Boolean isChild, Long parentId, List<Comment> children, Long likeCount) {
+    public Comment(Post post, Member member, Boolean anonymous, String body, Boolean isDeleted, Boolean isChild, Comment parent, List<Comment> children, Long likeCount) {
         this.post = post;
         this.member = member;
         this.anonymous = anonymous;
         this.body = body;
         this.isDeleted = isDeleted;
         this.isChild = isChild;
-        this.parentId = parentId;
+        this.parent = parent;
         this.children = children;
         this.likeCount = likeCount;
     }
 
-    public Comment(CommentCreateValues values) {
+    public Comment(Comment parent, CommentCreateValues values) {
         this.post = values.getPost();
         this.member = values.getMember();
         this.anonymous = values.getAnonymous();
         this.body = values.getBody();
         this.isDeleted = false;
-        this.parentId = values.getParentId();
-        if (parentId != null || parentId != 0) {
+        this.parent = parent;
+        if (parent != null) {
             this.isChild = true;
         } else {
             this.isChild = false;
