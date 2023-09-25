@@ -22,7 +22,7 @@ public class ConversationService {
         String conversationId = checkExistingConversation(values.getStarterLoginID(), values.getOtherLoginID());
         if (conversationId != null) return conversationId;
         else conversationRepository.save(new Conversation(values));
-        Conversation conversation = findConversationByReceiverAndSender(values.getStarterLoginID(), values.getOtherLoginID());
+        Conversation conversation = findConversationByStarterAndOther(values.getStarterLoginID(), values.getOtherLoginID());
         return conversation.getId();
     }
 
@@ -42,8 +42,7 @@ public class ConversationService {
         checkWhetherInvolved(conversation, loginID);
         return conversation;
     }
-
-    public Conversation findConversationByReceiverAndSender(String starterLoginID, String otherLoginID) {
+    public Conversation findConversationByStarterAndOther(String starterLoginID, String otherLoginID) {
         return conversationRepository.findByStarterLoginIDAndOtherLoginID(starterLoginID, otherLoginID)
                 .orElseThrow(() -> new NoSuchElementException("No conversation found with the given parties."));
     }
