@@ -11,13 +11,13 @@ public class CommentCreateValues {
     private final Member member;
     private final Boolean anonymous;
     private final String body;
-    private final Comment parent;
+    private final Long parentId;
 
-    public CommentCreateValues(Post post, Member member, Boolean anonymous, String body, Comment parent) {
+    public CommentCreateValues(Post post, Member member, Boolean anonymous, String body, Long parentId) {
         this.post = post;
         this.member = member;
         this.anonymous = anonymous;
         this.body = body;
-        this.parent = parent;
+        this.parentId = parentId;
     }
 }

@@ -1,6 +1,5 @@
 package org.poolc.api.comment.domain;
 
-import lombok.Builder;
 import lombok.Getter;
 import org.poolc.api.comment.vo.CommentCreateValues;
 import org.poolc.api.comment.vo.CommentUpdateValues;
@@ -48,9 +47,8 @@ public class Comment extends TimestampEntity {
     @Column(name = "is_child", nullable = false)
     private Boolean isChild;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "parent_id", referencedColumnName = "ID")
-    private Comment parent;
+    @Column(name = "parent_id")
+    private Long parentId;
 
     @OneToMany(mappedBy = "parent")
     private List<Comment> children = new ArrayList<>();
@@ -60,14 +58,14 @@ public class Comment extends TimestampEntity {
 
     public Comment() {}
 
-    public Comment(Post post, Member member, Boolean anonymous, String body, Boolean isDeleted, Boolean isChild, Comment parent, List<Comment> children, Long likeCount) {
+    public Comment(Post post, Member member, Boolean anonymous, String body, Boolean isDeleted, Boolean isChild, Long parentId, List<Comment> children, Long likeCount) {
         this.post = post;
         this.member = member;
         this.anonymous = anonymous;
         this.body = body;
         this.isDeleted = isDeleted;
         this.isChild = isChild;
-        this.parent = parent;
+        this.parentId = parentId;
         this.children = children;
         this.likeCount = likeCount;
     }
@@ -78,8 +76,8 @@ public class Comment extends TimestampEntity {
         this.anonymous = values.getAnonymous();
         this.body = values.getBody();
         this.isDeleted = false;
-        this.parent = values.getParent();
-        if (parent != null) {
+        this.parentId = values.getParentId();
+        if (parentId != null || parentId != 0) {
             this.isChild = true;
         } else {
             this.isChild = false;
