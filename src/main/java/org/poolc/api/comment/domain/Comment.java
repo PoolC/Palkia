@@ -44,7 +44,7 @@ public class Comment extends TimestampEntity {
     private Boolean isDeleted;
 
     // 대댓글이면 children 가질 수 없음
-    @Column(name = "is_child", nullable = false)
+    @Column(name = "is_child", nullable = false, columnDefinition = "boolean default false")
     private Boolean isChild;
 
     @ManyToOne(fetch = LAZY)
