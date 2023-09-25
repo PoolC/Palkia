@@ -90,7 +90,7 @@ public class Comment extends TimestampEntity {
     public void setIsDeleted() {
         this.isDeleted = true;
     }
-    public boolean hasChildren() { return this.getChildren().size() != 0; }
+    public boolean hasChildren() { return !this.getChildren().isEmpty(); }
     public void updateComment(CommentUpdateValues commentUpdateValues) {
         this.anonymous = commentUpdateValues.getAnonymous();
         this.body = commentUpdateValues.getBody();
