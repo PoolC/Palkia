@@ -35,17 +35,8 @@ public class CommentController {
                                                          @RequestBody @Valid CommentCreateRequest request) {
         Post post = postService.findPostById(member, request.getPostId());
 
-        Comment parent;
-        if (request.getIsChild()) parent = commentService.findById(request.getParentId());
-        else parent = null;
-
-        CommentCreateValues values = new CommentCreateValues(post, member, request.getAnonymous(), request.getBody(), parent);
+        CommentCreateValues values = new CommentCreateValues(post, member, request.getAnonymous(), request.getBody(), request.getParentId());
         Comment newComment = commentService.createComment(values);
-
-        // 댓글 달면 포스트 쓴 사람한테 알림
-        if (parent == null) notificationService.createCommentNotification(member.getUUID(), post.getMember().getUUID(), post.getId());
-        // 대댓글 달면 댓글 쓴 사람한테 알림
-        else notificationService.createRecommentNotification(member.getLoginID(), parent.getMember().getLoginID(), post.getId(), parent.getId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(CommentResponse.of(newComment));
     }

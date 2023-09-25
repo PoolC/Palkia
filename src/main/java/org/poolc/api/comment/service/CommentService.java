@@ -9,6 +9,7 @@ import org.poolc.api.comment.repository.CommentRepository;
 import org.poolc.api.comment.vo.CommentCreateValues;
 import org.poolc.api.comment.vo.CommentUpdateValues;
 import org.poolc.api.member.domain.Member;
+import org.poolc.api.notification.service.NotificationService;
 import org.poolc.api.post.domain.Post;
 import org.springframework.stereotype.Service;
 
@@ -23,13 +24,17 @@ public class CommentService {
     private final CommentRepository commentRepository;
     //좋아요 수에 따라 뱃지 자동지급을 위함
     private final BadgeConditionService badgeConditionService;
+    private final NotificationService notificationService;
     public Comment createComment(CommentCreateValues values) {
-        if (values.getParent() != null && values.getParent().getIsChild()) {
+        Comment parent = findById(values.getParentId());
+        if (parent.getIsChild()) {
             throw new IllegalArgumentException("대댓글에 대댓글을 달 수 없습니다.");
         } else {
             Comment comment = new Comment(values);
             commentRepository.save(comment);
             comment.getPost().addCommentCount();
+            if (parent != null) notificationService.createCommentNotification(values.getMember().getUUID(), values.getPost().getMember().getUUID(), values.getPost().getId());
+            else notificationService.createRecommentNotification(values.getMember().getLoginID(), parent.getMember().getLoginID(), values.getPost().getId(), parent.getId());
             return comment;
         }
     }
