@@ -64,7 +64,6 @@ public class PostService {
     public void createPost(PostCreateValues values) {
         checkWritePermission(values.getMember(), values.getBoardType());
         Post post = new Post(values.getMember(), values);
-        System.out.println(post.getTitle());
         postRepository.save(post);
         BoardType.addPostCount(values.getBoardType());
     }

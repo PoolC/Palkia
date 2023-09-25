@@ -25,7 +25,7 @@ public class PostCreateRequest {
     private LocalDateTime deadline;
     @JsonCreator
     public PostCreateRequest(BoardType boardType, Boolean anonymous, String title, String body, List<String> fileList,
-                              PostType postType, Boolean isQuestion,
+                             PostType postType, Boolean isQuestion,
                              JobType position, String region, String field, LocalDateTime deadline) {
         this.boardType = boardType;
         this.anonymous = anonymous;
