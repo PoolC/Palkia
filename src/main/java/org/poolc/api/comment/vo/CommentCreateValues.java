@@ -2,6 +2,7 @@ package org.poolc.api.comment.vo;
 
 import lombok.Getter;
 import org.poolc.api.comment.domain.Comment;
+import org.poolc.api.comment.dto.CommentCreateRequest;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.domain.Post;
 
@@ -13,11 +14,11 @@ public class CommentCreateValues {
     private final String body;
     private final Long parentId;
 
-    public CommentCreateValues(Post post, Member member, Boolean anonymous, String body, Long parentId) {
+    public CommentCreateValues(Post post, Member member, CommentCreateRequest request) {
         this.post = post;
         this.member = member;
-        this.anonymous = anonymous;
-        this.body = body;
-        this.parentId = parentId;
+        this.anonymous = request.getAnonymous();
+        this.body = request.getBody();
+        this.parentId = request.getParentId();
     }
 }

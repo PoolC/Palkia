@@ -27,17 +27,14 @@ import javax.validation.Valid;
 public class CommentController {
     private final PostService postService;
     private final CommentService commentService;
-    private final NotificationService notificationService;
     private final LikeService likeService;
 
     @PostMapping
     public ResponseEntity<CommentResponse> createComment(@AuthenticationPrincipal Member member,
                                                          @RequestBody @Valid CommentCreateRequest request) {
         Post post = postService.findPostById(member, request.getPostId());
-
-        CommentCreateValues values = new CommentCreateValues(post, member, request.getAnonymous(), request.getBody(), request.getParentId());
+        CommentCreateValues values = new CommentCreateValues(post, member, request);
         Comment newComment = commentService.createComment(values);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(CommentResponse.of(newComment));
     }
 
