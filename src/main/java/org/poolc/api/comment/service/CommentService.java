@@ -24,8 +24,8 @@ public class CommentService {
     //좋아요 수에 따라 뱃지 자동지급을 위함
     private final BadgeConditionService badgeConditionService;
     public Comment createComment(CommentCreateValues values) {
-        if (values.getParent().getIsChild()) {
-            return null;
+        if (values.getParent() != null && values.getParent().getIsChild()) {
+            throw new IllegalArgumentException("대댓글에 대댓글을 달 수 없습니다.");
         } else {
             Comment comment = new Comment(values);
             commentRepository.save(comment);
