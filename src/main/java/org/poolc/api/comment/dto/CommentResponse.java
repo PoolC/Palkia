@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Setter(AccessLevel.PRIVATE)
 public class CommentResponse {
     private Long commentId;
-    private Long generalPostId;
+    private Long postId;
     private String writerLoginId;
     private String writerName;
     private String profileImageUrl;
@@ -38,7 +38,7 @@ public class CommentResponse {
             else response.setBody("삭제된 댓글입니다.");
         } else {
             response.setCommentId(comment.getId());
-            response.setGeneralPostId(comment.getPost().getId());
+            response.setPostId(comment.getPost().getId());
             response.setCreatedAt(comment.getCreatedAt());
             // 익명 아닌 댓글
             if (!comment.getAnonymous()) {
