@@ -33,8 +33,8 @@ public class CommentService {
             Comment comment = new Comment(parent, values);
             commentRepository.save(comment);
             comment.getPost().addCommentCount();
-            //if (parent == null) notificationService.createCommentNotification(values.getMember().getUUID(), values.getPost().getMember().getUUID(), values.getPost().getId());
-            //else notificationService.createRecommentNotification(values.getMember().getLoginID(), parent.getMember().getLoginID(), values.getPost().getId(), parent.getId());
+            if (parent == null) notificationService.createCommentNotification(values.getMember().getLoginID(), values.getPost().getMember().getUUID(), values.getPost().getId());
+            else notificationService.createRecommentNotification(values.getMember().getLoginID(), parent.getMember().getLoginID(), values.getPost().getId(), parent.getId());
             return comment;
         }
     }
