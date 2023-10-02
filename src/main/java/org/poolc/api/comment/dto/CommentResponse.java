@@ -3,6 +3,7 @@ package org.poolc.api.comment.dto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.poolc.api.badge.domain.Badge;
 import org.poolc.api.comment.domain.Comment;
 
 import java.time.LocalDateTime;
@@ -16,6 +17,8 @@ public class CommentResponse {
     private Long generalPostId;
     private String writerLoginId;
     private String writerName;
+    private String profileImageUrl;
+    private Badge badge;
     private Boolean anonymous;
     private String body;
     private Long parentCommentId;
@@ -41,6 +44,8 @@ public class CommentResponse {
             if (!comment.getAnonymous()) {
                 response.setWriterLoginId(comment.getMember().getLoginID());
                 response.setWriterName(comment.getMember().getName());
+                response.setProfileImageUrl(comment.getMember().getProfileImageURL());
+                response.setBadge(comment.getMember().getBadge());
             }
             // 답변은 좋아요 개수 포함
             if (comment.getPost().getIsQuestion()) response.setLikeCount(comment.getLikeCount());

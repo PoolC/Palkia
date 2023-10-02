@@ -3,6 +3,7 @@ package org.poolc.api.post.dto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.poolc.api.badge.domain.Badge;
 import org.poolc.api.comment.dto.CommentResponse;
 import org.poolc.api.post.domain.BoardType;
 import org.poolc.api.post.domain.JobType;
@@ -21,6 +22,8 @@ public class PostResponse {
     private BoardType boardType;
     private String writerLoginId;
     private String writerName;
+    private String postProfileImageUrl;
+    private Badge badge;
     private String title;
     private String body;
     private LocalDateTime createdAt;
@@ -45,6 +48,8 @@ public class PostResponse {
         if (!post.getAnonymous()) {
             response.setWriterName(post.getMember().getName());
             response.setWriterLoginId(post.getMember().getLoginID());
+            response.setPostProfileImageUrl(post.getMember().getProfileImageURL());
+            response.setBadge(post.getMember().getBadge());
         }
         if (post.getPostType() == PostType.GENERAL_POST) response.setIsQuestion(post.getIsQuestion());
 
