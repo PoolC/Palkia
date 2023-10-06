@@ -64,6 +64,7 @@ public class PostResponse {
                         .map(CommentResponse::of)
                         .collect(Collectors.toList())
         );
+        response.setCommentCount(post.getCommentCount());
         response.setPostType(post.getPostType());
         response.setPosition(post.getPosition());
         response.setRegion(post.getRegion());
