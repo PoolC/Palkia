@@ -65,4 +65,3 @@ compiler(`⌘,` > `Build, Execution, Deployment` > `Compiler` > `Java Compiler` 
 ### Deploy
 
 TODO with docker
-
