@@ -48,7 +48,7 @@ jobs:
         key: ${{ secrets.KEY }}
         port: ${{ secrets.SSH_PORT }}
         source: "./build/libs/*.jar"
-        target: /root/dockercompose/palkia
+        target: /home/ubuntu/dockercompose/palkia
     - name: restart server
       uses: appleboy/ssh-action@v1.0.0
       with:
