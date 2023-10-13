@@ -39,7 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
         configuration.setAllowedOrigins(Arrays.asList("https://alpha.poolc.org",
-                "https://poolc.org", "http://localhost:3000"));
+                "https://server.poolc.kr", "http://localhost:3000"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control",
                 "Content-Type", "Accept", "Content-Length", "Accept-Encoding", "X-Requested-With"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
@@ -82,6 +82,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/post/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/post/search").permitAll()
                 .antMatchers(HttpMethod.POST, "/post/search").permitAll()
+                .antMatchers(HttpMethod.POST, "/post/new").permitAll()
                 .antMatchers("/post/**").hasAuthority(MemberRole.MEMBER.name())
 
                 .antMatchers(HttpMethod.GET, "/book").permitAll()
