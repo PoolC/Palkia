@@ -5,7 +5,7 @@ import lombok.Getter;
 import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.post.domain.JobType;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 /* */
@@ -19,10 +19,10 @@ public class PostUpdateRequest {
     private JobType position;
     private String region;
     private String field;
-    private LocalDateTime deadline;
+    private LocalDate deadline;
 
     @JsonCreator
-    public PostUpdateRequest(Boolean anonymous, String title, String body, List<String> fileList, List<Comment> commentList, JobType position, String region, String field, LocalDateTime deadline) {
+    public PostUpdateRequest(Boolean anonymous, String title, String body, List<String> fileList, List<Comment> commentList, JobType position, String region, String field, LocalDate deadline) {
         this.anonymous = anonymous;
         this.title = title;
         this.body = body;

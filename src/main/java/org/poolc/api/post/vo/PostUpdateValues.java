@@ -6,7 +6,7 @@ import org.poolc.api.post.domain.JobType;
 import org.poolc.api.post.domain.PostType;
 import org.poolc.api.post.dto.PostUpdateRequest;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -19,7 +19,7 @@ public class PostUpdateValues {
     private JobType position;
     private String region;
     private String field;
-    private LocalDateTime deadline;
+    private LocalDate deadline;
 
     public PostUpdateValues(PostType postType, PostUpdateRequest request) {
         this.anonymous = request.getAnonymous();

@@ -10,7 +10,7 @@ import org.poolc.api.post.vo.PostCreateValues;
 import org.poolc.api.post.vo.PostUpdateValues;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,7 +87,7 @@ public class Post extends TimestampEntity {
     private String field;
 
     @Column(name = "deadline")
-    private LocalDateTime deadline;
+    private LocalDate deadline;
 
     public void addLikeCount() {
         this.likeCount ++;
@@ -107,7 +107,7 @@ public class Post extends TimestampEntity {
 
     protected Post() {}
 
-    public Post(BoardType boardType, Member member, Boolean anonymous, String title, String body, List<String> fileList, List<Comment> commentList, PostType postType, Boolean isQuestion, Boolean isDeleted, Long likeCount, Long scrapCount, Long commentCount, JobType position, String region, String field, LocalDateTime deadline) {
+    public Post(BoardType boardType, Member member, Boolean anonymous, String title, String body, List<String> fileList, List<Comment> commentList, PostType postType,  Boolean isQuestion, Boolean isDeleted, Long likeCount, Long scrapCount, Long commentCount, JobType position, String region, String field, LocalDate deadline) {
         this.boardType = boardType;
         this.member = member;
         this.anonymous = anonymous;

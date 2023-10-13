@@ -10,6 +10,7 @@ import org.poolc.api.post.domain.JobType;
 import org.poolc.api.post.domain.Post;
 import org.poolc.api.post.domain.PostType;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,7 +40,7 @@ public class PostResponse {
     private JobType position;
     private String region;
     private String field;
-    private LocalDateTime deadline;
+    private LocalDate deadline;
 
     public static PostResponse of(Post post) {
         PostResponse response = new PostResponse();

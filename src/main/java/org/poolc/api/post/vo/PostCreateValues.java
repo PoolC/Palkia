@@ -8,25 +8,39 @@ import org.poolc.api.post.domain.JobType;
 import org.poolc.api.post.domain.PostType;
 import org.poolc.api.post.dto.PostCreateRequest;
 
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotBlank;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class PostCreateValues {
+
+    @NotBlank
     private final BoardType boardType;
+
+    @NotBlank
     private final Member member;
+
+    @NotBlank
     private final Boolean anonymous;
+
+    @NotBlank
     private final String title;
+
+    @NotBlank
     private final String body;
+
     private final List<String> fileList;
     private final List<Comment> commentList;
+
+    @NotBlank
     private final PostType postType;
     private Boolean isQuestion;
     private JobType position;
     private String region;
     private String field;
-    private LocalDateTime deadline;
+    private LocalDate deadline;
 
 
     public PostCreateValues(Member member, PostCreateRequest request) {
