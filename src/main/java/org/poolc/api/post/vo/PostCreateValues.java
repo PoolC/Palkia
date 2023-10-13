@@ -9,7 +9,7 @@ import org.poolc.api.post.domain.PostType;
 import org.poolc.api.post.dto.PostCreateRequest;
 
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +40,7 @@ public class PostCreateValues {
     private JobType position;
     private String region;
     private String field;
-    private LocalDateTime deadline;
+    private LocalDate deadline;
 
 
     public PostCreateValues(Member member, PostCreateRequest request) {
