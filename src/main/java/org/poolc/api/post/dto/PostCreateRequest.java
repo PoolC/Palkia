@@ -7,17 +7,30 @@ import org.poolc.api.post.domain.BoardType;
 import org.poolc.api.post.domain.JobType;
 import org.poolc.api.post.domain.PostType;
 
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 public class PostCreateRequest {
+    @NotBlank
     private final BoardType boardType;
+
+    @NotBlank
     private final Boolean anonymous;
+
+    @NotBlank
     private final String title;
+
+    @NotBlank
     private final String body;
+
     private final List<String> fileList;
+
+    @NotBlank
     private final PostType postType;
+
+    @NotBlank
     private Boolean isQuestion;
     private JobType position;
     private String region;
