@@ -31,7 +31,6 @@ public class PostCreateRequest {
     @NotEmpty
     private final PostType postType;
 
-    @NotEmpty
     private Boolean isQuestion;
     private JobType position;
     private String region;
