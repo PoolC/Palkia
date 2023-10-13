@@ -40,6 +40,7 @@ public class CommentResponse {
             response.setCommentId(comment.getId());
             response.setPostId(comment.getPost().getId());
             response.setCreatedAt(comment.getCreatedAt());
+            response.setBody(comment.getBody());
             // 익명 아닌 댓글
             if (!comment.getAnonymous()) {
                 response.setWriterLoginId(comment.getMember().getLoginID());
