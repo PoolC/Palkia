@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
-    private static final int size = 15;
+    private static final int size = 10;
     //좋아요 수에 따라 뱃지 자동지급 용도
     private final BadgeConditionService badgeConditionService;
 
