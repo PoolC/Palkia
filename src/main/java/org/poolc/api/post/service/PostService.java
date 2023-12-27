@@ -7,6 +7,7 @@ import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.domain.BoardType;
 import org.poolc.api.post.domain.Post;
+import org.poolc.api.post.dto.GetBoardResponse;
 import org.poolc.api.post.dto.PostResponse;
 import org.poolc.api.post.repository.PostRepository;
 import org.poolc.api.post.vo.PostCreateValues;
@@ -50,15 +51,19 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> findPostsByBoard(Member member, BoardType boardType, int page) {
+    public GetBoardResponse findPostsByBoard(Member member, BoardType boardType, int page) {
         checkReadPermission(member, boardType);
         PageRequest pr = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findByBoardType(boardType, pr);
+        System.out.println(posts.toString());
+        System.out.println(posts.getTotalPages());
         if (posts.getNumberOfElements() == 0) return null;
-        return posts.stream()
+        return new GetBoardResponse(
+                posts.getTotalPages(),
+                posts.stream()
                 .sorted(Comparator.comparing(Post::getCreatedAt).reversed())
                 .map(PostResponse::of)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     @Transactional

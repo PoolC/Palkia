@@ -7,6 +7,7 @@ import org.poolc.api.like.service.LikeService;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.domain.BoardType;
 import org.poolc.api.post.domain.Post;
+import org.poolc.api.post.dto.GetBoardResponse;
 import org.poolc.api.post.dto.PostCreateRequest;
 import org.poolc.api.post.dto.PostResponse;
 import org.poolc.api.post.dto.PostUpdateRequest;
@@ -42,12 +43,12 @@ public class PostController {
     }
 
     @GetMapping("/board/{boardTitle}")
-    public ResponseEntity<List<PostResponse>> viewPostsByBoard(@AuthenticationPrincipal Member member,
+    public ResponseEntity<GetBoardResponse> viewPostsByBoard(@AuthenticationPrincipal Member member,
                                                               @PathVariable String boardTitle,
                                                               @RequestParam int page) {
         BoardType boardType = BoardType.getBoardTypeByName(boardTitle);
-        List<PostResponse> posts = postService.findPostsByBoard(member, boardType, page);
-        return ResponseEntity.status(HttpStatus.OK).body(posts);
+        GetBoardResponse response = postService.findPostsByBoard(member, boardType, page);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/my_posts")
