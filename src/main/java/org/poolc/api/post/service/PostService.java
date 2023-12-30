@@ -14,6 +14,7 @@ import org.poolc.api.post.vo.PostCreateValues;
 import org.poolc.api.post.vo.PostUpdateValues;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,11 +42,11 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public List<PostResponse> findPostsByMember(Member member, int page) {
-        PageRequest pr = PageRequest.of(page, size);
+        PageRequest pr = PageRequest.of(page, size,Sort.by("createdAt").descending());
         Page<Post> posts = postRepository.findByMember(member, pr);
         if (posts.getNumberOfElements() == 0) return null;
         return posts.stream()
-                .sorted(Comparator.comparing(Post::getCreatedAt).reversed())
+                //.sorted(Comparator.comparing(Post::getCreatedAt).reversed())
                 .map(PostResponse::of)
                 .collect(Collectors.toList());
     }
@@ -53,15 +54,13 @@ public class PostService {
     @Transactional(readOnly = true)
     public GetBoardResponse findPostsByBoard(Member member, BoardType boardType, int page) {
         checkReadPermission(member, boardType);
-        PageRequest pr = PageRequest.of(page, size);
+        PageRequest pr = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<Post> posts = postRepository.findByBoardType(boardType, pr);
-        System.out.println(posts.toString());
-        System.out.println(posts.getTotalPages());
         if (posts.getNumberOfElements() == 0) return null;
         return new GetBoardResponse(
                 posts.getTotalPages(),
                 posts.stream()
-                .sorted(Comparator.comparing(Post::getCreatedAt).reversed())
+                //.sorted(Comparator.comparing(Post::getCreatedAt).reversed())
                 .map(PostResponse::of)
                 .collect(Collectors.toList()));
     }
