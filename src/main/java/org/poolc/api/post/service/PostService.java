@@ -78,6 +78,7 @@ public class PostService {
         Post post = findPostById(member, postId);
         checkWriter(member, post);
         post.updatePost(post.getPostType(), values);
+        postRepository.save(post);
     }
 
     public void likePost(Member member, Long postId) {
@@ -85,6 +86,7 @@ public class PostService {
         checkNotWriter(member, post);
         post.addLikeCount();
         badgeConditionService.like(post.getMember());
+        postRepository.save(post);
     }
 
     public void dislikePost(Member member, Long postId) {
@@ -92,18 +94,21 @@ public class PostService {
         checkNotWriter(member, post);
         post.deductLikeCount();
         badgeConditionService.dislike(post.getMember());
+        postRepository.save(post);
     }
 
     public void scrapPost(Member member, Long postId) {
         Post post = findPostById(member, postId);
         checkNotWriter(member, post);
         post.addScrapCount();
+        postRepository.save(post);
     }
 
     public void unscrapPost(Member member, Long postId) {
         Post post = findPostById(member, postId);
         checkNotWriter(member, post);
         post.deductScrapCount();
+        postRepository.save(post);
     }
 
     public void deletePost(Member member, Long postId) {
@@ -113,6 +118,7 @@ public class PostService {
             post.setIsDeleted();
         }
         BoardType.removePostCount(post.getBoardType());
+        postRepository.save(post);
     }
 
     public List<PostResponse> searchPost(Member member, String keyword, int page) {
