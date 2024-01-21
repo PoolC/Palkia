@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 public interface PostRepository extends JpaRepository<Post, Long>, PagingAndSortingRepository<Post, Long>, JpaSpecificationExecutor<Post> {
     Page<Post> findByMember(Member member, Pageable pageable);
 
-    @Query("select p from Post p where p.isDeleted=false")
+    @Query("select p from Post p where p.boardType=:boardType and p.isDeleted=false")
     Page<Post> findByBoardType(BoardType boardType, Pageable pageable);
     Page<Post> findByTitleContainingOrBodyContaining(String title, String body, Pageable pageable);
 
