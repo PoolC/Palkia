@@ -40,7 +40,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         configuration.setAllowCredentials(true);
         configuration.setAllowedOrigins(Arrays.asList("https://alpha.poolc.org",
                 "https://server.poolc.kr", "http://localhost:3000","http://server.poolc.kr",
-                "http://poolc.kr","https://poolc.kr"));
+                "http://poolc.kr","https://poolc.kr","chrome-extension://doeamknhlolnflkmhbhkagganhjjbefe",
+                "https://poolc.org", "http://poolc.org"
+        ));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control",
                 "Content-Type", "Accept", "Content-Length", "Accept-Encoding", "X-Requested-With"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
