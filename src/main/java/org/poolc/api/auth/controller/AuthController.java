@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/login")
-@CrossOrigin(origins = "chrome-extension://doeamknhlolnflkmhbhkagganhjjbefe")
 public class AuthController {
     private final AuthService authService;
 

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value="/baekjoon", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
-@CrossOrigin(origins = "chrome-extension://doeamknhlolnflkmhbhkagganhjjbefe")
 public class BaekjoonController {
     private final BaekjoonService baekjoonService;
 
