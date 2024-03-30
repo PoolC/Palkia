@@ -37,11 +37,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false);
         configuration.setAllowedOrigins(Arrays.asList("https://alpha.poolc.org",
                 "https://server.poolc.kr", "http://localhost:3000","http://server.poolc.kr",
                 "http://poolc.kr","https://poolc.kr",
-                "https://poolc.org", "http://poolc.org"
+                "https://poolc.org", "http://poolc.org",
+                "chrome-extension://doeamknhlolnflkmhbhkagganhjjbefe"
         ));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control",
                 "Content-Type", "Accept", "Content-Length", "Accept-Encoding", "X-Requested-With"));
