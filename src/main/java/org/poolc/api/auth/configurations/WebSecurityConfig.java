@@ -39,21 +39,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
         configuration.setAllowedOrigins(Arrays.asList(
-//                "https://alpha.poolc.org", "http://localhost:3000",
-//                "https://server.poolc.kr", "http://server.poolc.kr",
-//                "http://poolc.kr","https://poolc.kr",
-//                "https://poolc.org", "http://poolc.org",
-//                "chrome-extension://doeamknhlolnflkmhbhkagganhjjbefe",
-                CorsConfiguration.ALL
+                "https://alpha.poolc.org", "http://localhost:3000",
+                "https://server.poolc.kr", "http://server.poolc.kr",
+                "http://poolc.kr","https://poolc.kr",
+                "https://poolc.org", "http://poolc.org",
+                "chrome-extension://doeamknhlolnflkmhbhkagganhjjbefe"
+//                CorsConfiguration.ALL
         ));
         configuration.setAllowedHeaders(Arrays.asList(
-//                "Authorization", "Cache-Control",
-//                "Content-Type", "Accept", "Content-Length", "Accept-Encoding", "X-Requested-With"
-                CorsConfiguration.ALL
+                "Authorization", "Cache-Control",
+                "Content-Type", "Accept", "Content-Length", "Accept-Encoding", "X-Requested-With"
+//                CorsConfiguration.ALL
         ));
         configuration.setAllowedMethods(Arrays.asList(
-//                "GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"
-                CorsConfiguration.ALL
+                "GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"
+//                CorsConfiguration.ALL
         ));
         configuration.setMaxAge(3600L);
 
@@ -65,7 +65,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .cors().disable()
+                .cors().and()
                 .httpBasic().disable()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
