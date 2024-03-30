@@ -46,9 +46,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "chrome-extension://doeamknhlolnflkmhbhkagganhjjbefe"
         ));
         configuration.setAllowedHeaders(Arrays.asList(
-//                "Authorization", "Cache-Control",
-//                "Content-Type", "Accept", "Content-Length", "Accept-Encoding", "X-Requested-With"
-                "*"
+                "Authorization", "Cache-Control",
+                "Content-Type", "Accept", "Content-Length", "Accept-Encoding", "X-Requested-With"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
         configuration.setMaxAge(3600L);
