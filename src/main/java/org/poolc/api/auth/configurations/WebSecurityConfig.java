@@ -37,15 +37,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(false);
-        configuration.setAllowedOrigins(Arrays.asList("https://alpha.poolc.org",
-                "https://server.poolc.kr", "http://localhost:3000","http://server.poolc.kr",
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedOrigins(Arrays.asList(
+                "https://alpha.poolc.org", "http://localhost:3000",
+                "https://server.poolc.kr", "http://server.poolc.kr",
                 "http://poolc.kr","https://poolc.kr",
                 "https://poolc.org", "http://poolc.org",
                 "chrome-extension://doeamknhlolnflkmhbhkagganhjjbefe"
         ));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control",
-                "Content-Type", "Accept", "Content-Length", "Accept-Encoding", "X-Requested-With"));
+        configuration.setAllowedHeaders(Arrays.asList(
+//                "Authorization", "Cache-Control",
+//                "Content-Type", "Accept", "Content-Length", "Accept-Encoding", "X-Requested-With"
+                "*"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
         configuration.setMaxAge(3600L);
 
