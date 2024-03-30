@@ -42,19 +42,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "https://alpha.poolc.org", "http://localhost:3000",
                 "https://server.poolc.kr", "http://server.poolc.kr",
                 "http://poolc.kr","https://poolc.kr",
-                "https://poolc.org", "http://poolc.org",
+                "https://poolc.org", "http://poolc.org","https://poolc.org/api", "http://poolc.org/api",
                 "chrome-extension://doeamknhlolnflkmhbhkagganhjjbefe"
-//                CorsConfiguration.ALL
         ));
         configuration.setAllowedHeaders(Arrays.asList(
                 "Authorization", "Cache-Control",
                 "Content-Type", "Accept", "Content-Length", "Accept-Encoding", "X-Requested-With"
-//                CorsConfiguration.ALL
         ));
-        configuration.setAllowedMethods(Arrays.asList(
-                "GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"
-//                CorsConfiguration.ALL
-        ));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
