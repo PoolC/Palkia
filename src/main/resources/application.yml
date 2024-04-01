@@ -12,7 +12,7 @@ spring:
       max-file-size: 50MB
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
   mail:
     default-encoding: UTF-8
     host: smtp.naver.com
