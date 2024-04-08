@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Random;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,7 +48,7 @@ public class FileController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadFile(@ModelAttribute MultipartFile file) {
         try {
-            String fileNameWithOutSpace = file.getOriginalFilename().replace(' ', '-');
+            String fileNameWithOutSpace = file.getOriginalFilename().replace(' ', '-')+RandomStringGenerator();
             Path path = Paths.get(fileDir + fileNameWithOutSpace);
             if (Files.exists(path)) {
                 return ResponseEntity.badRequest().body("이미 존재하는 파일명입니다. 파일 명을 수정해주세요");
@@ -57,5 +58,16 @@ public class FileController {
         } catch (IOException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    private String RandomStringGenerator(){
+        String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder salt = new StringBuilder();
+        Random rnd = new Random();
+        for(int i=0;i<7;i++){
+            int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+            salt.append(SALTCHARS.charAt(index));
+        }
+        return salt.toString();
     }
 }
