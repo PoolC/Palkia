@@ -48,7 +48,7 @@ public class FileController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadFile(@ModelAttribute MultipartFile file) {
         try {
-            String fileNameWithOutSpace = file.getOriginalFilename().replace(' ', '-')+RandomStringGenerator();
+            String fileNameWithOutSpace = RandomStringGenerator()+file.getOriginalFilename().replace(' ', '-');
             Path path = Paths.get(fileDir + fileNameWithOutSpace);
             if (Files.exists(path)) {
                 return ResponseEntity.badRequest().body("이미 존재하는 파일명입니다. 파일 명을 수정해주세요");
