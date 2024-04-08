@@ -8,6 +8,7 @@ import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.domain.BoardType;
 import org.poolc.api.post.domain.Post;
 import org.poolc.api.post.dto.GetBoardResponse;
+import org.poolc.api.post.dto.GetPostsResponse;
 import org.poolc.api.post.dto.PostResponse;
 import org.poolc.api.post.repository.PostRepository;
 import org.poolc.api.post.vo.PostCreateValues;
@@ -61,7 +62,7 @@ public class PostService {
                 posts.getTotalPages(),
                 posts.stream()
                 //.sorted(Comparator.comparing(Post::getCreatedAt).reversed())
-                .map(PostResponse::of)
+                .map(GetPostsResponse::of)
                 .collect(Collectors.toList()));
     }
 
