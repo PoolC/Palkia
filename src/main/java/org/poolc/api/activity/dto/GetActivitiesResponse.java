@@ -18,9 +18,9 @@ public class GetActivitiesResponse {
     private final Long capacity;
     private final boolean isSeminar;
     private final Long hour;
-    private final Long joinedMemberCount;
+    private final List<String> memberLoginIds;
 
-    public GetActivitiesResponse(Long id, String title, HostResponse host, LocalDate startDate, boolean available, List<TagResponse> tags, Long capacity, boolean isSeminar, Long hour, Long joinedMemberCount) {
+    public GetActivitiesResponse(Long id, String title, HostResponse host, LocalDate startDate, boolean available, List<TagResponse> tags, Long capacity, boolean isSeminar, Long hour,List<String> memberLoginIds) {
         this.id = id;
         this.title = title;
         this.host = host;
@@ -30,8 +30,8 @@ public class GetActivitiesResponse {
         this.capacity = capacity;
         this.isSeminar = isSeminar;
         this.hour = hour;
-        this.joinedMemberCount= joinedMemberCount;
-    }
+        this.memberLoginIds = memberLoginIds;
+}
 
     public static GetActivitiesResponse of(Activity activity) {
         List<TagResponse> tags = activity.getTags().stream()
@@ -40,7 +40,7 @@ public class GetActivitiesResponse {
         HostResponse host = HostResponse.of(activity.getHost());
         return new GetActivitiesResponse(activity.getId(), activity.getTitle(), host,
                 activity.getStartDate(), activity.getAvailable(),
-                tags, activity.getCapacity(), activity.getIsSeminar(), activity.getHour(), Long.valueOf(activity.getMemberLoginIDs().size())
+                tags, activity.getCapacity(), activity.getIsSeminar(), activity.getHour(), activity.getMemberLoginIDs()
                 );
     }
 }
