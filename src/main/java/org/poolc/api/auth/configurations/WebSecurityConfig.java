@@ -43,6 +43,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "https://server.poolc.kr", "http://server.poolc.kr",
                 "http://poolc.kr","https://poolc.kr",
                 "https://poolc.org", "http://poolc.org","https://poolc.org/api", "http://poolc.org/api",
+                "https://dev.poolc.org", "http://dev.poolc.org","https://dev.poolc.org/api", "http://dev.poolc.org/api",
                 "chrome-extension://doeamknhlolnflkmhbhkagganhjjbefe"
         ));
         configuration.setAllowedHeaders(Arrays.asList(

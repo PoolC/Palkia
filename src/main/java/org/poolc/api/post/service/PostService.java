@@ -8,6 +8,7 @@ import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.domain.BoardType;
 import org.poolc.api.post.domain.Post;
 import org.poolc.api.post.dto.GetBoardResponse;
+import org.poolc.api.post.dto.GetPostsResponse;
 import org.poolc.api.post.dto.PostResponse;
 import org.poolc.api.post.repository.PostRepository;
 import org.poolc.api.post.vo.PostCreateValues;
@@ -41,14 +42,16 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> findPostsByMember(Member member, int page) {
+    public GetBoardResponse findPostsByMember(Member member, int page) {
         PageRequest pr = PageRequest.of(page, size,Sort.by("createdAt").descending());
         Page<Post> posts = postRepository.findByMember(member, pr);
         if (posts.getNumberOfElements() == 0) return null;
-        return posts.stream()
-                //.sorted(Comparator.comparing(Post::getCreatedAt).reversed())
-                .map(PostResponse::of)
-                .collect(Collectors.toList());
+        return new GetBoardResponse(
+                posts.getTotalPages(),
+                posts.stream()
+                        .map(GetPostsResponse::of)
+                        .collect(Collectors.toList())
+        );
     }
 
     @Transactional(readOnly = true)
@@ -61,7 +64,7 @@ public class PostService {
                 posts.getTotalPages(),
                 posts.stream()
                 //.sorted(Comparator.comparing(Post::getCreatedAt).reversed())
-                .map(PostResponse::of)
+                .map(GetPostsResponse::of)
                 .collect(Collectors.toList()));
     }
 

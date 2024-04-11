@@ -52,7 +52,7 @@ public class PostController {
     }
 
     @GetMapping("/my_posts")
-    public ResponseEntity<List<PostResponse>> viewMyPosts(@AuthenticationPrincipal Member member, @RequestParam int page) {
+    public ResponseEntity<GetBoardResponse> viewMyPosts(@AuthenticationPrincipal Member member, @RequestParam int page) {
         return ResponseEntity.status(HttpStatus.OK).body(postService.findPostsByMember(member, page));
     }
 
