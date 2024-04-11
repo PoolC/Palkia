@@ -42,14 +42,16 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> findPostsByMember(Member member, int page) {
+    public GetBoardResponse findPostsByMember(Member member, int page) {
         PageRequest pr = PageRequest.of(page, size,Sort.by("createdAt").descending());
         Page<Post> posts = postRepository.findByMember(member, pr);
         if (posts.getNumberOfElements() == 0) return null;
-        return posts.stream()
-                //.sorted(Comparator.comparing(Post::getCreatedAt).reversed())
-                .map(PostResponse::of)
-                .collect(Collectors.toList());
+        return new GetBoardResponse(
+                posts.getTotalPages(),
+                posts.stream()
+                        .map(GetPostsResponse::of)
+                        .collect(Collectors.toList())
+        );
     }
 
     @Transactional(readOnly = true)
