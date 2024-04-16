@@ -3,8 +3,6 @@ package org.poolc.api.scrap.controller;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.dto.GetBoardResponse;
-import org.poolc.api.post.dto.GetPostsResponse;
-import org.poolc.api.post.dto.PostResponse;
 import org.poolc.api.post.service.PostService;
 import org.poolc.api.scrap.service.ScrapService;
 import org.springframework.http.HttpStatus;
@@ -12,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/scrap")
