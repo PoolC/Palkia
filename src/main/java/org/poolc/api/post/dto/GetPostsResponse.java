@@ -59,6 +59,7 @@ public class GetPostsResponse {
         response.setRegion(post.getRegion());
         response.setField(post.getField());
         response.setDeadline(post.getDeadline());
+        response.setScrapCount(post.getScrapCount());
         return response;
     }
 }

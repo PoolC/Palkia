@@ -75,6 +75,7 @@ public class PostResponse {
         response.setBoardPostCount(response.getBoardType().getPostCount());
         response.setBoardPageNum(response.getBoardPostCount() / 15 + 1);
         response.setIsScraped(isScraped);
+        response.setScrapCount(post.getScrapCount());
         return response;
     }
 }
