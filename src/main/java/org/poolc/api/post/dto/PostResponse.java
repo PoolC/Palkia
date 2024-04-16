@@ -41,8 +41,9 @@ public class PostResponse {
     private String region;
     private String field;
     private LocalDate deadline;
+    private Boolean isScraped;
 
-    public static PostResponse of(Post post) {
+    public static PostResponse of(Post post, boolean isScraped) {
         PostResponse response = new PostResponse();
 
         if (post.getIsDeleted()) return null;
@@ -73,6 +74,7 @@ public class PostResponse {
         response.setDeadline(post.getDeadline());
         response.setBoardPostCount(response.getBoardType().getPostCount());
         response.setBoardPageNum(response.getBoardPostCount() / 15 + 1);
+        response.setIsScraped(isScraped);
         return response;
     }
 }

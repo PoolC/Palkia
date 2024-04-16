@@ -14,6 +14,7 @@ import org.poolc.api.post.dto.PostUpdateRequest;
 import org.poolc.api.post.service.PostService;
 import org.poolc.api.post.vo.PostCreateValues;
 import org.poolc.api.post.vo.PostUpdateValues;
+import org.poolc.api.scrap.service.ScrapService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,6 +29,7 @@ import java.util.List;
 public class PostController {
     private final PostService postService;
     private final LikeService likeService;
+    private final ScrapService scrapService;
 
     @PostMapping(value = "/post/new")
     public ResponseEntity<Void> registerPost(@AuthenticationPrincipal Member member,
@@ -39,7 +41,8 @@ public class PostController {
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostResponse> viewPost(@AuthenticationPrincipal Member member, @PathVariable Long postId) {
         Post post = postService.findPostById(member, postId);
-        return ResponseEntity.status(HttpStatus.OK).body(PostResponse.of(post));
+        PostResponse response = PostResponse.of(post, scrapService.isScrap(member.getLoginID(),postId));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/board/{boardTitle}")

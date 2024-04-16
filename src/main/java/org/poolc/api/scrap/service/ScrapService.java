@@ -35,6 +35,13 @@ public class ScrapService {
         }
     }
 
+    public boolean isScrap(String memberId, Long postId){
+        if(scrapRepository.existsByMemberIdAndPostId(memberId, postId)) {
+            return true;
+        }
+        return false;
+    }
+
     public void removeScrap(String memberId, Long postId) {
         Scrap scrap = scrapRepository.findByMemberIdAndPostId(memberId, postId)
                 .orElseThrow(() -> new NoSuchElementException("No scrap with given id."));
