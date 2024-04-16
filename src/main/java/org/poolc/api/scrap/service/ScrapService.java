@@ -6,7 +6,6 @@ import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.domain.Post;
 import org.poolc.api.post.dto.GetBoardResponse;
 import org.poolc.api.post.dto.GetPostsResponse;
-import org.poolc.api.post.dto.PostResponse;
 import org.poolc.api.post.service.PostService;
 import org.poolc.api.scrap.domain.Scrap;
 import org.poolc.api.scrap.repository.ScrapRepository;
@@ -14,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
