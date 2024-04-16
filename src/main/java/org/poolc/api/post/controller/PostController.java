@@ -21,7 +21,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 
 @RestController
@@ -81,10 +80,10 @@ public class PostController {
     }
 
     @GetMapping("/post/search")
-    public ResponseEntity<List<PostResponse>> searchPost(@AuthenticationPrincipal Member member,
+    public ResponseEntity<GetBoardResponse> searchPost(@AuthenticationPrincipal Member member,
                                                          @RequestParam String keyword,
                                                          @RequestParam int page) {
-        List<PostResponse> postResponses = postService.searchPost(member, keyword, page);
+        GetBoardResponse postResponses = postService.searchPost(member, keyword, page);
         return ResponseEntity.status(HttpStatus.OK).body(postResponses);
     }
 }
