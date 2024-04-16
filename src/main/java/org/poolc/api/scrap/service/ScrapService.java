@@ -1,8 +1,11 @@
 package org.poolc.api.scrap.service;
 
 import lombok.RequiredArgsConstructor;
+import org.poolc.api.common.exception.ConflictException;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.domain.Post;
+import org.poolc.api.post.dto.GetBoardResponse;
+import org.poolc.api.post.dto.GetPostsResponse;
 import org.poolc.api.post.dto.PostResponse;
 import org.poolc.api.post.service.PostService;
 import org.poolc.api.scrap.domain.Scrap;
@@ -21,11 +24,16 @@ public class ScrapService {
     private final ScrapRepository scrapRepository;
     private final PostService postService;
 
-    private static final int size = 15;
+    private static final int size = 10;
 
     public void scrap(String memberId, Long postId) {
+        //check scrap exist
         if (!scrapRepository.existsByMemberIdAndPostId(memberId, postId)) {
             scrapRepository.save(new Scrap(memberId, postId));
+        }
+        else{
+            //already scrapped
+            throw new ConflictException("Already Scrapped");
         }
     }
 
@@ -35,16 +43,19 @@ public class ScrapService {
         scrapRepository.deleteById(scrap.getId());
     }
 
-    public List<PostResponse> viewMyPosts(Member member, int page) {
+    public GetBoardResponse viewMyPosts(Member member, int page) {
         PageRequest pr = PageRequest.of(page, size);
         Page<Scrap> scraps = scrapRepository.findAllByMemberId(member.getLoginID(), pr);
-        return scraps.stream()
-                .map(s -> scrapToPostResponse(member, s))
-                .collect(Collectors.toList());
+        return new GetBoardResponse(
+                scraps.getTotalPages(),
+                scraps.stream()
+                        .map(s -> scrapToPostResponse(member, s))
+                        .collect(Collectors.toList())
+        );
     }
 
-    private PostResponse scrapToPostResponse(Member member, Scrap scrap) {
+    private GetPostsResponse scrapToPostResponse(Member member, Scrap scrap) {
         Post post = postService.findPostById(member, scrap.getPostId());
-        return PostResponse.of(post);
+        return GetPostsResponse.of(post);
     }
 }
