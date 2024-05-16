@@ -9,7 +9,6 @@ import org.poolc.api.post.domain.BoardType;
 import org.poolc.api.post.domain.Post;
 import org.poolc.api.post.dto.GetBoardResponse;
 import org.poolc.api.post.dto.GetPostsResponse;
-import org.poolc.api.post.dto.PostResponse;
 import org.poolc.api.post.repository.PostRepository;
 import org.poolc.api.post.vo.PostCreateValues;
 import org.poolc.api.post.vo.PostUpdateValues;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -124,14 +122,17 @@ public class PostService {
         postRepository.save(post);
     }
 
-    public List<PostResponse> searchPost(Member member, String keyword, int page) {
+    public GetBoardResponse searchPost(Member member, String keyword, int page) {
         PageRequest pr = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findByTitleContainingOrBodyContaining(keyword, keyword, pr);
-        return posts.stream()
-                .filter(post -> checkReadPermissionBoolean(member, post.getBoardType()))
-                .sorted(Comparator.comparing(Post::getCreatedAt).reversed())
-                .map(PostResponse::of)
-                .collect(Collectors.toList());
+        return new GetBoardResponse(
+                posts.getTotalPages(),
+                posts.stream()
+                        .filter(post -> checkReadPermissionBoolean(member, post.getBoardType()))
+                        .sorted(Comparator.comparing(Post::getCreatedAt).reversed())
+                        .map(GetPostsResponse::of)
+                        .collect(Collectors.toList())
+        );
     }
 
 
@@ -150,8 +151,7 @@ public class PostService {
     }
 
     private boolean checkWritePermissionBoolean(Member user, BoardType board) {
-        if (user == null || !user.isMember() || (!user.isAdmin() && board == BoardType.NOTICE)) return false;
-        return true;
+        return user != null && user.isMember() && (user.isAdmin() || board != BoardType.NOTICE);
     }
 
     private void checkWriter(Member member, Post post) {
