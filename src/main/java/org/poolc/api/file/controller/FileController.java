@@ -45,11 +45,16 @@ public class FileController {
         }
     }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> uploadFile(@ModelAttribute MultipartFile file) {
         try {
-//            String fileNameWithOutSpace = RandomStringGenerator()+file.getOriginalFilename().replace(' ', '-');
-            String fileNameWithOutSpace =file.getOriginalFilename().replace(' ', '-');
+
+            int pos = file.getOriginalFilename().lastIndexOf(".");
+            if(pos ==-1){
+                pos = file.getOriginalFilename().length();
+            }
+            String fileNameWithOutSpace = file.getOriginalFilename().replace(' ', '-').substring(0,pos)+RandomStringGenerator()+file.getOriginalFilename().replace(' ', '-').substring(pos);
+//            String fileNameWithOutSpace =file.getOriginalFilename().replace(' ', '-');
             Path path = Paths.get(fileDir + fileNameWithOutSpace);
             if (Files.exists(path)) {
                 return ResponseEntity.badRequest().body("이미 존재하는 파일명입니다. 파일 명을 수정해주세요");
@@ -61,14 +66,14 @@ public class FileController {
         }
     }
 
-//    private String RandomStringGenerator(){
-//        String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-//        StringBuilder salt = new StringBuilder();
-//        Random rnd = new Random();
-//        for(int i=0;i<7;i++){
-//            int index = (int) (rnd.nextFloat() * SALTCHARS.length());
-//            salt.append(SALTCHARS.charAt(index));
-//        }
-//        return salt.toString();
-//    }
+    private String RandomStringGenerator(){
+        String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder salt = new StringBuilder();
+        Random rnd = new Random();
+        for(int i=0;i<7;i++){
+            int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+            salt.append(SALTCHARS.charAt(index));
+        }
+        return salt.toString();
+    }
 }
