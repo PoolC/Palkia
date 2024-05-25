@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,13 +18,19 @@ public class ConversationService {
     private final ConversationRepository conversationRepository;
     private final MemberService memberService;
 
-    public String createConversation(ConversationCreateValues values) {
-        checkValidParties(values.getStarterLoginID(), values.getOtherLoginID());
-        String conversationId = checkExistingConversation(values.getStarterLoginID(), values.getOtherLoginID());
-        if (conversationId != null) return conversationId;
-        else conversationRepository.save(new Conversation(values));
-        Conversation conversation = findConversationByStarterAndOther(values.getStarterLoginID(), values.getOtherLoginID());
-        return conversation.getId();
+    @Transactional
+    public Conversation findOrCreateConversation(String starterLoginID, String otherLoginID) {
+        checkValidParties(starterLoginID, otherLoginID);
+        return conversationRepository.findByStarterLoginIDAndOtherLoginID(starterLoginID, otherLoginID)
+                .orElseGet(() -> {
+                    ConversationCreateValues values = new ConversationCreateValues(
+                            starterLoginID, otherLoginID,
+                            memberService.getMemberByLoginID(starterLoginID).getName(),
+                            memberService.getMemberByLoginID(otherLoginID).getName(),
+                            false, false // defaulting anonymity to false
+                    );
+                    return conversationRepository.save(new Conversation(values));
+                });
     }
 
     public ConversationCreateValues convertToConversationCreateValues(ConversationCreateRequest request) {
@@ -36,6 +43,7 @@ public class ConversationService {
         );
     }
 
+    @Transactional(readOnly = true)
     public Conversation findConversationById(String conversationId, String loginID) {
         Conversation conversation = conversationRepository.findById(conversationId)
                 .orElseThrow(() -> new NoSuchElementException("No conversation found with the given id."));
@@ -47,6 +55,7 @@ public class ConversationService {
                 .orElseThrow(() -> new NoSuchElementException("No conversation found with the given parties."));
     }
 
+    @Transactional
     public void deleteConversation(String conversationId, String loginID) {
         Conversation conversation = findConversationById(conversationId, loginID);
         checkWhetherInvolved(conversation, loginID);
