@@ -1,6 +1,6 @@
 package org.poolc.api.notification.service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.repository.MemberRepository;
@@ -75,6 +75,7 @@ public class NotificationService {
         receiver.addNotification();
     }
 
+    @Transactional(readOnly = true)
     public void readNotification(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new NoSuchElementException("No notification with given id."));
