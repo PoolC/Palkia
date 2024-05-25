@@ -36,11 +36,16 @@ public class CommentService {
             Comment comment = new Comment(parent, values);
             commentRepository.save(comment);
             comment.getPost().addCommentCount();
-            if (parent == null && !values.getPost().getMember().equals(values.getMember())) {
-                notificationService.createCommentNotification(values.getMember().getLoginID(), values.getPost().getMember().getLoginID(), values.getPost().getId());
+
+            String commenterID = values.getMember().getLoginID();
+            String postWriterID = values.getPost().getMember().getLoginID();
+
+            if (parent == null && !commenterID.equals(postWriterID)) {
+                notificationService.createCommentNotification(commenterID, postWriterID, values.getPost().getId());
             }
             else if (parent != null && !parent.getMember().equals(values.getMember())) {
-                notificationService.createRecommentNotification(values.getMember().getLoginID(), parent.getMember().getLoginID(), values.getPost().getId(), parent.getId());
+                String parentCommenterID = parent.getMember().getLoginID();
+                notificationService.createRecommentNotification(commenterID, parentCommenterID, values.getPost().getId(), parent.getId());
             }
             return comment;
         }
