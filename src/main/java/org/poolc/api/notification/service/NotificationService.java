@@ -26,6 +26,7 @@ public class NotificationService {
                 .sorted(Comparator.comparing(Notification::getCreatedAt).reversed())
                 .collect(Collectors.toList());
         notifications.forEach(Notification::memberReads);
+        notificationRepository.saveAll(notifications);
         Member recipient = getMemberByLoginID(receiverId);
         recipient.resetNotificationCount();
         return notifications;
