@@ -1,5 +1,6 @@
 package org.poolc.api.comment.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.auth.exception.UnauthorizedException;
 import org.poolc.api.badge.service.BadgeConditionService;
@@ -24,6 +25,8 @@ public class CommentService {
     //좋아요 수에 따라 뱃지 자동지급을 위함
     private final BadgeConditionService badgeConditionService;
     private final NotificationService notificationService;
+
+    @Transactional
     public Comment createComment(CommentCreateValues values) {
         Comment parent = null;
         if (values.getParentId() != null && values.getParentId() != 0) parent = findById(values.getParentId());
@@ -33,29 +36,37 @@ public class CommentService {
             Comment comment = new Comment(parent, values);
             commentRepository.save(comment);
             comment.getPost().addCommentCount();
-            if (parent == null) notificationService.createCommentNotification(values.getMember().getLoginID(), values.getPost().getMember().getLoginID(), values.getPost().getId());
-            else notificationService.createRecommentNotification(values.getMember().getLoginID(), parent.getMember().getLoginID(), values.getPost().getId(), parent.getId());
+            if (parent == null && !values.getPost().getMember().equals(values.getMember())) {
+                notificationService.createCommentNotification(values.getMember().getLoginID(), values.getPost().getMember().getLoginID(), values.getPost().getId());
+            }
+            else if (parent != null && !parent.getMember().equals(values.getMember())) {
+                notificationService.createRecommentNotification(values.getMember().getLoginID(), parent.getMember().getLoginID(), values.getPost().getId(), parent.getId());
+            }
             return comment;
         }
     }
 
+    @Transactional(readOnly = true)
     public List<Comment> findCommentsByPost(Post post) {
         return commentRepository.findAllByPost(post).stream()
                 .sorted(Comparator.comparing(Comment::getCreatedAt))
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<Comment> findCommentsByParent(Long parentId) {
         Comment parent = commentRepository.findById(parentId)
                 .orElseThrow(() -> new NoSuchElementException("No comment found with given comment id."));
         return commentRepository.findAllByParent(parent);
     }
 
+    @Transactional(readOnly = true)
     public Comment findById(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new NoSuchElementException("No comment found with given comment id."));
     }
 
+    @Transactional
     public void deleteComment(Member member, Long commentId) {
         Comment comment = findById(commentId);
         checkWriterOrAdmin(member, comment);
@@ -63,12 +74,14 @@ public class CommentService {
         comment.getPost().deductCommentCount();
     }
 
+    @Transactional
     public void updateComment(Member member, Long commentId, CommentUpdateValues commentUpdateValues) {
         Comment comment = findById(commentId);
         checkWriter(member, comment);
         comment.updateComment(commentUpdateValues);
     }
 
+    @Transactional
     public void likeComment(Member member, Long commentId) {
         Comment comment = findById(commentId);
         checkNotWriter(member, comment);
@@ -78,6 +91,7 @@ public class CommentService {
         }
     }
 
+    @Transactional
     public void dislikeComment(Member member, Long commentId) {
         Comment comment = findById(commentId);
         checkNotWriter(member, comment);
