@@ -1,6 +1,7 @@
 package org.poolc.api.post.domain;
 
 import java.util.Arrays;
+import lombok.Getter;
 
 public enum BoardType {
     NOTICE(0L, "공지 게시판"),
@@ -9,16 +10,13 @@ public enum BoardType {
     PROJECT(0L, "프로젝트 게시판"),
     CS(0L, "CS 게시판");
 
+    @Getter
     private Long postCount;
     private final String boardName;
 
     private BoardType(Long postCount, String boardName) {
         this.postCount = postCount;
         this.boardName = boardName;
-    }
-
-    public Long getPostCount() {
-        return postCount;
     }
 
     public static BoardType getBoardTypeByName(String name) {
