@@ -28,27 +28,13 @@ public class CommentService {
 
     @Transactional
     public Comment createComment(CommentCreateValues values) {
-        Comment parent = null;
-        if (values.getParentId() != null && values.getParentId() != 0) parent = findById(values.getParentId());
-        if (parent != null && parent.getIsChild()) {
-            throw new IllegalArgumentException("대댓글에 대댓글을 달 수 없습니다.");
-        } else {
-            Comment comment = new Comment(parent, values);
-            commentRepository.save(comment);
-            comment.getPost().addCommentCount();
+        Comment parent = findParentComment(values.getParentId());
+        validateParentComment(parent);
 
-            String commenterID = values.getMember().getLoginID();
-            String postWriterID = values.getPost().getMember().getLoginID();
+        Comment comment = saveComment(values, parent);
+        sendNotifications(values, parent);
 
-            if (parent == null && !commenterID.equals(postWriterID)) {
-                notificationService.createCommentNotification(commenterID, postWriterID, values.getPost().getId());
-            }
-            else if (parent != null && !parent.getMember().equals(values.getMember())) {
-                String parentCommenterID = parent.getMember().getLoginID();
-                notificationService.createRecommentNotification(commenterID, parentCommenterID, values.getPost().getId(), parent.getId());
-            }
-            return comment;
-        }
+        return comment;
     }
 
     @Transactional(readOnly = true)
@@ -103,6 +89,38 @@ public class CommentService {
         if (comment.getPost().getIsQuestion()){
             comment.deductLikeCount();
             badgeConditionService.dislike(comment.getMember());
+        }
+    }
+
+    private Comment findParentComment(Long parentId) {
+        if (parentId != null && parentId != 0) {
+            return findById(parentId);
+        }
+        return null;
+    }
+
+    private void validateParentComment(Comment parent) {
+        if (parent != null && parent.getIsChild()) {
+            throw new IllegalArgumentException("대댓글에 대댓글을 달 수 없습니다.");
+        }
+    }
+
+    private Comment saveComment(CommentCreateValues values, Comment parent) {
+        Comment comment = new Comment(parent, values);
+        commentRepository.save(comment);
+        comment.getPost().addCommentCount();
+        return comment;
+    }
+
+    private void sendNotifications(CommentCreateValues values, Comment parent) {
+        String commenterID = values.getMember().getLoginID();
+        String postWriterID = values.getPost().getMember().getLoginID();
+
+        if (parent == null && !commenterID.equals(postWriterID)) {
+            notificationService.createCommentNotification(commenterID, postWriterID, values.getPost().getId());
+        } else if (parent != null && !parent.getMember().equals(values.getMember())) {
+            String parentCommenterID = parent.getMember().getLoginID();
+            notificationService.createRecommentNotification(commenterID, parentCommenterID, values.getPost().getId(), parent.getId());
         }
     }
 
