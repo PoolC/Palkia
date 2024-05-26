@@ -56,7 +56,6 @@ public class MessageService {
 
     @Transactional
     public void writeMessage(Member sender, MessageCreateValues values) {
-        // TODO: 같은 환경에서 찾아야함 (두 사용자 모두 익명, 두 사용자 중 하나 익명, 두 사용자 중 다른 하나 익명, 두 사용자 모두 노 익명)
         Conversation conversation = conversationService.findConversationById(values.getConversationId(), sender.getLoginID());
         boolean sentByStarter = conversation.getStarterLoginID().equals(sender.getLoginID());
 
@@ -64,7 +63,17 @@ public class MessageService {
         messageRepository.save(message);
 
         String receiverID = conversation.getStarterLoginID().equals(sender.getLoginID()) ? conversation.getOtherLoginID() : conversation.getStarterLoginID();
-        notificationService.createMessageNotification(sender.getLoginID(), receiverID);
+        String senderName = ANONYMOUS_NAME;
+        String senderID = null;
+        if (sentByStarter && !conversation.isStarterAnonymous()) {
+            senderName = conversation.getStarterName();
+            senderID = conversation.getStarterLoginID();
+        }
+        if (!sentByStarter && !conversation.isOtherAnonymous()) {
+            senderID = conversation.getOtherLoginID();
+        }
+
+        notificationService.createMessageNotification(senderID, receiverID, senderName);
     }
 
 
