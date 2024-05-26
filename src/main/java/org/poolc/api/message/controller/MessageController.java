@@ -14,53 +14,35 @@ import org.poolc.api.notification.service.NotificationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
-@RequestMapping("/conversation")
+@RequestMapping("/message")
 public class MessageController {
     private final MessageService messageService;
-    private final MemberService memberService;
-    private final NotificationService notificationService;
     private final ConversationService conversationService;
 
-    @PostMapping("/{conversationId}/send")
-    public ResponseEntity<?> writeMessage(@AuthenticationPrincipal Member member,
-                                          @PathVariable String conversationId,
+    @PostMapping("/send")
+    public ResponseEntity<?> sendMessage(@AuthenticationPrincipal Member member,
                                           @RequestBody @Valid MessageCreateRequest request) {
-        String senderId = request.getSenderId();
-        String receiverId = request.getReceiverId();
-
-        Member receiver = memberService.getMemberByLoginID(receiverId);
-        messageService.write(member, receiverId, new MessageCreateValues(conversationId, request));
-
-        if (request.getSenderAnonymous()) senderId = "익명";
-        if (request.getReceiverAnonymous()) receiverId = "익명";
-
-        notificationService.createMessageNotification(senderId, receiverId);
+        messageService.writeMessage(member, new MessageCreateValues(request));
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/{messageId}")
-    public ResponseEntity<MessageResponse> viewMessage(@AuthenticationPrincipal Member member,
+    public ResponseEntity<MessageResponse> getMessage(@AuthenticationPrincipal Member member,
                                                        @PathVariable Long messageId) {
-        Message message = messageService.findMessageById(member, messageId);
-        return ResponseEntity.status(HttpStatus.OK).body(MessageResponse.of(message));
+        MessageResponse response = messageService.getMessageResponseById(member, messageId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/{messageId}")
     public ResponseEntity<Void> deleteMessage(@AuthenticationPrincipal Member member,
                                               @PathVariable Long messageId) {
-        Message message = messageService.findMessageById(member, messageId);
-        Conversation conversation = conversationService.findConversationById(message.getConversation().getId(), member.getLoginID());
-        if (conversation.getStarterLoginID().equals(member.getLoginID())) {
-            messageService.deleteMessageByStarter(member, messageId);
-        }
-        else messageService.deleteMessageByOther(member, messageId);
+        messageService.deleteMessage(member, messageId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
