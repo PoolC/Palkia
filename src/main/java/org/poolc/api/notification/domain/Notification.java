@@ -17,7 +17,7 @@ public class Notification extends TimestampEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "NOTIFICATION_SEQ_GENERATOR")
     private Long id;
 
-    @Column(name = "sender_id", nullable = true)
+    @Column(name = "sender_id")
     private String senderId;
 
     @Column(name = "receiver_id", nullable = false)
@@ -40,7 +40,7 @@ public class Notification extends TimestampEntity {
 
     protected Notification() {}
 
-    // 쪽지 알림
+    // 실명 쪽지 알림
     public Notification(String senderId, String receiverId, String senderName, NotificationType notificationType) {
         this.senderId = senderId;
         this.receiverId = receiverId;
@@ -48,10 +48,15 @@ public class Notification extends TimestampEntity {
         this.notificationType = notificationType;
     }
 
-    // 뱃지 알림
+    // 뱃지 알림 or 익명 쪽지 알림
     public Notification(String receiverId, NotificationType notificationType) {
         this.receiverId = receiverId;
         this.notificationType = notificationType;
+        if (notificationType == NotificationType.BADGE) {
+            this.senderName = "풀씨";
+        } else if (notificationType == NotificationType.MESSAGE) {
+            this.senderName = "익명";
+        }
     }
 
     // 댓글 알림
