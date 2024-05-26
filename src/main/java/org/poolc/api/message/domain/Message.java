@@ -25,20 +25,20 @@ public class Message extends TimestampEntity {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "starter_is_sender")
-    private boolean starterIsSender;
+    @Column(name = "sent_by_starter", nullable = false)
+    private Boolean sentByStarter;
 
-    @Column(name = "deleted_by_sender", nullable = false, columnDefinition = "boolean default false")
+    @Column(name = "deleted_by_starter", nullable = false, columnDefinition = "boolean default false")
     private Boolean deletedByStarter;
 
     @Column(name = "deleted_by_other", nullable = false, columnDefinition = "boolean default false")
     private Boolean deletedByOther;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "conversation", referencedColumnName = "conversation_id")
+    @JoinColumn(name = "conversation", referencedColumnName = "conversation_id", nullable = false)
     private Conversation conversation;
 
-    @Column(name = "starter_anonymous", nullable = false)
+    /*@Column(name = "starter_anonymous", nullable = false)
     private Boolean starterAnonymous;
 
     @Column(name = "other_anonymous", nullable = false)
@@ -49,20 +49,18 @@ public class Message extends TimestampEntity {
 
     @Column(name = "other_name")
     private String otherName;
-
+*/
     protected Message() {}
 
-    public Message(String content, boolean starterIsSender, Conversation conversation, Boolean starterAnonymous, Boolean otherAnonymous, String starterName, String otherName) {
+    public Message(Member member, String content, Conversation conversation, Boolean sentByStarter) {
         this.content = content;
-        this.starterIsSender = starterIsSender;
         this.conversation = conversation;
-        this.starterAnonymous = starterAnonymous;
-        this.otherAnonymous = otherAnonymous;
-        this.starterName = starterName;
-        this.otherName = otherName;
+        this.sentByStarter = sentByStarter;
+        this.deletedByStarter = false;
+        this.deletedByOther = false;
     }
 
-    public void starterDeletes() {
+    public void senderDeletes() {
         this.deletedByStarter = true;
     }
 
@@ -73,6 +71,5 @@ public class Message extends TimestampEntity {
     public boolean isDeleted() {
         return this.deletedByStarter && this.deletedByOther;
     }
-
 
 }
