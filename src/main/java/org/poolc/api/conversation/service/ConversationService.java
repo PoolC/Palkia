@@ -19,28 +19,14 @@ public class ConversationService {
     private final MemberService memberService;
 
     @Transactional
-    public Conversation findOrCreateConversation(String starterLoginID, String otherLoginID) {
-        checkValidParties(starterLoginID, otherLoginID);
-        return conversationRepository.findByStarterLoginIDAndOtherLoginID(starterLoginID, otherLoginID)
-                .orElseGet(() -> {
-                    ConversationCreateValues values = new ConversationCreateValues(
-                            starterLoginID, otherLoginID,
-                            memberService.getMemberByLoginID(starterLoginID).getName(),
-                            memberService.getMemberByLoginID(otherLoginID).getName(),
-                            false, false // defaulting anonymity to false
-                    );
-                    return conversationRepository.save(new Conversation(values));
-                });
-    }
-
-    public ConversationCreateValues convertToConversationCreateValues(ConversationCreateRequest request) {
-        String receiverName = checkValidParties(request.getStarterLoginID(), request.getOtherLoginID());
-        String senderName = memberService.getMemberByLoginID(request.getOtherLoginID()).getName();
-        return new ConversationCreateValues(
-                request.getStarterLoginID(), request.getOtherLoginID(),
-                senderName, receiverName,
-                request.isStarterAnonymous(), request.isOtherAnonymous()
-        );
+    public Conversation createConversation(String starterLoginID, ConversationCreateRequest request) {
+        checkValidParties(starterLoginID, request.getOtherLoginID());
+        String conversationId = checkExistingConversation(starterLoginID, request.getOtherLoginID());
+        if (conversationId != null) {
+            return conversationRepository.findById(conversationId).get();
+        }
+        ConversationCreateValues values = convertToConversationCreateValues(starterLoginID, request);
+        return conversationRepository.save(new Conversation(values));
     }
 
     @Transactional(readOnly = true)
@@ -50,17 +36,13 @@ public class ConversationService {
         checkWhetherInvolved(conversation, loginID);
         return conversation;
     }
-    public Conversation findConversationByStarterAndOther(String starterLoginID, String otherLoginID) {
-        return conversationRepository.findByStarterLoginIDAndOtherLoginID(starterLoginID, otherLoginID)
-                .orElseThrow(() -> new NoSuchElementException("No conversation found with the given parties."));
-    }
 
     @Transactional
     public void deleteConversation(String conversationId, String loginID) {
         Conversation conversation = findConversationById(conversationId, loginID);
         checkWhetherInvolved(conversation, loginID);
-        boolean sender = findWhetherSenderOrReceiver(conversation, loginID);
-        if (sender) conversation.setSenderDeleted();
+        boolean sender = findWhetherStarterOrOther(conversation, loginID);
+        if (sender) conversation.setStarterDeleted();
         else conversation.setReceiverDeleted();
     }
 
@@ -69,9 +51,21 @@ public class ConversationService {
             throw new IllegalArgumentException("You are not involved in this conversation.");
         }
     }
-    public boolean findWhetherSenderOrReceiver(Conversation conversation, String loginID) {
+
+    public boolean findWhetherStarterOrOther(Conversation conversation, String loginID) {
         return conversation.getStarterLoginID().equals(loginID);
     }
+
+    private ConversationCreateValues convertToConversationCreateValues(String starterID, ConversationCreateRequest request) {
+        String receiverName = checkValidParties(starterID, request.getOtherLoginID());
+        String senderName = memberService.getMemberByLoginID(request.getOtherLoginID()).getName();
+        return new ConversationCreateValues(
+                starterID, request.getOtherLoginID(),
+                senderName, receiverName,
+                request.isStarterAnonymous(), request.isOtherAnonymous()
+        );
+    }
+
 
     private String checkValidParties(String starterLoginID, String otherLoginID) {
         if (starterLoginID.equals(otherLoginID)) {
