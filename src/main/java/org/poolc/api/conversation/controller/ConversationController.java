@@ -27,10 +27,8 @@ public class ConversationController {
     @PostMapping("/new")
     public ResponseEntity<String> createConversation(@AuthenticationPrincipal Member member,
                                                      @RequestBody ConversationCreateRequest request) {
-        String conversationId = conversationService.createConversation(
-                conversationService.convertToConversationCreateValues(request)
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).body(conversationId);
+        Conversation conversation = conversationService.createConversation(member.getLoginID(), request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(conversation.getId());
     }
 
     // get conversation
@@ -38,10 +36,10 @@ public class ConversationController {
     public ResponseEntity<List<MessageResponse>> viewConversation(@AuthenticationPrincipal Member member,
                                                                  @PathVariable String conversationId) {
 
-        Conversation conversation = conversationService.findConversationById(conversationId, member.getLoginID());
+        // Conversation conversation = conversationService.findConversationById(conversationId, member.getLoginID());
         List<MessageResponse> responses= messageService.findMessagesByConversationId(member, conversationId)
                 .stream()
-                .map(MessageResponse::of)
+                .map(message -> messageService.getMessageResponseById(member, message.getId()))
                 .collect(Collectors.toList());
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
@@ -53,16 +51,7 @@ public class ConversationController {
         conversationService.deleteConversation(conversationId, member.getLoginID());
 
         messageService.findMessagesByConversationId(member, conversationId)
-                .stream()
-                .map(message -> {
-                    if (message.getConversation().getStarterLoginID().equals(member.getLoginID())) {
-                        messageService.deleteMessageByStarter(member, message.getId());
-                    } else {
-                        messageService.deleteMessageByOther(member, message.getId());
-                    }
-                    return null;
-                });
-
+                .forEach(message -> messageService.deleteMessage(member, message.getId()));
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
