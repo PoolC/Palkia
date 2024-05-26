@@ -11,17 +11,28 @@ import java.time.LocalDateTime;
 @Setter(AccessLevel.PRIVATE)
 public class MessageResponse {
     private String content;
-    private String receiverName;
+    private String starterName;
+    private String otherName;
+    private boolean sentByMe;
     private LocalDateTime sentAt;
 
-    public static MessageResponse of(Message message) {
+    public static MessageResponse of(Message message, boolean sentByMe) {
         MessageResponse response = new MessageResponse();
         response.setContent(message.getContent());
         response.setSentAt(message.getCreatedAt());
+        response.setSentByMe(sentByMe);
+        response.setStarterName("익명");
+        response.setOtherName("익명");
+        return response;
+    }
 
-        if (message.getOtherAnonymous()) response.setReceiverName("익명");
-        else response.setReceiverName(message.getOtherName());
-
+    public static MessageResponse of(Message message, boolean sentByMe, String senderName, String receiverName) {
+        MessageResponse response = new MessageResponse();
+        response.setContent(message.getContent());
+        response.setSentAt(message.getCreatedAt());
+        response.setSentByMe(sentByMe);
+        response.setStarterName(senderName);
+        response.setOtherName(receiverName);
         return response;
     }
 }
