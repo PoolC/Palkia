@@ -21,7 +21,10 @@ public class ConversationService {
     @Transactional
     public Conversation createConversation(String starterLoginID, ConversationCreateRequest request) {
         checkValidParties(starterLoginID, request.getOtherLoginID());
-        String conversationId = checkExistingConversation(starterLoginID, request.getOtherLoginID());
+        String conversationId = null;
+        if (!request.isStarterAnonymous() && !request.isOtherAnonymous()) {
+            conversationId = checkExistingConversation(starterLoginID, request.getOtherLoginID());
+        }
         if (conversationId != null) {
             return conversationRepository.findById(conversationId).get();
         }
@@ -66,7 +69,6 @@ public class ConversationService {
         );
     }
 
-
     private String checkValidParties(String starterLoginID, String otherLoginID) {
         if (starterLoginID.equals(otherLoginID)) {
             throw new IllegalArgumentException("Sender and receiver cannot be the same person.");
@@ -80,8 +82,9 @@ public class ConversationService {
         return memberService.getMemberByLoginID(otherLoginID).getName();
     }
 
+    // 두 사용자 모두 실명인 conversation이 존재하는지 확인
     private String checkExistingConversation(String starterLoginID, String otherLoginID) {
-        Optional<Conversation> conversationOptional = conversationRepository.findByStarterLoginIDAndOtherLoginID(starterLoginID, otherLoginID);
+        Optional<Conversation> conversationOptional = conversationRepository.findByStarterLoginIDAndOtherLoginIDAndStarterAnonymousFalseAndOtherAnonymousFalse(starterLoginID, otherLoginID);
         if (conversationOptional.isPresent() &&
                 !conversationOptional.get().isStarterDeleted() &&
                 !conversationOptional.get().isStarterAnonymous() &&
