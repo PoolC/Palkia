@@ -61,7 +61,7 @@ public class Conversation extends TimestampEntity {
         this.otherAnonymous = values.isOtherAnonymous();
     }
 
-    public void setSenderDeleted() {
+    public void setStarterDeleted() {
         this.starterDeleted = true;
     }
 
