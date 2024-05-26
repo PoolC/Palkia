@@ -52,10 +52,9 @@ public class NotificationService {
     }
 
     @Transactional
-    public void createMessageNotification(String senderId, String receiverId) {
-        Member sender = getMemberByLoginID(senderId);
+    public void createMessageNotification(String senderId, String receiverId, String senderName) {
         Member receiver = getMemberByLoginID(receiverId);
-        notificationRepository.save(new Notification(senderId, receiverId, sender.getName(), NotificationType.MESSAGE));
+        notificationRepository.save(new Notification(senderId, receiverId, senderName, NotificationType.MESSAGE));
         receiver.addNotification();
     }
 
