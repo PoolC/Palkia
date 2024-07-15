@@ -1,8 +1,10 @@
 package org.poolc.api.conversation.controller;
 
+import io.swagger.models.Response;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.conversation.domain.Conversation;
 import org.poolc.api.conversation.dto.ConversationCreateRequest;
+import org.poolc.api.conversation.dto.ConversationResponse;
 import org.poolc.api.conversation.service.ConversationService;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.message.dto.MessageResponse;
@@ -22,6 +24,16 @@ import java.util.stream.Collectors;
 public class ConversationController {
     private final ConversationService conversationService;
     private final MessageService messageService;
+
+    // get all conversations
+    @GetMapping("/all")
+    public ResponseEntity<List<ConversationResponse>> getAllConversations(@AuthenticationPrincipal Member member) {
+        List<ConversationResponse> responses =  conversationService.findAllConversationsForLoginID(member.getLoginID())
+                .stream()
+                .map(ConversationResponse::of)
+                .collect(Collectors.toList());
+        return ResponseEntity.status(HttpStatus.OK).body(responses);
+    }
 
     // create conversation
     @PostMapping("/new")

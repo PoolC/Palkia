@@ -1,5 +1,6 @@
 package org.poolc.api.conversation.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.conversation.domain.Conversation;
 import org.poolc.api.conversation.dto.ConversationCreateRequest;
@@ -38,6 +39,11 @@ public class ConversationService {
                 .orElseThrow(() -> new NoSuchElementException("No conversation found with the given id."));
         checkWhetherInvolved(conversation, loginID);
         return conversation;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Conversation> findAllConversationsForLoginID(String loginID) {
+        return conversationRepository.findAllByStarterLoginIDOrOtherLoginID(loginID, loginID);
     }
 
     @Transactional
