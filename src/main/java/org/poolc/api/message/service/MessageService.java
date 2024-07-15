@@ -73,7 +73,7 @@ public class MessageService {
             senderID = conversation.getOtherLoginID();
         }
 
-        notificationService.createMessageNotification(senderID, receiverID, senderName);
+        notificationService.createMessageNotification(senderID, receiverID, senderName, message.getId());
     }
 
 

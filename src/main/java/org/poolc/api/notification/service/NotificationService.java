@@ -1,10 +1,15 @@
 package org.poolc.api.notification.service;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.repository.MemberRepository;
-import org.poolc.api.member.service.MemberService;
 import org.poolc.api.notification.domain.Notification;
 import org.poolc.api.notification.domain.NotificationType;
 import org.poolc.api.notification.repository.NotificationRepository;
@@ -35,26 +40,40 @@ public class NotificationService {
 
     @Transactional
     public List<Notification> getAllNotificationsForMember(String receiverId) {
-        List<Notification> notifications = notificationRepository.findAllByReceiverId(receiverId)
+        List<Notification> notifications = Optional.ofNullable(notificationRepository.findAllByReceiverId(receiverId))
+                .orElse(Collections.emptyList())
                 .stream()
                 .sorted(Comparator.comparing(Notification::getCreatedAt).reversed())
                 .collect(Collectors.toList());
-        notifications.forEach(Notification::memberReads);
+
+        if (!notifications.isEmpty()) {
+            notifications.forEach(notification -> {
+                if (notification != null) {
+                    notification.memberReads();
+                }
+            });
+        }
+
         Member recipient = getMemberByLoginID(receiverId);
+        if (recipient == null) {
+            throw new IllegalArgumentException("Recipient not found for the given receiverId");
+        }
         recipient.resetNotificationCount();
         return notifications;
     }
-
     @Transactional
     public void createBadgeNotification(Member receiver) {
-        notificationRepository.save(new Notification(receiver.getLoginID(), NotificationType.BADGE));
+        Notification notification = new Notification(receiver.getLoginID(), NotificationType.BADGE);
+        notificationRepository.save(notification);
         receiver.addNotification();
+        sendRealTimeNotification(notification);
     }
 
     @Transactional
-    public void createMessageNotification(String senderId, String receiverId, String senderName) {
+    public void createMessageNotification(String senderId, String receiverId, String senderName, Long messageId) {
         Member receiver = getMemberByLoginID(receiverId);
-        notificationRepository.save(new Notification(senderId, receiverId, senderName, NotificationType.MESSAGE));
+        Notification notification = new Notification(senderId, receiverId, senderName, messageId, NotificationType.MESSAGE);
+        notificationRepository.save(notification);
         receiver.addNotification();
     }
 
@@ -70,7 +89,7 @@ public class NotificationService {
     public void createRecommentNotification(String senderId, String receiverId, Long postId, Long parentCommentId) {
         Member sender = getMemberByLoginID(senderId);
         Member receiver = getMemberByLoginID(receiverId);
-        notificationRepository.save(new Notification(senderId, receiverId, sender.getName(), postId, parentCommentId, NotificationType.RECOMMENT));
+        notificationRepository.save(new Notification(senderId, receiverId, sender.getName(), parentCommentId, NotificationType.RECOMMENT));
         receiver.addNotification();
     }
 

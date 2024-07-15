@@ -12,27 +12,21 @@ import java.time.LocalDateTime;
 @Setter(AccessLevel.PRIVATE)
 public class NotificationResponse {
     private Boolean readStatus;
-    private String notificationType;
+    private NotificationType notificationType;
     private LocalDateTime createdAt;
     private String senderName;
     // 댓글 알림이면 포스트로 링크
-    private Long postId;
-    // 대댓글이면 해당 댓글 주인에게 알림 보내기 위해
-    private Long parentCommentId;
+    private Long causedById;
 
     public static NotificationResponse of(Notification notification) {
         NotificationResponse response = new NotificationResponse();
-        response.setNotificationType(notification.getNotificationType().getDescription());
+        response.setNotificationType(notification.getNotificationType());
         response.setReadStatus(notification.getReadStatus());
         response.setCreatedAt(notification.getCreatedAt());
 
         if (notification.getNotificationType() != NotificationType.BADGE) {
             response.setSenderName(notification.getSenderName());
-            if (notification.getNotificationType() == NotificationType.COMMENT) {
-                response.setPostId(notification.getPostId());
-            } else if (notification.getNotificationType() == NotificationType.RECOMMENT) {
-                response.setParentCommentId(notification.getParentCommentId());
-            }
+            response.setCausedById(notification.getCausedById());
         }
 
         return response;
