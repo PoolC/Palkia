@@ -24,6 +24,9 @@ public class NotificationController {
     @GetMapping("/unread")
     public ResponseEntity<List<NotificationResponse>> getUnreadNotifications(@AuthenticationPrincipal Member member) {
         List<Notification> notifications = notificationService.getUnreadNotificationsForMember(member.getLoginID());
+        if (notifications.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
         List<NotificationResponse> responses = notifications.stream()
                 .map(NotificationResponse::of)
                 .collect(Collectors.toList());

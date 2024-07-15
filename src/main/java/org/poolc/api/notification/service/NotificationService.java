@@ -46,14 +46,6 @@ public class NotificationService {
                 .sorted(Comparator.comparing(Notification::getCreatedAt).reversed())
                 .collect(Collectors.toList());
 
-        if (!notifications.isEmpty()) {
-            notifications.forEach(notification -> {
-                if (notification != null) {
-                    notification.memberReads();
-                }
-            });
-        }
-
         Member recipient = getMemberByLoginID(receiverId);
         if (recipient == null) {
             throw new IllegalArgumentException("Recipient not found for the given receiverId");
