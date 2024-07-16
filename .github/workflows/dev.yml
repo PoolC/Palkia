@@ -38,7 +38,7 @@ jobs:
     - name: make directory for transfer
       run: mkdir deploy
     - name: Copy Jar
-      run: cp ./build/libs/*.jar ./palkia/
+      run: cp ./build/libs/*.jar ./deploy/
     - name: copy file via ssh password
       uses: appleboy/scp-action@v0.1.4
       with:
@@ -47,7 +47,7 @@ jobs:
         password: ${{ secrets.DEV_PASSWORD }}
         key: ${{ secrets.DEV_KEY }}
         port: ${{ secrets.SSH_PORT }}
-        source: "./palkia/*.jar"
+        source: "./deploy/*.jar"
         target: /home/jimmy/k8s/
     - name: restart server
       uses: appleboy/ssh-action@v1.0.0
@@ -59,5 +59,5 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           kubectl delete deployment palkia-deployment
-          kubectl apply -f /home/jimmy/k8s/palkia-deployment.yaml
+          kubectl apply -f ./k8s/palkia-deployment.yaml
           kubectl rollout status deployment/palkia-deployment
