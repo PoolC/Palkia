@@ -1,9 +1,12 @@
 package org.poolc.api.conversation.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.poolc.api.comment.dto.CommentResponse;
 import org.poolc.api.conversation.domain.Conversation;
 import org.poolc.api.conversation.dto.ConversationCreateRequest;
+import org.poolc.api.conversation.dto.ConversationResponse;
 import org.poolc.api.conversation.repository.ConversationRepository;
 import org.poolc.api.conversation.vo.ConversationCreateValues;
 import org.poolc.api.member.service.MemberService;
@@ -20,30 +23,30 @@ public class ConversationService {
     private final MemberService memberService;
 
     @Transactional
-    public Conversation createConversation(String starterLoginID, ConversationCreateRequest request) {
+    public ConversationResponse createConversation(String starterLoginID, ConversationCreateRequest request) {
         checkValidParties(starterLoginID, request.getOtherLoginID());
         String conversationId = null;
         if (!request.isStarterAnonymous() && !request.isOtherAnonymous()) {
             conversationId = checkExistingConversation(starterLoginID, request.getOtherLoginID());
         }
         if (conversationId != null) {
-            return conversationRepository.findById(conversationId).get();
+            return ConversationResponse.of(conversationRepository.findById(conversationId).get());
         }
-        ConversationCreateValues values = convertToConversationCreateValues(starterLoginID, request);
-        return conversationRepository.save(new Conversation(values));
+        Conversation conversation = new Conversation(new ConversationCreateValues(starterLoginID, request.getOtherLoginID(), request.isStarterAnonymous(), request.isOtherAnonymous()));
+        return ConversationResponse.of(conversation);
     }
 
     @Transactional(readOnly = true)
-    public Conversation findConversationById(String conversationId, String loginID) {
-        Conversation conversation = conversationRepository.findById(conversationId)
-                .orElseThrow(() -> new NoSuchElementException("No conversation found with the given id."));
-        checkWhetherInvolved(conversation, loginID);
-        return conversation;
+    public ConversationResponse getConversationResponseById(String conversationId, String loginID) {
+        Conversation conversation = findConversationById(conversationId, loginID);
+        return ConversationResponse.of(conversation);
     }
 
     @Transactional(readOnly = true)
-    public List<Conversation> findAllConversationsForLoginID(String loginID) {
-        return conversationRepository.findAllByStarterLoginIDOrOtherLoginID(loginID, loginID);
+    public List<ConversationResponse> findAllConversationsForLoginID(String loginID) {
+        return conversationRepository.findAllByStarterLoginIDOrOtherLoginID(loginID, loginID)
+                .stream().map(ConversationResponse::of)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -65,17 +68,14 @@ public class ConversationService {
         return conversation.getStarterLoginID().equals(loginID);
     }
 
-    private ConversationCreateValues convertToConversationCreateValues(String starterID, ConversationCreateRequest request) {
-        String receiverName = checkValidParties(starterID, request.getOtherLoginID());
-        String senderName = memberService.getMemberByLoginID(request.getOtherLoginID()).getName();
-        return new ConversationCreateValues(
-                starterID, request.getOtherLoginID(),
-                senderName, receiverName,
-                request.isStarterAnonymous(), request.isOtherAnonymous()
-        );
+    public Conversation findConversationById(String conversationId, String loginID) {
+        Conversation conversation = conversationRepository.findById(conversationId)
+                .orElseThrow(() -> new NoSuchElementException("No conversation found with the given id."));
+        checkWhetherInvolved(conversation, loginID);
+        return conversation;
     }
 
-    private String checkValidParties(String starterLoginID, String otherLoginID) {
+    private void checkValidParties(String starterLoginID, String otherLoginID) {
         if (starterLoginID.equals(otherLoginID)) {
             throw new IllegalArgumentException("Sender and receiver cannot be the same person.");
         }
