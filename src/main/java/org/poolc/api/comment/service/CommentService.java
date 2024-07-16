@@ -1,5 +1,9 @@
 package org.poolc.api.comment.service;
 
+import org.poolc.api.comment.dto.CommentCreateRequest;
+import org.poolc.api.comment.dto.CommentResponse;
+import org.poolc.api.comment.dto.CommentUpdateRequest;
+import org.poolc.api.post.service.PostService;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.auth.exception.UnauthorizedException;
@@ -25,16 +29,20 @@ public class CommentService {
     //좋아요 수에 따라 뱃지 자동지급을 위함
     private final BadgeConditionService badgeConditionService;
     private final NotificationService notificationService;
+    private final PostService postService;
 
     @Transactional
-    public Comment createComment(CommentCreateValues values) {
+    public CommentResponse createComment(Member member, CommentCreateRequest request) {
+        Post post = postService.findPostById(member, request.getPostId());
+        CommentCreateValues values = new CommentCreateValues(post, member, request);
+
         Comment parent = findParentComment(values.getParentId());
         validateParentComment(parent);
 
         Comment comment = saveComment(values, parent);
         sendNotifications(values, parent);
 
-        return comment;
+        return CommentResponse.of(comment);
     }
 
     @Transactional(readOnly = true)
@@ -66,10 +74,10 @@ public class CommentService {
     }
 
     @Transactional
-    public void updateComment(Member member, Long commentId, CommentUpdateValues commentUpdateValues) {
+    public void updateComment(Member member, Long commentId, CommentUpdateRequest request) {
         Comment comment = findById(commentId);
         checkWriter(member, comment);
-        comment.updateComment(commentUpdateValues);
+        comment.updateComment(new CommentUpdateValues(request));
     }
 
     @Transactional
@@ -92,6 +100,7 @@ public class CommentService {
         }
     }
 
+    // TODO
     private Comment findParentComment(Long parentId) {
         if (parentId != null && parentId != 0) {
             return findById(parentId);

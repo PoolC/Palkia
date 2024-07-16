@@ -25,24 +25,21 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping("/comment")
 public class CommentController {
-    private final PostService postService;
     private final CommentService commentService;
     private final LikeService likeService;
 
     @PostMapping
     public ResponseEntity<CommentResponse> createComment(@AuthenticationPrincipal Member member,
                                                          @RequestBody @Valid CommentCreateRequest request) {
-        Post post = postService.findPostById(member, request.getPostId());
-        CommentCreateValues values = new CommentCreateValues(post, member, request);
-        Comment newComment = commentService.createComment(values);
-        return ResponseEntity.status(HttpStatus.CREATED).body(CommentResponse.of(newComment));
+        CommentResponse response = commentService.createComment(member, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{commentId}")
     public ResponseEntity<Void> updateComment(@AuthenticationPrincipal Member member,
                                               @PathVariable Long commentId,
                                               @RequestBody CommentUpdateRequest request) {
-        commentService.updateComment(member, commentId, new CommentUpdateValues(request));
+        commentService.updateComment(member, commentId, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
