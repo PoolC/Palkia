@@ -26,6 +26,8 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
+    - name: make empty file
+      run: cat /dev/null > file.txt
     - name: copy file via ssh password
       uses: appleboy/scp-action@v0.1.4
       with:
@@ -34,6 +36,6 @@ jobs:
         password: ${{ secrets.SSH_PASSWORD }}
         key: ${{ secrets.DEV_KEY }}
         port: ${{ secrets.SSH_PORT }}
-        source: "./build/libs/*.jar"
-        target: /home/ubuntu/palkiabuilds/
+        source: "./file.txt"
+        target: /home/jimmy/k8s/
     
