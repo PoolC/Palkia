@@ -4,5 +4,5 @@ public enum NotificationType {
     MESSAGE,
     BADGE,
     COMMENT,
-    RECOMMENT;
+    POST;
 }
