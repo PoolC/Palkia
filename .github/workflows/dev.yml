@@ -44,7 +44,6 @@ jobs:
       with:
         host: ${{ secrets.DEV_HOST }}
         username: ${{ secrets.DEV_USER }}
-        password: ${{ secrets.SSH_PASSWORD }}
         key: ${{ secrets.DEV_KEY }}
         port: ${{ secrets.SSH_PORT }}
         source: "./build/libs/*.jar"
@@ -54,7 +53,6 @@ jobs:
       with:
         host: ${{ secrets.DEV_HOST }}
         username: ${{ secrets.DEV_USER }}
-        password: ${{ secrets.SSH_PASSWORD }}
         key: ${{ secrets.DEV_KEY }}
         port: ${{ secrets.SSH_PORT }}
         script: |
