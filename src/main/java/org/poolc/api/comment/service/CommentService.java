@@ -33,7 +33,7 @@ public class CommentService {
 
     @Transactional
     public CommentResponse createComment(Member member, CommentCreateRequest request) {
-        Post post = postService.findPostById(member, request.getPostId());
+        Post post = postService.findById(member, request.getPostId());
         CommentCreateValues values = new CommentCreateValues(post, member, request);
 
         Comment parent = findParentComment(values.getParentId());

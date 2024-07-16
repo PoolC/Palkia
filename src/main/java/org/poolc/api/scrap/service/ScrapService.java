@@ -60,7 +60,7 @@ public class ScrapService {
     }
 
     private GetPostsResponse scrapToPostResponse(Member member, Scrap scrap) {
-        Post post = postService.findPostById(member, scrap.getPostId());
+        Post post = postService.findById(member, scrap.getPostId());
         return GetPostsResponse.of(post);
     }
 }

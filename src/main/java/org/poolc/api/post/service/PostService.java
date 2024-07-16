@@ -32,7 +32,7 @@ public class PostService {
     //좋아요 수에 따라 뱃지 자동지급 용도
     private final BadgeConditionService badgeConditionService;
 
-    public Post findPostById(Member member, Long postId) {
+    public Post findById(Member member, Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NoSuchElementException("No post found with given post id."));
         checkReadPermission(member, post.getBoardType());
@@ -78,14 +78,14 @@ public class PostService {
 
     @Transactional
     public void updatePost(Member member, Long postId, PostUpdateValues values) {
-        Post post = findPostById(member, postId);
+        Post post = findById(member, postId);
         checkWriter(member, post);
         post.updatePost(post.getPostType(), values);
         postRepository.save(post);
     }
 
     public void likePost(Member member, Long postId) {
-        Post post = findPostById(member, postId);
+        Post post = findById(member, postId);
         checkNotWriter(member, post);
         post.addLikeCount();
         badgeConditionService.like(post.getMember());
@@ -93,7 +93,7 @@ public class PostService {
     }
 
     public void dislikePost(Member member, Long postId) {
-        Post post = findPostById(member, postId);
+        Post post = findById(member, postId);
         checkNotWriter(member, post);
         post.deductLikeCount();
         badgeConditionService.dislike(post.getMember());
@@ -101,14 +101,14 @@ public class PostService {
     }
 
     public void scrapPost(Member member, Long postId) {
-        Post post = findPostById(member, postId);
+        Post post = findById(member, postId);
         checkNotWriter(member, post);
         post.addScrapCount();
         postRepository.save(post);
     }
 
     public void unscrapPost(Member member, Long postId) {
-        Post post = findPostById(member, postId);
+        Post post = findById(member, postId);
         checkNotWriter(member, post);
         post.deductScrapCount();
         postRepository.save(post);
@@ -116,7 +116,7 @@ public class PostService {
 
     @Transactional
     public void deletePost(Member member, Long postId) {
-        Post post = findPostById(member, postId);
+        Post post = findById(member, postId);
         checkWriterOrAdmin(member, post);
         if (!post.getIsQuestion()) {
             post.setIsDeleted();

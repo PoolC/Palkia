@@ -39,7 +39,7 @@ public class PostController {
 
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostResponse> viewPost(@AuthenticationPrincipal Member member, @PathVariable Long postId) {
-        Post post = postService.findPostById(member, postId);
+        Post post = postService.findById(member, postId);
         PostResponse response = PostResponse.of(post, scrapService.isScrap(member.getLoginID(),postId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -62,7 +62,7 @@ public class PostController {
     public ResponseEntity<Void> updatePost(@AuthenticationPrincipal Member member,
                                            @PathVariable Long postId,
                                            @RequestBody @Valid PostUpdateRequest request) {
-        Post post = postService.findPostById(member, postId);
+        Post post = postService.findById(member, postId);
         postService.updatePost(member, postId, new PostUpdateValues(post.getPostType(), request));
         return ResponseEntity.status(HttpStatus.OK).build();
     }
