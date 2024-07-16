@@ -30,26 +30,18 @@ public class MessageService {
     @Transactional(readOnly = true)
     public MessageResponse getMessageResponseById(Member member, Long messageId) {
         Message message = findMessageById(member, messageId);
-        Conversation conversation = message.getConversation();
-
-        String starterName = conversation.isStarterAnonymous() ? ANONYMOUS_NAME : conversation.getStarterName();
-        String otherName = conversation.isOtherAnonymous() ? ANONYMOUS_NAME : conversation.getOtherName();
-
-        // check if member is starter. then check message's sent by starter
-        boolean isStarter = conversation.getStarterLoginID().equals(member.getLoginID());
-        boolean sentByMe = (isStarter && message.getSentByStarter()) || (!isStarter && !message.getSentByStarter());
-
-        return MessageResponse.of(message, sentByMe, starterName, otherName);
+        return MessageResponse.of(message);
     }
 
     @Transactional(readOnly = true)
-    public List<Message> findMessagesByConversationId(Member member, String conversationId) {
-        List<Message> messageList = messageRepository.findAllByConversationId(conversationId);
-        Conversation conversation = conversationService.findConversationById(conversationId, member.getLoginID());
+    public List<MessageResponse> findMessageResponsesByConversationId(Member member, String conversationId) {
+        List<Message> messageList = messageRepository.findAllByConversationID(conversationId);
+        Conversation conversation = conversationService.findConversationById(member.getLoginID(), conversationId);
         conversationService.checkWhetherInvolved(conversation, member.getLoginID());
         return messageList.stream()
                 .filter(message -> !message.isDeleted())
-                .sorted(Comparator.comparing(Message::getCreatedAt).reversed())
+                .sorted(Comparator.comparing(Message::getCreatedAt))
+                .map(MessageResponse::of)
                 .collect(Collectors.toList());
     }
 
