@@ -36,9 +36,9 @@ jobs:
       #  arguments: build
       run: ./gradlew clean build --exclude-task test
     - name: make directory for transfer
-      run: mkdir deploy
+      run: mkdir palkia
     - name: Copy Jar
-      run: cp ./build/libs/*.jar ./deploy/
+      run: cp ./build/libs/*.jar ./palkia/
     - name: copy file via ssh password
       uses: appleboy/scp-action@v0.1.4
       with:
@@ -47,7 +47,7 @@ jobs:
         password: ${{ secrets.DEV_PASSWORD }}
         key: ${{ secrets.DEV_KEY }}
         port: ${{ secrets.SSH_PORT }}
-        source: "./deploy/*.jar"
+        source: "./palkia/*.jar"
         target: /home/jimmy/k8s/
     - name: restart server
       uses: appleboy/ssh-action@v1.0.0
