@@ -16,8 +16,8 @@ public class Like {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "member_id", nullable = false)
-    private String memberId;
+    @Column(name = "login_ID", nullable = false)
+    private String loginID;
 
     @Column(name = "subject", nullable = false)
     private Subject subject;
