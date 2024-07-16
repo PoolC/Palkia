@@ -23,7 +23,6 @@ import javax.validation.Valid;
 @RequestMapping("/message")
 public class MessageController {
     private final MessageService messageService;
-    private final ConversationService conversationService;
 
     @PostMapping("/send")
     public ResponseEntity<?> sendMessage(@AuthenticationPrincipal Member member,
