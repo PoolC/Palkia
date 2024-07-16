@@ -78,11 +78,7 @@ public class Comment extends TimestampEntity {
         this.body = values.getBody();
         this.isDeleted = false;
         this.parent = parent;
-        if (parent != null) {
-            this.isChild = true;
-        } else {
-            this.isChild = false;
-        }
+        this.isChild = parent != null;
         this.children = new ArrayList<>();
         this.likeCount = 0L;
     }
