@@ -40,9 +40,9 @@ public class NotificationService {
 
     @Transactional
     public List<Notification> getAllNotificationsForMember(String receiverId) {
-        List<Notification> notifications = Optional.ofNullable(notificationRepository.findAllByReceiverId(receiverId))
-                .orElse(Collections.emptyList())
+        List<Notification> notifications = notificationRepository.findAllByReceiverId(receiverId)
                 .stream()
+                .peek(Notification::memberReads) // Apply the memberReads method
                 .sorted(Comparator.comparing(Notification::getCreatedAt).reversed())
                 .collect(Collectors.toList());
 
