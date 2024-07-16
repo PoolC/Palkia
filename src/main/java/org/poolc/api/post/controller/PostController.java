@@ -33,7 +33,7 @@ public class PostController {
     @PostMapping(value = "/post/new")
     public ResponseEntity<Void> registerPost(@AuthenticationPrincipal Member member,
                                           @RequestBody PostCreateRequest request) {
-        postService.createPost(new PostCreateValues(member, request));
+        postService.createPost(member, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -69,7 +69,7 @@ public class PostController {
 
     @PostMapping("/post/{postId}/like")
     public ResponseEntity<Void> likePost(@AuthenticationPrincipal Member member, @PathVariable Long postId) {
-        likeService.like(member.getLoginID(), Subject.POST, postId);
+        likeService.like(member, Subject.POST, postId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

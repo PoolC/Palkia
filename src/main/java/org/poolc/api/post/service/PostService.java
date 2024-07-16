@@ -9,6 +9,7 @@ import org.poolc.api.post.domain.BoardType;
 import org.poolc.api.post.domain.Post;
 import org.poolc.api.post.dto.GetBoardResponse;
 import org.poolc.api.post.dto.GetPostsResponse;
+import org.poolc.api.post.dto.PostCreateRequest;
 import org.poolc.api.post.repository.PostRepository;
 import org.poolc.api.post.vo.PostCreateValues;
 import org.poolc.api.post.vo.PostUpdateValues;
@@ -67,7 +68,8 @@ public class PostService {
     }
 
     @Transactional
-    public void createPost(PostCreateValues values) {
+    public void createPost(Member member, PostCreateRequest request) {
+        PostCreateValues values = new PostCreateValues(member, request);
         checkWritePermission(values.getMember(), values.getBoardType());
         Post post = new Post(values.getMember(), values);
         postRepository.save(post);
@@ -112,6 +114,7 @@ public class PostService {
         postRepository.save(post);
     }
 
+    @Transactional
     public void deletePost(Member member, Long postId) {
         Post post = findPostById(member, postId);
         checkWriterOrAdmin(member, post);
