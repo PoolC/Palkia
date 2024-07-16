@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 public class MessageService {
 
     private static final String MESSAGE_NOT_FOUND = "No message found with given id.";
-    private static final String ANONYMOUS_NAME = "익명";
 
     private final MessageRepository messageRepository;
     private final ConversationService conversationService;
@@ -61,19 +60,18 @@ public class MessageService {
 
         Message message = new Message(sender, values.getContent(), conversation, sentByStarter);
         messageRepository.save(message);
+        conversation.setLastMessage(message);
 
         String receiverID = conversation.getStarterLoginID().equals(sender.getLoginID()) ? conversation.getOtherLoginID() : conversation.getStarterLoginID();
-        String senderName = ANONYMOUS_NAME;
         String senderID = null;
         if (sentByStarter && !conversation.isStarterAnonymous()) {
-            senderName = conversation.getStarterName();
             senderID = conversation.getStarterLoginID();
         }
         if (!sentByStarter && !conversation.isOtherAnonymous()) {
             senderID = conversation.getOtherLoginID();
         }
 
-        notificationService.createMessageNotification(senderID, receiverID, senderName, message.getId());
+        notificationService.createMessageNotification(senderID, receiverID, message.getId());
     }
 
 

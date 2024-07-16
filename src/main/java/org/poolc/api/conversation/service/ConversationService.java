@@ -85,8 +85,7 @@ public class ConversationService {
         if (memberService.checkMemberExistsByLoginID(otherLoginID)) {
             throw new NoSuchElementException("Receiver is not found.");
         }
-        return memberService.getMemberByLoginID(otherLoginID).getName();
-    }
+     }
 
     // 두 사용자 모두 실명인 conversation이 존재하는지 확인
     private String checkExistingConversation(String starterLoginID, String otherLoginID) {

@@ -23,9 +23,6 @@ public class Notification extends TimestampEntity {
     @Column(name = "receiver_id", nullable = false)
     private String receiverId;
 
-    @Column(name = "sender_name")
-    private String senderName;
-
     @Column(name = "caused_by_id")
     private Long causedById;
 
@@ -41,18 +38,12 @@ public class Notification extends TimestampEntity {
     public Notification(String receiverId, NotificationType notificationType) {
         this.receiverId = receiverId;
         this.notificationType = notificationType;
-        if (notificationType == NotificationType.BADGE) {
-            this.senderName = "풀씨";
-        } else if (notificationType == NotificationType.MESSAGE) {
-            this.senderName = "익명";
-        }
     }
 
     // 댓글 알림
-    public Notification(String senderId, String receiverId, String senderName, Long postId, NotificationType notificationType) {
+    public Notification(String senderId, String receiverId, Long postId, NotificationType notificationType) {
         this.senderId = senderId;
         this.receiverId = receiverId;
-        this.senderName = senderName;
         this.causedById = postId;
         this.notificationType = notificationType;
     }

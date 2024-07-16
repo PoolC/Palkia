@@ -58,13 +58,13 @@ public class NotificationService {
         Notification notification = new Notification(receiver.getLoginID(), NotificationType.BADGE);
         notificationRepository.save(notification);
         receiver.addNotification();
-        sendRealTimeNotification(notification);
+        //sendRealTimeNotification(notification);
     }
 
     @Transactional
-    public void createMessageNotification(String senderId, String receiverId, String senderName, Long messageId) {
+    public void createMessageNotification(String senderId, String receiverId, Long messageId) {
         Member receiver = getMemberByLoginID(receiverId);
-        Notification notification = new Notification(senderId, receiverId, senderName, messageId, NotificationType.MESSAGE);
+        Notification notification = new Notification(senderId, receiverId, messageId, NotificationType.MESSAGE);
         notificationRepository.save(notification);
         receiver.addNotification();
     }
@@ -73,7 +73,7 @@ public class NotificationService {
     public void createCommentNotification(String senderId, String receiverId, Long postId) {
         Member sender = getMemberByLoginID(senderId);
         Member receiver = getMemberByLoginID(receiverId);
-        notificationRepository.save(new Notification(senderId, receiverId, sender.getName(), postId, NotificationType.COMMENT));
+        notificationRepository.save(new Notification(senderId, receiverId, postId, NotificationType.COMMENT));
         receiver.addNotification();
     }
 
@@ -81,14 +81,14 @@ public class NotificationService {
     public void createRecommentNotification(String senderId, String receiverId, Long postId, Long parentCommentId) {
         Member sender = getMemberByLoginID(senderId);
         Member receiver = getMemberByLoginID(receiverId);
-        notificationRepository.save(new Notification(senderId, receiverId, sender.getName(), parentCommentId, NotificationType.RECOMMENT));
+        notificationRepository.save(new Notification(senderId, receiverId, parentCommentId, NotificationType.RECOMMENT));
         receiver.addNotification();
     }
 
     @Transactional(readOnly = true)
     public void readNotification(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new NoSuchElementException("No notification with given id."));
+                .orElseThrow(() -> new NoSuchElementException("No notification found with given id."));
         notification.memberReads();
     }
 

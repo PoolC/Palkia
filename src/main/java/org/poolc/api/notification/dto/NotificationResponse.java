@@ -14,8 +14,6 @@ public class NotificationResponse {
     private Boolean readStatus;
     private NotificationType notificationType;
     private LocalDateTime createdAt;
-    private String senderName;
-    // 댓글 알림이면 포스트로 링크
     private Long causedById;
 
     public static NotificationResponse of(Notification notification) {
@@ -25,7 +23,6 @@ public class NotificationResponse {
         response.setCreatedAt(notification.getCreatedAt());
 
         if (notification.getNotificationType() != NotificationType.BADGE) {
-            response.setSenderName(notification.getSenderName());
             response.setCausedById(notification.getCausedById());
         }
 

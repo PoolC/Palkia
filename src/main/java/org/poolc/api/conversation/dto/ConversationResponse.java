@@ -4,29 +4,28 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.poolc.api.conversation.domain.Conversation;
+import org.poolc.api.message.dto.MessageResponse;
 
 @Getter
 @Setter(AccessLevel.PRIVATE)
 public class ConversationResponse {
 
     private String id;
-    private String senderNameOrAnonymous;
-    private String receiverNameOrAnonymous;
+    private String starterLoginID;
+    private String otherLoginID;
+    private boolean starterAnonymous;
+    private boolean otherAnonymous;
+    private MessageResponse lastMessage;
 
     protected ConversationResponse() {}
     public static ConversationResponse of(Conversation conversation) {
         ConversationResponse response = new ConversationResponse();
         response.setId(conversation.getId());
-        if (conversation.isStarterAnonymous()) {
-            response.setSenderNameOrAnonymous("익명");
-        } else {
-            response.setSenderNameOrAnonymous(conversation.getStarterName());
-        }
-        if (conversation.isOtherAnonymous()) {
-            response.setReceiverNameOrAnonymous("익명");
-        } else {
-            response.setReceiverNameOrAnonymous(conversation.getOtherName());
-        }
+        response.setStarterLoginID(conversation.getStarterLoginID());
+        response.setOtherLoginID(conversation.getOtherLoginID());
+        response.setStarterAnonymous(conversation.isStarterAnonymous());
+        response.setOtherAnonymous(conversation.isOtherAnonymous());
+        response.setLastMessage(MessageResponse.of(conversation.getLastMessage()));
         return response;
     }
 }
