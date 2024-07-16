@@ -29,7 +29,7 @@ public class LikeService {
         }
 
         if (checkIfLiked(member.getLoginID(), subject, subjectId)) {
-            Long likeId = likeRepository.findByMemberIdAndSubjectAndSubjectId(member.getLoginID(), subject, subjectId)
+            Long likeId = likeRepository.findByLoginIDAndSubjectAndSubjectId(member.getLoginID(), subject, subjectId)
                     .orElseThrow(() -> new NoSuchElementException("해당하는 좋아요가 없습니다.")).getId();
             likeRepository.deleteById(likeId);
             deductLikeToSubject(member, subject, subjectId);
@@ -40,7 +40,7 @@ public class LikeService {
     }
 
     private boolean checkIfLiked(String loginID, Subject subject, Long subjectId) {
-        return likeRepository.existsByMemberIdAndSubjectAndSubjectId(loginID, subject, subjectId);
+        return likeRepository.existsByLoginIDAndSubjectAndSubjectId(loginID, subject, subjectId);
     }
 
     private void addLikeToSubject(Member member, Subject subject, Long subjectId) {
