@@ -21,24 +21,26 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final PostService postService;
     private final CommentService commentService;
-    private final MemberService memberService;
 
-    public void like(String memberId, Subject subject, Long subjectId) {
-        Member member = memberService.getMemberByLoginID(memberId);
-        if (checkIfLiked(memberId, subject, subjectId)) {
-            Long likeId = likeRepository.findByMemberIdAndSubjectAndSubjectId(memberId, subject, subjectId)
-                    .get()
-                    .getSubjectId();
+    public void like(Member member, Subject subject, Long subjectId) {
+        Comment comment = commentService.findById(subjectId);
+        if (member.equals(comment.getMember())) {
+            throw new IllegalArgumentException("본인의 댓글은 좋아할 수 없습니다.");
+        }
+
+        if (checkIfLiked(member.getLoginID(), subject, subjectId)) {
+            Long likeId = likeRepository.findByMemberIdAndSubjectAndSubjectId(member.getLoginID(), subject, subjectId)
+                    .orElseThrow(() -> new NoSuchElementException("해당하는 좋아요가 없습니다.")).getId();
             likeRepository.deleteById(likeId);
             deductLikeToSubject(member, subject, subjectId);
         } else {
-            likeRepository.save(new Like(memberId, subject, subjectId));
+            likeRepository.save(new Like(member.getLoginID(), subject, subjectId));
             addLikeToSubject(member, subject, subjectId);
         }
     }
 
-    private boolean checkIfLiked(String memberId, Subject subject, Long subjectId) {
-        return likeRepository.existsByMemberIdAndSubjectAndSubjectId(memberId, subject, subjectId);
+    private boolean checkIfLiked(String loginID, Subject subject, Long subjectId) {
+        return likeRepository.existsByMemberIdAndSubjectAndSubjectId(loginID, subject, subjectId);
     }
 
     private void addLikeToSubject(Member member, Subject subject, Long subjectId) {
