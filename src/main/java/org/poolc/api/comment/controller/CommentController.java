@@ -51,9 +51,7 @@ public class CommentController {
 
     @PostMapping("/{commentId}/like")
     public ResponseEntity<Void> likeComment(@AuthenticationPrincipal Member member, @PathVariable Long commentId) {
-        Comment comment = commentService.findById(commentId);
-        if (!member.equals(comment.getMember())) likeService.like(member.getLoginID(), Subject.COMMENT, commentId);
-        else throw new IllegalArgumentException("본인의 댓글은 좋아할 수 없습니다.");
+        likeService.like(member, Subject.COMMENT, commentId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
