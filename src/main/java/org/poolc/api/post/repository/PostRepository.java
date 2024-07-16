@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -16,7 +17,7 @@ public interface PostRepository extends JpaRepository<Post, Long>, PagingAndSort
     Page<Post> findByMember(Member member, Pageable pageable);
 
     @Query("select p from Post p where p.boardType=:boardType and p.isDeleted=false")
-    Page<Post> findByBoardType(BoardType boardType, Pageable pageable);
+    Page<Post> findByBoardType(@Param("boardType") BoardType boardType, Pageable pageable);
     Page<Post> findByTitleContainingOrBodyContaining(String title, String body, Pageable pageable);
 
 }
