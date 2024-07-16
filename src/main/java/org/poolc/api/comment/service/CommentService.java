@@ -32,7 +32,7 @@ public class CommentService {
     private final PostService postService;
 
     @Transactional
-    public CommentResponse createComment(Member member, CommentCreateRequest request) {
+    public void createComment(Member member, CommentCreateRequest request) {
         Post post = postService.findById(member, request.getPostId());
         CommentCreateValues values = new CommentCreateValues(post, member, request);
 
@@ -41,8 +41,6 @@ public class CommentService {
 
         Comment comment = saveComment(values, parent);
         sendNotifications(values, parent);
-
-        return CommentResponse.of(comment);
     }
 
     @Transactional(readOnly = true)

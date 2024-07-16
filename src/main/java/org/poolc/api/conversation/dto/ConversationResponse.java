@@ -25,7 +25,7 @@ public class ConversationResponse {
         response.setOtherLoginID(conversation.getOtherLoginID());
         response.setStarterAnonymous(conversation.isStarterAnonymous());
         response.setOtherAnonymous(conversation.isOtherAnonymous());
-        response.setLastMessage(MessageResponse.of(conversation.getLastMessage()));
+        if (conversation.getLastMessage() != null) response.setLastMessage(MessageResponse.of(conversation.getLastMessage()));
         return response;
     }
 }

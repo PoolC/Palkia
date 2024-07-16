@@ -33,6 +33,7 @@ public class ConversationService {
             return ConversationResponse.of(conversationRepository.findById(conversationId).get());
         }
         Conversation conversation = new Conversation(new ConversationCreateValues(starterLoginID, request.getOtherLoginID(), request.isStarterAnonymous(), request.isOtherAnonymous()));
+        conversationRepository.save(conversation);
         return ConversationResponse.of(conversation);
     }
 

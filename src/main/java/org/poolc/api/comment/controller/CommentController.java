@@ -29,10 +29,10 @@ public class CommentController {
     private final LikeService likeService;
 
     @PostMapping
-    public ResponseEntity<CommentResponse> createComment(@AuthenticationPrincipal Member member,
+    public ResponseEntity<Void> createComment(@AuthenticationPrincipal Member member,
                                                          @RequestBody @Valid CommentCreateRequest request) {
-        CommentResponse response = commentService.createComment(member, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        commentService.createComment(member, request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("/{commentId}")
