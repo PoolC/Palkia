@@ -14,6 +14,7 @@ import org.poolc.api.post.service.PostService;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
