@@ -12,6 +12,7 @@ import org.poolc.api.member.service.MemberService;
 import org.poolc.api.post.domain.Post;
 import org.poolc.api.post.service.PostService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 import org.springframework.transaction.annotation.Transactional;
