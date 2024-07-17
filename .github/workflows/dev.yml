@@ -10,6 +10,8 @@ name: Java CI with Gradle
 on:
   push:
     branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
 
 permissions:
   contents: read
@@ -34,28 +36,26 @@ jobs:
       #  arguments: build
       run: ./gradlew clean build --exclude-task test
     - name: make directory for transfer
-      run: mkdir palkia
+      run: mkdir deploy
     - name: Copy Jar
-      run: cp ./build/libs/*.jar ./palkia/
+      run: cp ./build/libs/*.jar ./deploy/
     - name: copy file via ssh password
       uses: appleboy/scp-action@v0.1.4
       with:
         host: ${{ secrets.DEV_HOST }}
         username: ${{ secrets.DEV_USER }}
-        password: ${{ secrets.DEV_PASSWORD }}
         key: ${{ secrets.DEV_KEY }}
         port: ${{ secrets.SSH_PORT }}
-        source: "./palkia/*.jar"
-        target: /home/jimmy/k8s/
+        source: "./build/libs/*.jar"
+        target: /home/jimmy/k8s/palkia/
     - name: restart server
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.DEV_HOST }}
         username: ${{ secrets.DEV_USER }}
-        password: ${{ secrets.DEV_PASSWORD }}
         key: ${{ secrets.DEV_KEY }}
         port: ${{ secrets.SSH_PORT }}
         script: |
           kubectl delete deployment palkia-deployment
-          kubectl apply -f ./k8s/palkia-deployment.yaml
+          kubectl apply -f palkia-deployment.yaml
           kubectl rollout status deployment/palkia-deployment
