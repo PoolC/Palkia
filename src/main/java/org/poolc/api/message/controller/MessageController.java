@@ -1,16 +1,11 @@
 package org.poolc.api.message.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.poolc.api.conversation.domain.Conversation;
-import org.poolc.api.conversation.service.ConversationService;
 import org.poolc.api.member.domain.Member;
-import org.poolc.api.member.service.MemberService;
-import org.poolc.api.message.domain.Message;
 import org.poolc.api.message.dto.MessageCreateRequest;
 import org.poolc.api.message.dto.MessageResponse;
 import org.poolc.api.message.service.MessageService;
 import org.poolc.api.message.vo.MessageCreateValues;
-import org.poolc.api.notification.service.NotificationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
