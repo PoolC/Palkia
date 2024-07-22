@@ -11,12 +11,12 @@ import org.poolc.api.message.domain.Message;
 
 @Entity
 @Getter
-@Table(name = "conversations")
+@Table(name = "conversation")
 public class Conversation extends TimestampEntity {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid")
-    @Column(name = "conversation_id", columnDefinition = "CHAR(32)")
+    @Column(name = "id", columnDefinition = "CHAR(32)")
     private String id;
 
     @Column(name = "starter_login_id", nullable = false)

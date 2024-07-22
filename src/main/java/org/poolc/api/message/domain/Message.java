@@ -35,7 +35,7 @@ public class Message extends TimestampEntity {
     private Boolean deletedByOther;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "conversation", referencedColumnName = "conversation_id", nullable = false)
+    @JoinColumn(name = "conversation", referencedColumnName = "id", nullable = false)
     private Conversation conversation;
 
     /*@Column(name = "starter_anonymous", nullable = false)
