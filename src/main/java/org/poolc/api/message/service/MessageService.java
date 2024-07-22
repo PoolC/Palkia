@@ -35,8 +35,8 @@ public class MessageService {
 
     @Transactional(readOnly = true)
     public List<MessageResponse> findMessageResponsesByConversationId(Member member, String conversationId) {
-        List<Message> messageList = messageRepository.findAllByConversationID(conversationId);
-        Conversation conversation = conversationService.findConversationById(member.getLoginID(), conversationId);
+        Conversation conversation = conversationService.findConversationById(conversationId, member.getLoginID());
+        List<Message> messageList = messageRepository.findAllByConversationId(conversationId);
         conversationService.checkWhetherInvolved(conversation, member.getLoginID());
         return messageList.stream()
                 .filter(message -> !message.isDeleted())
