@@ -118,7 +118,7 @@ public class PostService {
     public void deletePost(Member member, Long postId) {
         Post post = findById(member, postId);
         checkWriterOrAdmin(member, post);
-        if (!post.getIsQuestion()) {
+        if (post.getIsQuestion() == null || !post.getIsQuestion()) {
             post.setIsDeleted();
         }
         BoardType.removePostCount(post.getBoardType());
