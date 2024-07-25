@@ -29,7 +29,8 @@ public class NotificationService {
                 .sorted(Comparator.comparing(Notification::getCreatedAt).reversed())
                 .map(NotificationResponse::of)
                 .collect(Collectors.toList());
-        return NotificationSummaryResponse.of(member.getNotificationCount(), responses);
+        long unreadCount = notificationRepository.countByReceiverIdAndReadIsFalse(member.getLoginID());
+        return NotificationSummaryResponse.of(unreadCount, responses);
     }
 
     @Transactional
@@ -40,14 +41,13 @@ public class NotificationService {
                 .sorted(Comparator.comparing(Notification::getCreatedAt).reversed())
                 .map(NotificationResponse::of)
                 .collect(Collectors.toList());
-
-        return NotificationSummaryResponse.of(member.getNotificationCount(), responses);
+        long unreadCount = notificationRepository.countByReceiverIdAndReadIsFalse(member.getLoginID());
+        return NotificationSummaryResponse.of(unreadCount, responses);
     }
     @Transactional
     public void createBadgeNotification(Member receiver) {
         Notification notification = new Notification(receiver.getLoginID(), NotificationType.BADGE);
         notificationRepository.save(notification);
-        receiver.addNotificationCount();
         //sendRealTimeNotification(notification);
     }
 
@@ -56,7 +56,6 @@ public class NotificationService {
         Member receiver = getMemberByLoginID(receiverId);
         Notification notification = new Notification(senderId, receiverId, messageId, NotificationType.MESSAGE);
         notificationRepository.save(notification);
-        receiver.addNotificationCount();
     }
 
     @Transactional
@@ -64,7 +63,6 @@ public class NotificationService {
         Member sender = getMemberByLoginID(senderId);
         Member receiver = getMemberByLoginID(receiverId);
         notificationRepository.save(new Notification(senderId, receiverId, postId, NotificationType.POST));
-        receiver.addNotificationCount();
     }
 
     @Transactional
@@ -72,7 +70,6 @@ public class NotificationService {
         Member sender = getMemberByLoginID(senderId);
         Member receiver = getMemberByLoginID(receiverId);
         notificationRepository.save(new Notification(senderId, receiverId, parentCommentId, NotificationType.COMMENT));
-        receiver.addNotificationCount();
     }
 
     @Transactional
@@ -81,7 +78,6 @@ public class NotificationService {
                 .orElseThrow(() -> new NoSuchElementException("No notification found with given id."));
         checkIfSelf(member, notification);
         notification.memberReads();
-        member.deductNotificationCount();
         return NotificationResponse.of(notification);
     }
 

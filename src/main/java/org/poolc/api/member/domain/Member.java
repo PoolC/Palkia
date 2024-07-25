@@ -72,9 +72,6 @@ public class Member extends TimestampEntity implements UserDetails {
     @JoinColumn(name = "badge_id")
     private Badge badge;
 
-    @Column(name = "notification_count", columnDefinition = "bigint default 0")
-    private Long notificationCount=0L;
-
     protected Member() {
     }
 
@@ -284,6 +281,4 @@ public class Member extends TimestampEntity implements UserDetails {
         this.badge = null;
     }
 
-    public void addNotificationCount() { this.notificationCount ++; }
-    public void deductNotificationCount() {this.notificationCount --;}
 }
