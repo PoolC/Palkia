@@ -81,7 +81,7 @@ public class PostService {
         Post post = findById(member, postId);
         checkWriter(member, post);
         post.updatePost(post.getPostType(), values);
-        postRepository.save(post);
+        // postRepository.save(post);
     }
 
     public void likePost(Member member, Long postId) {
@@ -122,7 +122,7 @@ public class PostService {
             post.setIsDeleted();
         }
         BoardType.removePostCount(post.getBoardType());
-        postRepository.save(post);
+        // postRepository.save(post);
     }
 
     public GetBoardResponse searchPost(Member member, String keyword, int page) {
