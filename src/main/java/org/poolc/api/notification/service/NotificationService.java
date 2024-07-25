@@ -1,13 +1,7 @@
 package org.poolc.api.notification.service;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.poolc.api.notification.dto.NotificationResponse;
+import org.poolc.api.notification.dto.NotificationSummaryResponse;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.member.domain.Member;
@@ -29,34 +23,31 @@ public class NotificationService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public List<NotificationResponse> getUnreadNotificationsForMember(String receiverId) {
-        return notificationRepository.findByReceiverIdAndReadStatus(receiverId, false)
+    public NotificationSummaryResponse getUnreadNotificationsForMember(Member member) {
+        List<NotificationResponse> responses = notificationRepository.findByReceiverIdAndReadStatus(member.getLoginID(), false)
                 .stream()
                 .sorted(Comparator.comparing(Notification::getCreatedAt).reversed())
                 .map(NotificationResponse::of)
                 .collect(Collectors.toList());
+        return NotificationSummaryResponse.of(member.getNotificationCount(), responses);
     }
 
     @Transactional
-    public List<Notification> getAllNotificationsForMember(String receiverId) {
-        List<Notification> notifications = notificationRepository.findAllByReceiverId(receiverId)
+    public NotificationSummaryResponse getAllNotificationsForMember(Member member) {
+        List<NotificationResponse> responses = notificationRepository.findAllByReceiverId(member.getLoginID())
                 .stream()
-                .peek(Notification::memberReads) // Apply the memberReads method
+                //.peek(Notification::memberReads) // Apply the memberReads method
                 .sorted(Comparator.comparing(Notification::getCreatedAt).reversed())
+                .map(NotificationResponse::of)
                 .collect(Collectors.toList());
 
-        Member recipient = getMemberByLoginID(receiverId);
-        if (recipient == null) {
-            throw new IllegalArgumentException("Recipient not found for the given receiverId");
-        }
-        recipient.resetNotificationCount();
-        return notifications;
+        return NotificationSummaryResponse.of(member.getNotificationCount(), responses);
     }
     @Transactional
     public void createBadgeNotification(Member receiver) {
         Notification notification = new Notification(receiver.getLoginID(), NotificationType.BADGE);
         notificationRepository.save(notification);
-        receiver.addNotification();
+        receiver.addNotificationCount();
         //sendRealTimeNotification(notification);
     }
 
@@ -65,7 +56,7 @@ public class NotificationService {
         Member receiver = getMemberByLoginID(receiverId);
         Notification notification = new Notification(senderId, receiverId, messageId, NotificationType.MESSAGE);
         notificationRepository.save(notification);
-        receiver.addNotification();
+        receiver.addNotificationCount();
     }
 
     @Transactional
@@ -73,7 +64,7 @@ public class NotificationService {
         Member sender = getMemberByLoginID(senderId);
         Member receiver = getMemberByLoginID(receiverId);
         notificationRepository.save(new Notification(senderId, receiverId, postId, NotificationType.POST));
-        receiver.addNotification();
+        receiver.addNotificationCount();
     }
 
     @Transactional
@@ -81,7 +72,7 @@ public class NotificationService {
         Member sender = getMemberByLoginID(senderId);
         Member receiver = getMemberByLoginID(receiverId);
         notificationRepository.save(new Notification(senderId, receiverId, parentCommentId, NotificationType.COMMENT));
-        receiver.addNotification();
+        receiver.addNotificationCount();
     }
 
     @Transactional
@@ -90,6 +81,7 @@ public class NotificationService {
                 .orElseThrow(() -> new NoSuchElementException("No notification found with given id."));
         checkIfSelf(member, notification);
         notification.memberReads();
+        member.deductNotificationCount();
         return NotificationResponse.of(notification);
     }
 
