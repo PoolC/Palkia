@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.poolc.api.notification.dto.NotificationResponse;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.member.domain.Member;
@@ -27,15 +29,12 @@ public class NotificationService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public List<Notification> getUnreadNotificationsForMember(String receiverId) {
-        List<Notification> notifications = notificationRepository.findByReceiverIdAndReadStatus(receiverId, false)
+    public List<NotificationResponse> getUnreadNotificationsForMember(String receiverId) {
+        return notificationRepository.findByReceiverIdAndReadStatus(receiverId, false)
                 .stream()
                 .sorted(Comparator.comparing(Notification::getCreatedAt).reversed())
+                .map(NotificationResponse::of)
                 .collect(Collectors.toList());
-        notifications.forEach(Notification::memberReads);
-        Member recipient = getMemberByLoginID(receiverId);
-        recipient.resetNotificationCount();
-        return notifications;
     }
 
     @Transactional
@@ -85,15 +84,21 @@ public class NotificationService {
         receiver.addNotification();
     }
 
-    @Transactional(readOnly = true)
-    public void readNotification(Long notificationId) {
+    @Transactional
+    public NotificationResponse readNotification(Member member, Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new NoSuchElementException("No notification found with given id."));
+        checkIfSelf(member, notification);
         notification.memberReads();
+        return NotificationResponse.of(notification);
     }
 
     private Member getMemberByLoginID(String loginID) {
         return memberRepository.findByLoginID(loginID)
                 .orElseThrow(() -> new NoSuchElementException("No user found with given loginID"));
+    }
+
+    private void checkIfSelf(Member member, Notification notification) {
+        if (!notification.getReceiverId().equals(member.getLoginID())) throw new NoSuchElementException("No notification found.");
     }
 }
