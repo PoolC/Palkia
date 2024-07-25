@@ -284,6 +284,6 @@ public class Member extends TimestampEntity implements UserDetails {
         this.badge = null;
     }
 
-    public void addNotification() { this.notificationCount ++; }
-    public void resetNotificationCount() {this.notificationCount = 0L;}
+    public void addNotificationCount() { this.notificationCount ++; }
+    public void deductNotificationCount() {this.notificationCount --;}
 }
