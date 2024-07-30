@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter(AccessLevel.PRIVATE)
 public class NotificationResponse {
+    private Long notificationId;
     private Boolean readStatus;
     private NotificationType notificationType;
     private LocalDateTime createdAt;
@@ -18,6 +19,7 @@ public class NotificationResponse {
 
     public static NotificationResponse of(Notification notification) {
         NotificationResponse response = new NotificationResponse();
+        response.setNotificationId(notification.getId());
         response.setNotificationType(notification.getNotificationType());
         response.setReadStatus(notification.getReadStatus());
         response.setCreatedAt(notification.getCreatedAt());
