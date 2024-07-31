@@ -1,20 +1,22 @@
 package org.poolc.api.conversation.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.conversation.vo.ConversationCreateValues;
 
 import javax.persistence.*;
+import org.poolc.api.message.domain.Message;
 
 @Entity
 @Getter
-@Table(name = "conversations")
+@Table(name = "conversation")
 public class Conversation extends TimestampEntity {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid")
-    @Column(name = "conversation_id", columnDefinition = "CHAR(32)")
+    @Column(name = "id", columnDefinition = "CHAR(32)")
     private String id;
 
     @Column(name = "starter_login_id", nullable = false)
@@ -22,12 +24,6 @@ public class Conversation extends TimestampEntity {
 
     @Column(name = "other_login_id", nullable = false)
     private String otherLoginID;
-
-    @Column(name = "starter_name", nullable = false)
-    private String starterName;
-
-    @Column(name = "other_name", nullable = false)
-    private String otherName;
 
     @Column(name = "starter_anonymous", nullable = false)
     private boolean starterAnonymous;
@@ -41,13 +37,15 @@ public class Conversation extends TimestampEntity {
     @Column(name = "other_deleted")
     private boolean otherDeleted = false;
 
+    @Setter
+    @OneToOne
+    private Message lastMessage;
+
     protected Conversation() {}
 
-    public Conversation(String starterLoginID, String otherLoginID, String starterName, String otherName, boolean starterAnonymous, boolean otherAnonymous) {
+    public Conversation(String starterLoginID, String otherLoginID, boolean starterAnonymous, boolean otherAnonymous) {
         this.starterLoginID = starterLoginID;
         this.otherLoginID = otherLoginID;
-        this.starterName = starterName;
-        this.otherName = otherName;
         this.starterAnonymous = starterAnonymous;
         this.otherAnonymous = otherAnonymous;
     }
@@ -55,17 +53,16 @@ public class Conversation extends TimestampEntity {
     public Conversation(ConversationCreateValues values) {
         this.starterLoginID = values.getStarterLoginID();
         this.otherLoginID = values.getOtherLoginID();
-        this.starterName = values.getStarterName();
-        this.otherName = values.getOtherName();
         this.starterAnonymous = values.isStarterAnonymous();
         this.otherAnonymous = values.isOtherAnonymous();
     }
 
-    public void setSenderDeleted() {
+    public void setStarterDeleted() {
         this.starterDeleted = true;
     }
 
     public void setReceiverDeleted() {
         this.otherDeleted = true;
     }
+
 }

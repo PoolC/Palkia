@@ -46,7 +46,7 @@ public class PostResponse {
     public static PostResponse of(Post post, boolean isScraped) {
         PostResponse response = new PostResponse();
 
-        if (post.getIsDeleted()) return null;
+        // if (post.getIsDeleted()) return null;
         if (!post.getAnonymous()) {
             response.setWriterName(post.getMember().getName());
             response.setWriterLoginId(post.getMember().getLoginID());

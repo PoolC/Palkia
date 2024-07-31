@@ -1,9 +1,11 @@
 package org.poolc.api.notification.service;
 
+import org.poolc.api.notification.dto.NotificationResponse;
+import org.poolc.api.notification.dto.NotificationSummaryResponse;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.repository.MemberRepository;
-import org.poolc.api.member.service.MemberService;
 import org.poolc.api.notification.domain.Notification;
 import org.poolc.api.notification.domain.NotificationType;
 import org.poolc.api.notification.repository.NotificationRepository;
@@ -20,62 +22,71 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final MemberRepository memberRepository;
 
-    public List<Notification> getUnreadNotificationsForMember(String receiverId) {
-        List<Notification> notifications = notificationRepository.findByReceiverIdAndReadStatus(receiverId, false)
+    @Transactional
+    public NotificationSummaryResponse getUnreadNotificationsForMember(Member member) {
+        List<NotificationResponse> responses = notificationRepository.findByReceiverIdAndReadStatus(member.getLoginID(), false)
                 .stream()
                 .sorted(Comparator.comparing(Notification::getCreatedAt).reversed())
+                .map(NotificationResponse::of)
                 .collect(Collectors.toList());
-        notifications.forEach(Notification::memberReads);
-        Member recipient = getMemberByLoginID(receiverId);
-        recipient.resetNotificationCount();
-        return notifications;
+        long unreadCount = notificationRepository.countByReceiverIdAndReadIsFalse(member.getLoginID());
+        return NotificationSummaryResponse.of(unreadCount, responses);
     }
 
-    public List<Notification> getAllNotificationsForMember(String receiverId) {
-        List<Notification> notifications = notificationRepository.findAllByReceiverId(receiverId)
+    @Transactional
+    public NotificationSummaryResponse getAllNotificationsForMember(Member member) {
+        List<NotificationResponse> responses = notificationRepository.findAllByReceiverId(member.getLoginID())
                 .stream()
+                //.peek(Notification::memberReads) // Apply the memberReads method
                 .sorted(Comparator.comparing(Notification::getCreatedAt).reversed())
+                .map(NotificationResponse::of)
                 .collect(Collectors.toList());
-        notifications.forEach(Notification::memberReads);
-        Member recipient = getMemberByLoginID(receiverId);
-        recipient.resetNotificationCount();
-        return notifications;
+        long unreadCount = notificationRepository.countByReceiverIdAndReadIsFalse(member.getLoginID());
+        return NotificationSummaryResponse.of(unreadCount, responses);
     }
-
+    @Transactional
     public void createBadgeNotification(Member receiver) {
-        notificationRepository.save(new Notification(receiver.getLoginID(), NotificationType.BADGE));
-        receiver.addNotification();
+        Notification notification = new Notification(receiver.getLoginID(), NotificationType.BADGE);
+        notificationRepository.save(notification);
+        //sendRealTimeNotification(notification);
     }
 
-    public void createMessageNotification(String senderId, String receiverId) {
-        Member sender = getMemberByLoginID(senderId);
+    @Transactional
+    public void createMessageNotification(String senderId, String receiverId, Long messageId) {
         Member receiver = getMemberByLoginID(receiverId);
-        notificationRepository.save(new Notification(senderId, receiverId, sender.getName(), NotificationType.MESSAGE));
-        receiver.addNotification();
+        Notification notification = new Notification(senderId, receiverId, messageId, NotificationType.MESSAGE);
+        notificationRepository.save(notification);
     }
 
+    @Transactional
     public void createCommentNotification(String senderId, String receiverId, Long postId) {
         Member sender = getMemberByLoginID(senderId);
         Member receiver = getMemberByLoginID(receiverId);
-        notificationRepository.save(new Notification(senderId, receiverId, sender.getName(), postId, NotificationType.COMMENT));
-        receiver.addNotification();
+        notificationRepository.save(new Notification(senderId, receiverId, postId, NotificationType.POST));
     }
 
+    @Transactional
     public void createRecommentNotification(String senderId, String receiverId, Long postId, Long parentCommentId) {
         Member sender = getMemberByLoginID(senderId);
         Member receiver = getMemberByLoginID(receiverId);
-        notificationRepository.save(new Notification(senderId, receiverId, sender.getName(), postId, parentCommentId, NotificationType.RECOMMENT));
-        receiver.addNotification();
+        notificationRepository.save(new Notification(senderId, receiverId, parentCommentId, NotificationType.COMMENT));
     }
 
-    public void readNotification(Long notificationId) {
+    @Transactional
+    public NotificationResponse readNotification(Member member, Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new NoSuchElementException("No notification with given id."));
+                .orElseThrow(() -> new NoSuchElementException("No notification found with given id."));
+        checkIfSelf(member, notification);
         notification.memberReads();
+        return NotificationResponse.of(notification);
     }
 
     private Member getMemberByLoginID(String loginID) {
         return memberRepository.findByLoginID(loginID)
                 .orElseThrow(() -> new NoSuchElementException("No user found with given loginID"));
+    }
+
+    private void checkIfSelf(Member member, Notification notification) {
+        if (!notification.getReceiverId().equals(member.getLoginID())) throw new NoSuchElementException("No notification found.");
     }
 }

@@ -33,13 +33,13 @@ public class PostController {
     @PostMapping(value = "/post/new")
     public ResponseEntity<Void> registerPost(@AuthenticationPrincipal Member member,
                                           @RequestBody PostCreateRequest request) {
-        postService.createPost(new PostCreateValues(member, request));
+        postService.createPost(member, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostResponse> viewPost(@AuthenticationPrincipal Member member, @PathVariable Long postId) {
-        Post post = postService.findPostById(member, postId);
+        Post post = postService.findById(member, postId);
         PostResponse response = PostResponse.of(post, scrapService.isScrap(member.getLoginID(),postId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -62,14 +62,14 @@ public class PostController {
     public ResponseEntity<Void> updatePost(@AuthenticationPrincipal Member member,
                                            @PathVariable Long postId,
                                            @RequestBody @Valid PostUpdateRequest request) {
-        Post post = postService.findPostById(member, postId);
+        Post post = postService.findById(member, postId);
         postService.updatePost(member, postId, new PostUpdateValues(post.getPostType(), request));
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("/post/{postId}/like")
     public ResponseEntity<Void> likePost(@AuthenticationPrincipal Member member, @PathVariable Long postId) {
-        likeService.like(member.getLoginID(), Subject.POST, postId);
+        likeService.like(member, Subject.POST, postId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

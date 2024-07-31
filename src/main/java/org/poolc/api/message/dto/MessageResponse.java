@@ -11,17 +11,14 @@ import java.time.LocalDateTime;
 @Setter(AccessLevel.PRIVATE)
 public class MessageResponse {
     private String content;
-    private String receiverName;
+    private boolean sentByStarter;
     private LocalDateTime sentAt;
 
     public static MessageResponse of(Message message) {
         MessageResponse response = new MessageResponse();
         response.setContent(message.getContent());
         response.setSentAt(message.getCreatedAt());
-
-        if (message.getOtherAnonymous()) response.setReceiverName("익명");
-        else response.setReceiverName(message.getOtherName());
-
+        response.setSentByStarter(message.getSentByStarter());
         return response;
     }
 }

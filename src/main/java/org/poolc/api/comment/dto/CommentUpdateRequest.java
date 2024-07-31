@@ -4,8 +4,8 @@ import lombok.Getter;
 
 @Getter
 public class CommentUpdateRequest {
-    private Boolean anonymous;
-    private String body;
+    private final Boolean anonymous;
+    private final String body;
 
     public CommentUpdateRequest(Boolean anonymous, String body) {
         this.anonymous = anonymous;

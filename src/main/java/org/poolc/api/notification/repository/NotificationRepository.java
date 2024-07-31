@@ -13,4 +13,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     List<Notification> findAllByReceiverId(String receiverId);
 
+    @Query("SELECT COUNT(n) FROM Notification n WHERE n.receiverId = :receiverId AND n.readStatus = false")
+    Long countByReceiverIdAndReadIsFalse(String receiverId);
 }

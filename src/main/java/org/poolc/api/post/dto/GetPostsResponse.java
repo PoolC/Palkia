@@ -11,8 +11,6 @@ import org.poolc.api.post.domain.PostType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -39,7 +37,7 @@ public class GetPostsResponse {
     public static GetPostsResponse of(Post post) {
         GetPostsResponse response = new GetPostsResponse();
 
-        if (post.getIsDeleted()) return null;
+        // if (post.getIsDeleted()) return null;
         if (!post.getAnonymous()) {
             response.setWriterName(post.getMember().getName());
             response.setWriterLoginId(post.getMember().getLoginID());

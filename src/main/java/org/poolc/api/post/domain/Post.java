@@ -13,6 +13,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static javax.persistence.FetchType.EAGER;
 
@@ -155,15 +156,16 @@ public class Post extends TimestampEntity {
     }
 
     public void updatePost(PostType postType, PostUpdateValues values) {
-        this.anonymous = values.getAnonymous();
-        this.title = values.getTitle();
-        this.body = values.getBody();
-        this.fileList = values.getFileList();
+        Optional.ofNullable(values.getAnonymous()).ifPresent(anonymous -> this.anonymous = anonymous);
+        Optional.ofNullable(values.getTitle()).ifPresent(title -> this.title = title);
+        Optional.ofNullable(values.getBody()).ifPresent(body -> this.body = body);
+        Optional.ofNullable(values.getFileList()).ifPresent(fileList -> this.fileList = fileList);
+
         if (postType == PostType.JOB_POST) {
-            this.position = values.getPosition();
-            this.region = values.getRegion();
-            this.field = values.getField();
-            this.deadline = values.getDeadline();
+            Optional.ofNullable(values.getPosition()).ifPresent(position -> this.position = position);
+            Optional.ofNullable(values.getRegion()).ifPresent(region -> this.region = region);
+            Optional.ofNullable(values.getField()).ifPresent(field -> this.field = field);
+            Optional.ofNullable(values.getDeadline()).ifPresent(deadline -> this.deadline = deadline);
         }
     }
 }

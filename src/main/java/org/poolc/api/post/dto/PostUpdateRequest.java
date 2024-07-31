@@ -22,7 +22,8 @@ public class PostUpdateRequest {
     private LocalDate deadline;
 
     @JsonCreator
-    public PostUpdateRequest(Boolean anonymous, String title, String body, List<String> fileList, List<Comment> commentList, JobType position, String region, String field, LocalDate deadline) {
+    public PostUpdateRequest(Boolean anonymous, String title, String body, List<String> fileList, List<Comment> commentList, JobType position,
+                             String region, String field, LocalDate deadline) {
         this.anonymous = anonymous;
         this.title = title;
         this.body = body;

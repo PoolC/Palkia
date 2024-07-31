@@ -6,14 +6,12 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ConversationCreateRequest {
-    private String starterLoginID;
     private String otherLoginID;
     private boolean starterAnonymous;
     private boolean otherAnonymous;
 
     protected ConversationCreateRequest() {}
-    public ConversationCreateRequest(String starterLoginID, String otherLoginID, boolean starterAnonymous, boolean otherAnonymous) {
-        this.starterLoginID = starterLoginID;
+    public ConversationCreateRequest(String otherLoginID, boolean starterAnonymous, boolean otherAnonymous) {
         this.otherLoginID = otherLoginID;
         this.starterAnonymous = starterAnonymous;
         this.otherAnonymous = otherAnonymous;

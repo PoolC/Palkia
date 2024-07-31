@@ -9,6 +9,7 @@ import org.poolc.api.post.domain.BoardType;
 import org.poolc.api.post.domain.Post;
 import org.poolc.api.post.dto.GetBoardResponse;
 import org.poolc.api.post.dto.GetPostsResponse;
+import org.poolc.api.post.dto.PostCreateRequest;
 import org.poolc.api.post.repository.PostRepository;
 import org.poolc.api.post.vo.PostCreateValues;
 import org.poolc.api.post.vo.PostUpdateValues;
@@ -31,7 +32,7 @@ public class PostService {
     //좋아요 수에 따라 뱃지 자동지급 용도
     private final BadgeConditionService badgeConditionService;
 
-    public Post findPostById(Member member, Long postId) {
+    public Post findById(Member member, Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NoSuchElementException("No post found with given post id."));
         checkReadPermission(member, post.getBoardType());
@@ -67,7 +68,8 @@ public class PostService {
     }
 
     @Transactional
-    public void createPost(PostCreateValues values) {
+    public void createPost(Member member, PostCreateRequest request) {
+        PostCreateValues values = new PostCreateValues(member, request);
         checkWritePermission(values.getMember(), values.getBoardType());
         Post post = new Post(values.getMember(), values);
         postRepository.save(post);
@@ -76,14 +78,14 @@ public class PostService {
 
     @Transactional
     public void updatePost(Member member, Long postId, PostUpdateValues values) {
-        Post post = findPostById(member, postId);
+        Post post = findById(member, postId);
         checkWriter(member, post);
         post.updatePost(post.getPostType(), values);
-        postRepository.save(post);
+        // postRepository.save(post);
     }
 
     public void likePost(Member member, Long postId) {
-        Post post = findPostById(member, postId);
+        Post post = findById(member, postId);
         checkNotWriter(member, post);
         post.addLikeCount();
         badgeConditionService.like(post.getMember());
@@ -91,7 +93,7 @@ public class PostService {
     }
 
     public void dislikePost(Member member, Long postId) {
-        Post post = findPostById(member, postId);
+        Post post = findById(member, postId);
         checkNotWriter(member, post);
         post.deductLikeCount();
         badgeConditionService.dislike(post.getMember());
@@ -99,27 +101,28 @@ public class PostService {
     }
 
     public void scrapPost(Member member, Long postId) {
-        Post post = findPostById(member, postId);
+        Post post = findById(member, postId);
         checkNotWriter(member, post);
         post.addScrapCount();
         postRepository.save(post);
     }
 
     public void unscrapPost(Member member, Long postId) {
-        Post post = findPostById(member, postId);
+        Post post = findById(member, postId);
         checkNotWriter(member, post);
         post.deductScrapCount();
         postRepository.save(post);
     }
 
+    @Transactional
     public void deletePost(Member member, Long postId) {
-        Post post = findPostById(member, postId);
+        Post post = findById(member, postId);
         checkWriterOrAdmin(member, post);
-        if (!post.getIsQuestion()) {
+        if (post.getIsQuestion() == null || !post.getIsQuestion()) {
             post.setIsDeleted();
         }
         BoardType.removePostCount(post.getBoardType());
-        postRepository.save(post);
+        // postRepository.save(post);
     }
 
     public GetBoardResponse searchPost(Member member, String keyword, int page) {

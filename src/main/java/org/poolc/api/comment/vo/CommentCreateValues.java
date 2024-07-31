@@ -1,7 +1,6 @@
 package org.poolc.api.comment.vo;
 
 import lombok.Getter;
-import org.poolc.api.comment.domain.Comment;
 import org.poolc.api.comment.dto.CommentCreateRequest;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.post.domain.Post;

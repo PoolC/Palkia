@@ -3,6 +3,7 @@ package org.poolc.api.conversation.controller;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.conversation.domain.Conversation;
 import org.poolc.api.conversation.dto.ConversationCreateRequest;
+import org.poolc.api.conversation.dto.ConversationResponse;
 import org.poolc.api.conversation.service.ConversationService;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.message.dto.MessageResponse;
@@ -23,14 +24,18 @@ public class ConversationController {
     private final ConversationService conversationService;
     private final MessageService messageService;
 
+    // get all conversations
+    @GetMapping("/all")
+    public ResponseEntity<List<ConversationResponse>> getAllConversations(@AuthenticationPrincipal Member member) {
+        return ResponseEntity.status(HttpStatus.OK).body(conversationService.findAllConversationsForLoginID(member.getLoginID()));
+    }
+
     // create conversation
     @PostMapping("/new")
-    public ResponseEntity<String> createConversation(@AuthenticationPrincipal Member member,
+    public ResponseEntity<ConversationResponse> createConversation(@AuthenticationPrincipal Member member,
                                                      @RequestBody ConversationCreateRequest request) {
-        String conversationId = conversationService.createConversation(
-                conversationService.convertToConversationCreateValues(request)
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).body(conversationId);
+        ConversationResponse response = conversationService.createConversation(member.getLoginID(), request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     // get conversation
@@ -38,31 +43,14 @@ public class ConversationController {
     public ResponseEntity<List<MessageResponse>> viewConversation(@AuthenticationPrincipal Member member,
                                                                  @PathVariable String conversationId) {
 
-        Conversation conversation = conversationService.findConversationById(conversationId, member.getLoginID());
-        List<MessageResponse> responses= messageService.findMessagesByConversationId(member, conversationId)
-                .stream()
-                .map(MessageResponse::of)
-                .collect(Collectors.toList());
-        return ResponseEntity.status(HttpStatus.OK).body(responses);
+        return ResponseEntity.status(HttpStatus.OK).body(messageService.findMessageResponsesByConversationId(member, conversationId));
     }
 
     // delete conversation
     @DeleteMapping("/{conversationId}")
     public ResponseEntity<Void> deleteConversation(@AuthenticationPrincipal Member member,
                                                    @PathVariable String conversationId) {
-        conversationService.deleteConversation(conversationId, member.getLoginID());
-
-        messageService.findMessagesByConversationId(member, conversationId)
-                .stream()
-                .map(message -> {
-                    if (message.getConversation().getStarterLoginID().equals(member.getLoginID())) {
-                        messageService.deleteMessageByStarter(member, message.getId());
-                    } else {
-                        messageService.deleteMessageByOther(member, message.getId());
-                    }
-                    return null;
-                });
-
+        conversationService.deleteConversation(member.getLoginID(), conversationId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

@@ -7,14 +7,10 @@ import org.poolc.api.message.dto.MessageCreateRequest;
 public class MessageCreateValues {
     private final String content;
     private final String conversationId;
-    private final Boolean senderAnonymous;
-    private final Boolean receiverAnonymous;
 
-    public MessageCreateValues(String conversationId, MessageCreateRequest request) {
+    public MessageCreateValues(MessageCreateRequest request) {
         this.content = request.getContent();
-        this.conversationId = conversationId;
-        this.senderAnonymous = request.getSenderAnonymous();
-        this.receiverAnonymous = request.getReceiverAnonymous();
+        this.conversationId = request.getConversationId();
     }
 
 }

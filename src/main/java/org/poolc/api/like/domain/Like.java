@@ -16,8 +16,8 @@ public class Like {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "member_id", nullable = false)
-    private String memberId;
+    @Column(name = "login_ID", nullable = false)
+    private String loginID;
 
     @Column(name = "subject", nullable = false)
     private Subject subject;
@@ -27,8 +27,8 @@ public class Like {
 
     protected Like() {}
 
-    public Like(String memberId, Subject subject, Long subjectId) {
-        this.memberId = memberId;
+    public Like(String loginID, Subject subject, Long subjectId) {
+        this.loginID = loginID;
         this.subject = subject;
         this.subjectId = subjectId;
     }
