@@ -138,16 +138,18 @@ public class BadgeService {
         return badgeRepository.findBadgeById(badgeId).get();
     }
 
-    //뱃지가 존재하는 경우에만 지급함.
+    //뱃지가 존재하고, 해당 뱃지를 받은 적이 없을 경우에만 지급함
     public void badgeGiver(Member member, Long badgeId){
         if(duplicateBadgeLogCheck(badgeId, member)&&badgeRepository.findBadgeById(badgeId).isPresent()){
-            Badge badge = getBadgeByBadgeId(badgeId);
-            badgeLogRepository.save(BadgeLog.builder()
-                    .member(member)
-                    .date(LocalDate.now())
-                    .badge(badge)
-                    .build());
-            notificationService.createBadgeNotification(member);
+            if(badgeLogRepository.findBadgeLogByUUID(member.getUUID(),badgeId).isEmpty()) {
+                Badge badge = getBadgeByBadgeId(badgeId);
+                badgeLogRepository.save(BadgeLog.builder()
+                        .member(member)
+                        .date(LocalDate.now())
+                        .badge(badge)
+                        .build());
+                notificationService.createBadgeNotification(member);
+            }
         }
     }
 }
