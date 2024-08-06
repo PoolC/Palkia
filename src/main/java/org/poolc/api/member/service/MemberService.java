@@ -229,7 +229,7 @@ public class MemberService {
     public String findNameByLoginID(String loginID) {
         Member member = memberRepository.findByLoginID(loginID)
                 .orElseThrow(() -> new NoSuchElementException("No member with given login ID."));
-        return member.getLoginID();
+        return member.getName();
     }
 
     private String resetMemberPasswordToken(String email) {
