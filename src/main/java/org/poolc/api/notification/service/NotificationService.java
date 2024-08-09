@@ -37,13 +37,20 @@ public class NotificationService {
     public NotificationSummaryResponse getAllNotificationsForMember(Member member) {
         List<NotificationResponse> responses = notificationRepository.findAllByReceiverId(member.getLoginID())
                 .stream()
-                //.peek(Notification::memberReads) // Apply the memberReads method
+                //.peek(Notification::memberReads)
                 .sorted(Comparator.comparing(Notification::getCreatedAt).reversed())
                 .map(NotificationResponse::of)
                 .collect(Collectors.toList());
         long unreadCount = notificationRepository.countByReceiverIdAndReadIsFalse(member.getLoginID());
         return NotificationSummaryResponse.of(unreadCount, responses);
     }
+
+    @Transactional
+    public void readAllNotifications(Member member) {
+        List<Notification> notifications = notificationRepository.findAllByReceiverId(member.getLoginID());
+        notifications.forEach(Notification::memberReads);
+    }
+
     @Transactional
     public void createBadgeNotification(Member receiver) {
         Notification notification = new Notification(receiver.getLoginID(), NotificationType.BADGE);

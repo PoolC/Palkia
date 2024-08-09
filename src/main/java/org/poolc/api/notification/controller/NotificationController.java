@@ -15,9 +15,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Controller
 @RequestMapping("/notification")
 @RequiredArgsConstructor
@@ -28,6 +25,12 @@ public class NotificationController {
     public ResponseEntity<NotificationResponse> viewNotification(@AuthenticationPrincipal Member member, @PathVariable("notificationId") Long notificationId) {
         NotificationResponse response = notificationService.readNotification(member, notificationId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/all")
+    public ResponseEntity<Void> viewAllNotifications(@AuthenticationPrincipal Member member) {
+        notificationService.readAllNotifications(member);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/unread")
