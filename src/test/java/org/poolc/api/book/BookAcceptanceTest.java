@@ -6,8 +6,6 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.dto.AuthResponse;
-import org.poolc.api.book.dto.BookRequest;
-import org.poolc.api.book.dto.BookResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;

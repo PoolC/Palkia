@@ -26,17 +26,32 @@ public class Book extends TimestampEntity {
     @JoinColumn(name = "borrower", referencedColumnName = "UUID")
     private Member borrower = null;
 
-    @Column(name = "title", nullable = false, length = 1024)
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "author", nullable = false, length = 1024)
-    private String author;
+    @Column(name = "link")
+    private String link;
 
-    @Column(name = "image_url", length = 1024)
+    @Column(name = "image_url")
     private String imageURL;
 
-    @Column(name = "info", length = 1024)
-    private String info;
+    @Column(name = "author", nullable = false)
+    private String author;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "discount")
+    private int discount;
+
+    @Column(name = "isbn")
+    private String isbn;
+
+    @Column(name = "publisher")
+    private String publisher;
+
+    @Column(name = "published_date")
+    private String publishedData;
 
     @Column(name = "borrow_date")
     private LocalDate borrowDate;
@@ -48,11 +63,20 @@ public class Book extends TimestampEntity {
     protected Book() {
     }
 
-    public Book(String title, String author, String imageURL, String info, BookStatus status) {
+    public Book(Long id, Member borrower, String title, String link, String imageURL, String author, String description,
+                int discount, String isbn, String publisher, String publishedData, LocalDate borrowDate, BookStatus status) {
+        this.id = id;
+        this.borrower = borrower;
         this.title = title;
-        this.author = author;
+        this.link = link;
         this.imageURL = imageURL;
-        this.info = info;
+        this.author = author;
+        this.description = description;
+        this.discount = discount;
+        this.isbn = isbn;
+        this.publisher = publisher;
+        this.publishedData = publishedData;
+        this.borrowDate = borrowDate;
         this.status = status;
     }
 
@@ -68,10 +92,4 @@ public class Book extends TimestampEntity {
         this.borrower = null;
     }
 
-    public void update(String title, String author, String imageURL, String info) {
-        this.title = title;
-        this.author = author;
-        this.imageURL = imageURL;
-        this.info = info;
-    }
 }
