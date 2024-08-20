@@ -118,7 +118,6 @@ public class BadgeService {
     }
 
     private boolean duplicateBadgeLogCheck(Long badgeId, Member member){
-        System.out.println(!badgeLogRepository.findBadgeLogByUUID(member.getUUID(), badgeId).isPresent());
         return !badgeLogRepository.findBadgeLogByUUID(member.getUUID(), badgeId).isPresent();
     }
 
@@ -140,6 +139,7 @@ public class BadgeService {
     }
 
     //뱃지가 존재하고, 해당 뱃지를 받은 적이 없을 경우에만 지급함
+    @Transactional
     public void badgeGiver(Member member, Long badgeId){
         if(duplicateBadgeLogCheck(badgeId, member)&&badgeRepository.findBadgeById(badgeId).isPresent()){
             Badge badge = getBadgeByBadgeId(badgeId);
