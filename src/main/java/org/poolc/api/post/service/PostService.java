@@ -35,7 +35,7 @@ public class PostService {
     public Post findById(Member member, Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NoSuchElementException("No post found with given post id."));
-        if (post.getBoardType() != BoardType.NOTICE) checkReadPermission(member, post.getBoardType());
+        checkReadPermission(member, post.getBoardType());
         post.getCommentList().sort(Comparator.comparing(Comment::getCreatedAt));
         return post;
     }
@@ -55,7 +55,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public GetBoardResponse findPostsByBoard(Member member, BoardType boardType, int page) {
-        if (BoardType.NOTICE != boardType) checkReadPermission(member, boardType);
+        checkReadPermission(member, boardType);
         PageRequest pr = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<Post> posts = postRepository.findByBoardType(boardType, pr);
         if (posts.getNumberOfElements() == 0) return null;
