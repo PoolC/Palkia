@@ -35,8 +35,9 @@ public class ScrapService {
         }
     }
 
-    public boolean isScrap(String memberId, Long postId){
-        if(scrapRepository.existsByMemberIdAndPostId(memberId, postId)) {
+    public boolean isScrap(Member member, Long postId){
+        if (member == null) return false;
+        if(scrapRepository.existsByMemberIdAndPostId(member.getLoginID(), postId)) {
             return true;
         }
         return false;

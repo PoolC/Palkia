@@ -40,7 +40,7 @@ public class PostController {
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostResponse> viewPost(@AuthenticationPrincipal Member member, @PathVariable Long postId) {
         Post post = postService.findById(member, postId);
-        PostResponse response = PostResponse.of(post, scrapService.isScrap(member.getLoginID(),postId));
+        PostResponse response = PostResponse.of(post, scrapService.isScrap(member, postId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
