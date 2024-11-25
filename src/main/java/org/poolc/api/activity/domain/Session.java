@@ -30,7 +30,7 @@ public class Session {
     @JoinColumn(name = "activity_id", nullable = false, referencedColumnName = "id")
     private Activity activity;
 
-    @Column(name = "description", nullable = false, columnDefinition = "varchar(1024)")
+    @Column(name = "description", nullable = false, columnDefinition = "varchar(2048)")
     private String description;
 
     @Column(name = "date", nullable = false, columnDefinition = "date")
