@@ -1,6 +1,7 @@
 package org.poolc.api.book.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
         name = "BOOK_SEQ_GENERATOR",
         sequenceName = "BOOK_SEQ"
 )
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Book extends TimestampEntity {
 
@@ -42,7 +44,7 @@ public class Book extends TimestampEntity {
     private String description;
 
     @Column(name = "discount")
-    private int discount;
+    private Integer discount;
 
     @Column(name = "isbn")
     private String isbn;
@@ -61,23 +63,6 @@ public class Book extends TimestampEntity {
     private BookStatus status = BookStatus.AVAILABLE;
 
     protected Book() {
-    }
-
-    public Book(Long id, Member borrower, String title, String link, String imageURL, String author, String description,
-                int discount, String isbn, String publisher, String publishedData, LocalDate borrowDate, BookStatus status) {
-        this.id = id;
-        this.borrower = borrower;
-        this.title = title;
-        this.link = link;
-        this.imageURL = imageURL;
-        this.author = author;
-        this.description = description;
-        this.discount = discount;
-        this.isbn = isbn;
-        this.publisher = publisher;
-        this.publishedData = publishedData;
-        this.borrowDate = borrowDate;
-        this.status = status;
     }
 
     public void borrowBook(Member member) {
