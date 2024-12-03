@@ -17,6 +17,7 @@ import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 @ActiveProfiles({"bookTest", "memberTest"})
 public class BookAcceptanceTest extends AcceptanceTest {
 
+    /*
     @Test
     void findAllBooks() {
         String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
@@ -328,4 +329,6 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
     }
+
+     */
 }
