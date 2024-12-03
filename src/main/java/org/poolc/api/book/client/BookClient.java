@@ -1,6 +1,6 @@
 package org.poolc.api.book.client;
 
-import org.poolc.api.book.dto.BookApiResponse;
+import org.poolc.api.book.dto.response.BookApiResponse;
 
 import javax.management.modelmbean.XMLParseException;
 import java.util.List;

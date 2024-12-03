@@ -1,15 +1,13 @@
 package org.poolc.api.book.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import lombok.RequiredArgsConstructor;
-import org.poolc.api.book.dto.BookApiResponse;
-import org.poolc.api.book.dto.NaverApiResponse;
+import org.poolc.api.book.dto.response.BookApiResponse;
+import org.poolc.api.book.dto.response.NaverApiResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
