@@ -42,7 +42,7 @@ public class NaverBookClient implements BookClient{
         String url = new StringBuilder(this.url)
                 .append("?query=").append(query)
                 .append("&display=").append(PAGE_SIZE)
-                .append("&start=").append((page - 1) * PAGE_SIZE + 1)
+                .append("&start=").append(page * PAGE_SIZE + 1)
                 .toString();
 
         String xmlResponse = restTemplate.exchange(url, HttpMethod.GET, entity, String.class).getBody();

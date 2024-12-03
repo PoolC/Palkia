@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 
 @RestController
 @RequestMapping("/book")
@@ -22,7 +23,8 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping("/search")
-    public ResponseEntity<?> searchBooks(@RequestParam String query, @RequestParam Integer page) {
+    public ResponseEntity<?> searchBooks(@RequestParam String query,
+                                         @RequestParam(value = "page", defaultValue = "0") @Min(0) Integer page) {
         try {
             return new ResponseEntity<>(bookClient.searchBooks(query, page), HttpStatus.OK);
         } catch (Exception e) {
@@ -31,7 +33,7 @@ public class BookController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllBooks(@RequestParam Integer page) {
+    public ResponseEntity<?> getAllBooks(@RequestParam(value = "page", defaultValue = "0") @Min(0) Integer page) {
         try {
             return new ResponseEntity<>(bookService.getAllBooks(page), HttpStatus.OK);
         } catch (Exception e) {
