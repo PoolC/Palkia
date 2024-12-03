@@ -32,3 +32,8 @@ security:
       expire-length: ${EXPIRE_LENGTH_IN_MILLISECONDS}
 file:
   file-dir: ${FILE_DIR}
+book:
+  api:
+    url: ${NAVER_BOOK_API_URL}
+    id: ${NAVER_BOOK_CLIENT_ID}
+    secret: ${NAVER_BOOK_CLIENT_SECRET}

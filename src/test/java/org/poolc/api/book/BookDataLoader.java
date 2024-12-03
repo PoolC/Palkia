@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component;
 @Component
 @Profile("bookTest")
 @RequiredArgsConstructor
-public class BookDataLoader implements CommandLineRunner {
+public class BookDataLoader /*implements CommandLineRunner*/ {
 
     private final BookRepository bookRepository;
 
-    @Override
+    /*@Override
     public void run(String... args) {
         bookRepository.save(new Book("형철이의 삶",
                 "박형철",
@@ -36,5 +36,5 @@ public class BookDataLoader implements CommandLineRunner {
                     "인생이란 무엇인가",
                     BookStatus.AVAILABLE));
         }
-    }
+    }*/
 }

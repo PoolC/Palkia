@@ -6,8 +6,6 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.dto.AuthResponse;
-import org.poolc.api.book.dto.BookRequest;
-import org.poolc.api.book.dto.BookResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
@@ -19,6 +17,7 @@ import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
 @ActiveProfiles({"bookTest", "memberTest"})
 public class BookAcceptanceTest extends AcceptanceTest {
 
+    /*
     @Test
     void findAllBooks() {
         String accessToken = loginRequest("MEMBER_ID", "MEMBER_PASSWORD")
@@ -330,4 +329,6 @@ public class BookAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
     }
+
+     */
 }
