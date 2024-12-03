@@ -20,6 +20,7 @@ import java.time.LocalDate;
 )
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
 public class Book extends TimestampEntity {
 
     @Id
@@ -34,16 +35,16 @@ public class Book extends TimestampEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "link")
+    @Column(name = "link", columnDefinition = "VARCHAR(600)")
     private String link;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", columnDefinition = "VARCHAR(600)")
     private String imageURL;
 
     @Column(name = "author", nullable = false)
     private String author;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "discount")
@@ -56,7 +57,7 @@ public class Book extends TimestampEntity {
     private String publisher;
 
     @Column(name = "published_date")
-    private String publishedData;
+    private String publishedDate;
 
     @Column(name = "borrow_date")
     private LocalDate borrowDate;
@@ -78,6 +79,18 @@ public class Book extends TimestampEntity {
         this.status = BookStatus.AVAILABLE;
         this.borrowDate = null;
         this.borrower = null;
+    }
+
+    public void update(UpdateBookRequest request) {
+        if (request.getTitle() != null) this.title = request.getTitle();
+        if (request.getLink() != null) this.link = request.getLink();
+        if (request.getImage() != null) this.imageURL = request.getImage();
+        if (request.getAuthor() != null) this.author = request.getAuthor();
+        if (request.getDescription() != null) this.description = request.getDescription();
+        if (request.getDiscount() != null) this.discount = request.getDiscount();
+        if (request.getIsbn() != null) this.isbn = request.getIsbn();
+        if (request.getPublisher() != null) this.publisher = request.getPublisher();
+        if (request.getPubdate() != null) this.publishedDate = request.getPubdate();
     }
 
 }
