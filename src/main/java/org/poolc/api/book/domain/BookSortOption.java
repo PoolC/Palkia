@@ -1,6 +1,6 @@
 package org.poolc.api.book.domain;
 
-public enum BookSort {
+public enum BookSortOption {
 
     CREATED_AT("createdAt"),
     TITLE("title"),
@@ -8,7 +8,7 @@ public enum BookSort {
 
     private final String value;
 
-    BookSort(String value) {
+    BookSortOption(String value) {
         this.value = value;
     }
 
