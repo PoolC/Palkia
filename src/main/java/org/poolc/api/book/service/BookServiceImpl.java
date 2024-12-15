@@ -2,6 +2,7 @@ package org.poolc.api.book.service;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.book.domain.Book;
+import org.poolc.api.book.domain.BookSortOption;
 import org.poolc.api.book.domain.BookStatus;
 import org.poolc.api.book.dto.request.CreateBookRequest;
 import org.poolc.api.book.dto.request.UpdateBookRequest;
@@ -22,9 +23,22 @@ public class BookServiceImpl implements BookService {
     private static final int PAGE_SIZE = 10;
 
     @Override
-    public Page<BookResponse> getAllBooks(int page) {
-        return bookRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(page, PAGE_SIZE))
-                .map(BookResponse::of);
+    public Page<BookResponse> getAllBooks(int page, BookSortOption option) {
+        Page<Book> books;
+        System.out.println("option: " + option);
+
+        if (option == null || option == BookSortOption.TITLE) {
+            books = bookRepository.findAllByOrderByTitleAsc(PageRequest.of(page, PAGE_SIZE));
+        } else if (option == BookSortOption.CREATED_AT) {
+            books = bookRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(page, PAGE_SIZE));
+        } else if (option == BookSortOption.RENT_TIME) {
+            books = bookRepository.findAllByOrderByRentDateDescTitleAsc(PageRequest.of(page, PAGE_SIZE));
+        } else {
+            throw new IllegalArgumentException("잘못된 정렬 옵션입니다.");
+        }
+
+        return books.map(BookResponse::of);
+
     }
 
     @Override
