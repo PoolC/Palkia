@@ -46,7 +46,6 @@ public class NaverBookClient implements BookClient{
                 .toString();
 
         String xmlResponse = restTemplate.exchange(url, HttpMethod.GET, entity, String.class).getBody();
-        System.out.println(xmlResponse);
 
 
         try {

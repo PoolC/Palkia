@@ -2,6 +2,7 @@ package org.poolc.api.book.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.book.client.BookClient;
+import org.poolc.api.book.domain.BookSortOption;
 import org.poolc.api.book.dto.request.CreateBookRequest;
 import org.poolc.api.book.dto.request.UpdateBookRequest;
 import org.poolc.api.book.service.BookService;
@@ -33,10 +34,13 @@ public class BookController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllBooks(@RequestParam(value = "page", defaultValue = "0") @Min(0) Integer page) {
+    public ResponseEntity<?> getAllBooks(
+            @RequestParam(value = "page", defaultValue = "0") @Min(0) Integer page,
+            @RequestParam(value = "sort", required = false) BookSortOption sortOption) {
         try {
-            return new ResponseEntity<>(bookService.getAllBooks(page), HttpStatus.OK);
+            return new ResponseEntity<>(bookService.getAllBooks(page, sortOption), HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -85,7 +89,7 @@ public class BookController {
     @PostMapping("/{id}/borrow")
     public ResponseEntity<?> borrowBook(@AuthenticationPrincipal Member member, @PathVariable Long id) {
         try {
-            bookService.borrow(member, id);
+            bookService.rent(member, id);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

@@ -2,6 +2,7 @@ package org.poolc.api.book.service;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.book.domain.Book;
+import org.poolc.api.book.domain.BookSortOption;
 import org.poolc.api.book.domain.BookStatus;
 import org.poolc.api.book.dto.request.CreateBookRequest;
 import org.poolc.api.book.dto.request.UpdateBookRequest;
@@ -22,9 +23,22 @@ public class BookServiceImpl implements BookService {
     private static final int PAGE_SIZE = 10;
 
     @Override
-    public Page<BookResponse> getAllBooks(int page) {
-        return bookRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(page, PAGE_SIZE))
-                .map(BookResponse::of);
+    public Page<BookResponse> getAllBooks(int page, BookSortOption option) {
+        Page<Book> books;
+        System.out.println("option: " + option);
+
+        if (option == null || option == BookSortOption.TITLE) {
+            books = bookRepository.findAllByOrderByTitleAsc(PageRequest.of(page, PAGE_SIZE));
+        } else if (option == BookSortOption.CREATED_AT) {
+            books = bookRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(page, PAGE_SIZE));
+        } else if (option == BookSortOption.RENT_TIME) {
+            books = bookRepository.findAllByOrderByRentDateDescTitleAsc(PageRequest.of(page, PAGE_SIZE));
+        } else {
+            throw new IllegalArgumentException("잘못된 정렬 옵션입니다.");
+        }
+
+        return books.map(BookResponse::of);
+
     }
 
     @Override
@@ -42,7 +56,8 @@ public class BookServiceImpl implements BookService {
                 .isbn(request.getIsbn())
                 .description(request.getDescription())
                 .status(BookStatus.AVAILABLE)
-                .borrowDate(null)
+                .rentDate(null)
+                .donor(request.getDonor())
                 .build();
         bookRepository.save(book);
     }
@@ -67,13 +82,13 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void borrow(Member member, Long id) throws Exception {
+    public void rent(Member member, Long id) throws Exception {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new Exception("책을 찾을 없습니다. id: " + id));
         if (book.getStatus() == BookStatus.UNAVAILABLE) {
             throw new Exception("대여 중인 책입니다. id: " + id);
         }
-        book.borrowBook(member);
+        book.rentBook(member);
     }
 
     @Override
@@ -81,7 +96,7 @@ public class BookServiceImpl implements BookService {
     public void returnBook(Member member, Long id) throws Exception {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new Exception("책을 찾을 없습니다. id: " + id));
-        if (!book.getBorrower().equals(member)) {
+        if (!book.getRenter().equals(member)) {
             throw new Exception("대여한 사람만 반납할 수 있습니다. id: " + id);
         }
         if (book.getStatus() == BookStatus.AVAILABLE) {

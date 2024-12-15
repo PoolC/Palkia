@@ -18,5 +18,6 @@ public class UpdateBookRequest {
     private String image;
     private Integer discount;
     private String link;
+    private String donor;
 
 }

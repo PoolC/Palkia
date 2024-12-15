@@ -9,7 +9,6 @@ import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Entity
@@ -29,8 +28,11 @@ public class Book extends TimestampEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "borrower", referencedColumnName = "UUID")
-    private Member borrower = null;
+    @JoinColumn(name = "renter", referencedColumnName = "UUID")
+    private Member renter = null;
+
+    @Column(name="donor")
+    private String donor;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -59,8 +61,8 @@ public class Book extends TimestampEntity {
     @Column(name = "published_date")
     private String publishedDate;
 
-    @Column(name = "borrow_date")
-    private LocalDate borrowDate;
+    @Column(name = "rent_date")
+    private LocalDate rentDate;
 
     @Column(name = "status", columnDefinition = "varchar(64) default 'AVAILABLE'")
     @Enumerated(EnumType.STRING)
@@ -69,16 +71,16 @@ public class Book extends TimestampEntity {
     protected Book() {
     }
 
-    public void borrowBook(Member member) {
+    public void rentBook(Member member) {
         this.status = BookStatus.UNAVAILABLE;
-        this.borrowDate = LocalDate.now();
-        this.borrower = member;
+        this.rentDate = LocalDate.now();
+        this.renter = member;
     }
 
     public void returnBook() {
         this.status = BookStatus.AVAILABLE;
-        this.borrowDate = null;
-        this.borrower = null;
+        this.rentDate = null;
+        this.renter = null;
     }
 
     public void update(UpdateBookRequest request) {
@@ -91,6 +93,7 @@ public class Book extends TimestampEntity {
         if (request.getIsbn() != null) this.isbn = request.getIsbn();
         if (request.getPublisher() != null) this.publisher = request.getPublisher();
         if (request.getPubdate() != null) this.publishedDate = request.getPubdate();
+        if (request.getDonor() != null) this.donor = request.getDonor();
     }
 
 }
