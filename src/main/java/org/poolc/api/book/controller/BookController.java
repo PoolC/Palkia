@@ -89,7 +89,7 @@ public class BookController {
     @PostMapping("/{id}/borrow")
     public ResponseEntity<?> borrowBook(@AuthenticationPrincipal Member member, @PathVariable Long id) {
         try {
-            bookService.borrow(member, id);
+            bookService.rent(member, id);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

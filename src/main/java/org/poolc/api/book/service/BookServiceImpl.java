@@ -67,13 +67,13 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void borrow(Member member, Long id) throws Exception {
+    public void rent(Member member, Long id) throws Exception {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new Exception("책을 찾을 없습니다. id: " + id));
         if (book.getStatus() == BookStatus.UNAVAILABLE) {
             throw new Exception("대여 중인 책입니다. id: " + id);
         }
-        book.borrowBook(member);
+        book.rentBook(member);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class BookServiceImpl implements BookService {
     public void returnBook(Member member, Long id) throws Exception {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new Exception("책을 찾을 없습니다. id: " + id));
-        if (!book.getBorrower().equals(member)) {
+        if (!book.getRenter().equals(member)) {
             throw new Exception("대여한 사람만 반납할 수 있습니다. id: " + id);
         }
         if (book.getStatus() == BookStatus.AVAILABLE) {

@@ -59,8 +59,8 @@ public class Book extends TimestampEntity {
     @Column(name = "published_date")
     private String publishedDate;
 
-    @Column(name = "borrow_date")
-    private LocalDate borrowDate;
+    @Column(name = "rent_date")
+    private LocalDate rentDate;
 
     @Column(name = "status", columnDefinition = "varchar(64) default 'AVAILABLE'")
     @Enumerated(EnumType.STRING)
@@ -69,16 +69,16 @@ public class Book extends TimestampEntity {
     protected Book() {
     }
 
-    public void borrowBook(Member member) {
+    public void rentBook(Member member) {
         this.status = BookStatus.UNAVAILABLE;
-        this.borrowDate = LocalDate.now();
-        this.borrower = member;
+        this.rentDate = LocalDate.now();
+        this.renter = member;
     }
 
     public void returnBook() {
         this.status = BookStatus.AVAILABLE;
-        this.borrowDate = null;
-        this.borrower = null;
+        this.rentDate = null;
+        this.renter = null;
     }
 
     public void update(UpdateBookRequest request) {
