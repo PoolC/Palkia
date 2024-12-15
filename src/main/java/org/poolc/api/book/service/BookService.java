@@ -1,5 +1,6 @@
 package org.poolc.api.book.service;
 
+import org.poolc.api.book.domain.BookSortOption;
 import org.poolc.api.book.dto.request.CreateBookRequest;
 import org.poolc.api.book.dto.request.UpdateBookRequest;
 import org.poolc.api.book.dto.response.BookResponse;
