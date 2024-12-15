@@ -56,7 +56,8 @@ public class BookServiceImpl implements BookService {
                 .isbn(request.getIsbn())
                 .description(request.getDescription())
                 .status(BookStatus.AVAILABLE)
-                .borrowDate(null)
+                .rentDate(null)
+                .donor(request.getDonor())
                 .build();
         bookRepository.save(book);
     }
