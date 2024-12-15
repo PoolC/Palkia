@@ -1,9 +1,10 @@
 package org.poolc.api.book.dto.request;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 
@@ -12,30 +13,39 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class CreateBookRequest {
 
-    @Length(min = 1, max = 100)
+    @NotBlank
+    @Size(max = 30)
     private String title;
 
-    @Length(min = 1, max = 100)
+    @NotBlank
+    @Size(max = 100)
     private String author;
 
-    @Length(min = 1, max = 100)
+    @NotBlank
+    @Size(max = 100)
     private String publisher;
 
-    @Length(min = 1, max = 100)
+    @NotBlank
+    @Size(max = 100)
     private String isbn;
 
-    @Length(min = 1)
+    @NotBlank
     private String description;
 
-    @Length(min = 1, max = 100)
+    @NotBlank
+    @Size(max = 100)
     private String pubdate;
 
-    @Length(min = 1)
+    @NotBlank
     private String image;
 
     @NotNull
     private Integer discount;
 
-    @Length(min = 1)
+    @NotBlank
     private String link;
+
+    @NotBlank
+    @Size(max = 100)
+    private String donor;
 }
