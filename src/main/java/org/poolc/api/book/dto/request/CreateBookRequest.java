@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -48,4 +49,7 @@ public class CreateBookRequest {
     @NotBlank
     @Size(max = 100)
     private String donor;
+
+    @Size(max = 10)
+    private List<String> tags;
 }

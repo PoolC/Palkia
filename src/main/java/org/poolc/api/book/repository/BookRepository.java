@@ -14,6 +14,11 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     Optional<Book> findBookById(Long id);
     Page<Book> findAllByOrderByCreatedAtDesc(Pageable pageable);
     Page<Book> findAllByOrderByTitleAsc(Pageable pageable);
+    Page<Book> findAllByTitleContaining(String title, Pageable pageable);
+    Page<Book> findAllByAuthorContaining(String author, Pageable pageable);
+
+    @Query("SELECT b FROM Book b WHERE :tag MEMBER OF b.tags")
+    Page<Book> findAllByTagsContaining(String tag, Pageable pageable);
 
     @Query("SELECT b FROM Book b " +
             "ORDER BY CASE WHEN b.rentDate IS NULL THEN 0 ELSE 1 END, " +

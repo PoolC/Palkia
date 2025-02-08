@@ -2,6 +2,7 @@ package org.poolc.api.book.service;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.book.domain.Book;
+import org.poolc.api.book.domain.BookSearchOption;
 import org.poolc.api.book.domain.BookSortOption;
 import org.poolc.api.book.domain.BookStatus;
 import org.poolc.api.book.dto.request.CreateBookRequest;
@@ -25,7 +26,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public Page<BookResponse> getAllBooks(int page, BookSortOption option) {
         Page<Book> books;
-        System.out.println("option: " + option);
+//        System.out.println("option: " + option);
 
         if (option == null || option == BookSortOption.TITLE) {
             books = bookRepository.findAllByOrderByTitleAsc(PageRequest.of(page, PAGE_SIZE));
@@ -39,6 +40,21 @@ public class BookServiceImpl implements BookService {
 
         return books.map(BookResponse::of);
 
+    }
+
+    @Override
+    public Page<BookResponse> searchBooks(int page, BookSearchOption option, String keyword) {
+        Page<Book> books;
+        if (option == BookSearchOption.TITLE) {
+            books = bookRepository.findAllByTitleContaining(keyword, PageRequest.of(page, PAGE_SIZE));
+        } else if (option == BookSearchOption.AUTHOR) {
+            books = bookRepository.findAllByAuthorContaining(keyword, PageRequest.of(page, PAGE_SIZE));
+        } else if (option == BookSearchOption.TAG) {
+            books = bookRepository.findAllByTagsContaining(keyword, PageRequest.of(page, PAGE_SIZE));
+        } else {
+            throw new IllegalArgumentException("잘못된 검색 옵션입니다.");
+        }
+        return books.map(BookResponse::of);
     }
 
     @Override
@@ -58,6 +74,7 @@ public class BookServiceImpl implements BookService {
                 .status(BookStatus.AVAILABLE)
                 .rentDate(null)
                 .donor(request.getDonor())
+                .tags(request.getTags())
                 .build();
         bookRepository.save(book);
     }

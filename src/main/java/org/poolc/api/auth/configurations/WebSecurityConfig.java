@@ -96,6 +96,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/book").permitAll()
                 .antMatchers(HttpMethod.GET, "/book/*").permitAll()
                 .antMatchers(HttpMethod.POST, "/book").hasAuthority(MemberRole.ADMIN.name())
+                .antMatchers(HttpMethod.POST, "/book/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.PUT, "/book/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.DELETE, "/book/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.PUT, "/book/borrow/*").hasAuthority(MemberRole.MEMBER.name())

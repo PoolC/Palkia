@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,5 +21,5 @@ public class UpdateBookRequest {
     private Integer discount;
     private String link;
     private String donor;
-
+    private List<String> tags;
 }

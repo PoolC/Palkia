@@ -10,6 +10,7 @@ import org.poolc.api.member.domain.Member;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -64,6 +65,10 @@ public class Book extends TimestampEntity {
     @Column(name = "rent_date")
     private LocalDate rentDate;
 
+    @ElementCollection
+    @CollectionTable(name = "book_tags",joinColumns = @JoinColumn(name = "id", referencedColumnName = "id"))
+    private List<String> tags;
+
     @Column(name = "status", columnDefinition = "varchar(64) default 'AVAILABLE'")
     @Enumerated(EnumType.STRING)
     private BookStatus status = BookStatus.AVAILABLE;
@@ -94,6 +99,7 @@ public class Book extends TimestampEntity {
         if (request.getPublisher() != null) this.publisher = request.getPublisher();
         if (request.getPubdate() != null) this.publishedDate = request.getPubdate();
         if (request.getDonor() != null) this.donor = request.getDonor();
+        if (request.getTags() != null) this.tags = request.getTags();
     }
 
 }
