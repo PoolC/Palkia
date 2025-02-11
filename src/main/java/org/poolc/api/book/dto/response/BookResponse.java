@@ -8,6 +8,8 @@ import org.poolc.api.book.domain.Book;
 import org.poolc.api.book.domain.BookStatus;
 
 import java.time.LocalDate;
+import java.util.List;
+
 import org.poolc.api.member.dto.MemberResponse;
 
 @Getter
@@ -31,6 +33,7 @@ public class BookResponse {
 
     private MemberResponse borrower;
     private String donor;
+    private List<String> tags;
 
     public static BookResponse of(Book book) {
         return BookResponse.builder()
@@ -48,6 +51,7 @@ public class BookResponse {
                 .status(book.getStatus())
                 .donor(book.getDonor())
                 .borrower(book.getRenter() == null ? null : MemberResponse.of(book.getRenter()))
+                .tags(book.getTags())
                 .build();
     }
 

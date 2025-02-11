@@ -42,9 +42,10 @@ public class BookController {
     public ResponseEntity<Page<BookResponse>> searchBooks(
             @RequestParam(value = "page", defaultValue = "0") @Min(0) Integer page,
             @RequestParam(value = "search", required = true)BookSearchOption searchOption,
-            @RequestParam(value = "keyword", required = true) String keyword) {
+            @RequestParam(value = "keyword", required = true) String keyword,
+            @RequestParam(value = "sort", required = false) BookSortOption sortOption) {
         try {
-            return new ResponseEntity<>(bookService.searchBooks(page,searchOption,keyword), HttpStatus.OK);
+            return new ResponseEntity<>(bookService.searchBooks(page,searchOption,keyword,sortOption), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

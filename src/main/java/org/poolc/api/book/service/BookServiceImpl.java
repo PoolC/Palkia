@@ -43,14 +43,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Page<BookResponse> searchBooks(int page, BookSearchOption option, String keyword) {
+    public Page<BookResponse> searchBooks(int page, BookSearchOption option, String keyword, BookSortOption sortOption) {
         Page<Book> books;
+        if(sortOption == null) {
+            sortOption = BookSortOption.TITLE;
+        }
         if (option == BookSearchOption.TITLE) {
-            books = bookRepository.findAllByTitleContaining(keyword, PageRequest.of(page, PAGE_SIZE));
+            books = bookRepository.findAllByTitleContaining(keyword,sortOption.name(), PageRequest.of(page, PAGE_SIZE));
         } else if (option == BookSearchOption.AUTHOR) {
-            books = bookRepository.findAllByAuthorContaining(keyword, PageRequest.of(page, PAGE_SIZE));
+            books = bookRepository.findAllByAuthorContaining(keyword,sortOption.name(), PageRequest.of(page, PAGE_SIZE));
         } else if (option == BookSearchOption.TAG) {
-            books = bookRepository.findAllByTagsContaining(keyword, PageRequest.of(page, PAGE_SIZE));
+            books = bookRepository.findAllByTagsContaining(keyword,sortOption.name(), PageRequest.of(page, PAGE_SIZE));
         } else {
             throw new IllegalArgumentException("잘못된 검색 옵션입니다.");
         }
