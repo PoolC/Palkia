@@ -37,3 +37,4 @@ book:
     url: ${NAVER_BOOK_API_URL}
     id: ${NAVER_BOOK_CLIENT_ID}
     secret: ${NAVER_BOOK_CLIENT_SECRET}
+
