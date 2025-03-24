@@ -1,10 +1,7 @@
 package org.poolc.api.book.service;
 
 import lombok.RequiredArgsConstructor;
-import org.poolc.api.book.domain.Book;
-import org.poolc.api.book.domain.BookSearchOption;
-import org.poolc.api.book.domain.BookSortOption;
-import org.poolc.api.book.domain.BookStatus;
+import org.poolc.api.book.domain.*;
 import org.poolc.api.book.dto.request.CreateBookRequest;
 import org.poolc.api.book.dto.request.UpdateBookRequest;
 import org.poolc.api.book.dto.response.BookResponse;
@@ -49,11 +46,11 @@ public class BookServiceImpl implements BookService {
             sortOption = BookSortOption.TITLE;
         }
         if (option == BookSearchOption.TITLE) {
-            books = bookRepository.findAllByTitleContaining(keyword,sortOption.name(), PageRequest.of(page, PAGE_SIZE));
-        } else if (option == BookSearchOption.AUTHOR) {
-            books = bookRepository.findAllByAuthorContaining(keyword,sortOption.name(), PageRequest.of(page, PAGE_SIZE));
+            books = bookRepository.findAll(BookSpecification.findByTitleAndSortOption(keyword, sortOption.name()), PageRequest.of(page, PAGE_SIZE));
+        }else if (option == BookSearchOption.AUTHOR) {
+            books = bookRepository.findAll(BookSpecification.findByAuthorAndSortOption(keyword, sortOption.name()), PageRequest.of(page, PAGE_SIZE));
         } else if (option == BookSearchOption.TAG) {
-            books = bookRepository.findAllByTagsContaining(keyword,sortOption.name(), PageRequest.of(page, PAGE_SIZE));
+            books = bookRepository.findAll(BookSpecification.findByTagsContainingAndSortOption(keyword, sortOption.name()), PageRequest.of(page, PAGE_SIZE));
         } else {
             throw new IllegalArgumentException("잘못된 검색 옵션입니다.");
         }
