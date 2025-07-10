@@ -1,12 +1,16 @@
 package org.poolc.api.book.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import org.poolc.api.book.dto.request.UpdateBookRequest;
 import org.poolc.api.common.domain.TimestampEntity;
 import org.poolc.api.member.domain.Member;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -14,7 +18,9 @@ import java.time.LocalDate;
         name = "BOOK_SEQ_GENERATOR",
         sequenceName = "BOOK_SEQ"
 )
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
 public class Book extends TimestampEntity {
 
     @Id
@@ -23,23 +29,45 @@ public class Book extends TimestampEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "borrower", referencedColumnName = "UUID")
-    private Member borrower = null;
+    @JoinColumn(name = "renter", referencedColumnName = "UUID")
+    private Member renter = null;
 
-    @Column(name = "title", nullable = false, length = 1024)
+    @Column(name="donor")
+    private String donor;
+
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "author", nullable = false, length = 1024)
-    private String author;
+    @Column(name = "link", columnDefinition = "VARCHAR(600)")
+    private String link;
 
-    @Column(name = "image_url", length = 1024)
+    @Column(name = "image_url", columnDefinition = "VARCHAR(600)")
     private String imageURL;
 
-    @Column(name = "info", length = 1024)
-    private String info;
+    @Column(name = "author", nullable = false)
+    private String author;
 
-    @Column(name = "borrow_date")
-    private LocalDate borrowDate;
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "discount")
+    private Integer discount;
+
+    @Column(name = "isbn")
+    private String isbn;
+
+    @Column(name = "publisher")
+    private String publisher;
+
+    @Column(name = "published_date")
+    private String publishedDate;
+
+    @Column(name = "rent_date")
+    private LocalDate rentDate;
+
+    @ElementCollection
+    @CollectionTable(name = "book_tags",joinColumns = @JoinColumn(name = "id", referencedColumnName = "id"))
+    private List<String> tags;
 
     @Column(name = "status", columnDefinition = "varchar(64) default 'AVAILABLE'")
     @Enumerated(EnumType.STRING)
@@ -48,30 +76,30 @@ public class Book extends TimestampEntity {
     protected Book() {
     }
 
-    public Book(String title, String author, String imageURL, String info, BookStatus status) {
-        this.title = title;
-        this.author = author;
-        this.imageURL = imageURL;
-        this.info = info;
-        this.status = status;
-    }
-
-    public void borrowBook(Member member) {
+    public void rentBook(Member member) {
         this.status = BookStatus.UNAVAILABLE;
-        this.borrowDate = LocalDate.now();
-        this.borrower = member;
+        this.rentDate = LocalDate.now();
+        this.renter = member;
     }
 
     public void returnBook() {
         this.status = BookStatus.AVAILABLE;
-        this.borrowDate = null;
-        this.borrower = null;
+        this.rentDate = null;
+        this.renter = null;
     }
 
-    public void update(String title, String author, String imageURL, String info) {
-        this.title = title;
-        this.author = author;
-        this.imageURL = imageURL;
-        this.info = info;
+    public void update(UpdateBookRequest request) {
+        if (request.getTitle() != null) this.title = request.getTitle();
+        if (request.getLink() != null) this.link = request.getLink();
+        if (request.getImage() != null) this.imageURL = request.getImage();
+        if (request.getAuthor() != null) this.author = request.getAuthor();
+        if (request.getDescription() != null) this.description = request.getDescription();
+        if (request.getDiscount() != null) this.discount = request.getDiscount();
+        if (request.getIsbn() != null) this.isbn = request.getIsbn();
+        if (request.getPublisher() != null) this.publisher = request.getPublisher();
+        if (request.getPubdate() != null) this.publishedDate = request.getPubdate();
+        if (request.getDonor() != null) this.donor = request.getDonor();
+        if (request.getTags() != null) this.tags = request.getTags();
     }
+
 }

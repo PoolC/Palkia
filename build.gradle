@@ -66,6 +66,10 @@ dependencies {
     implementation 'org.hibernate:hibernate-core'
     implementation 'org.hibernate:hibernate-entitymanager'
 
+    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.18.1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.18.1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.18.1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.18.1'
     //compile group: 'io.springfox', name: 'springfox-swagger2', version: '3.0.0'
     //compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
 

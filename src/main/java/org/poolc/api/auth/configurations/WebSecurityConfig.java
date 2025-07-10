@@ -39,11 +39,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
         configuration.setAllowedOrigins(Arrays.asList(
-                "https://alpha.poolc.org", "http://localhost:3000",
-                "https://server.poolc.kr", "http://server.poolc.kr",
-                "http://poolc.kr","https://poolc.kr",
-                "https://poolc.org", "http://poolc.org","https://poolc.org/api", "http://poolc.org/api",
-                "https://dev.poolc.org", "http://dev.poolc.org","https://dev.poolc.org/api", "http://dev.poolc.org/api",
+                "http://localhost:3000",
+                "https://poolc.org", "http://poolc.org"
+                ,"https://poolc.org/api", "http://poolc.org/api",
+                "https://dev.poolc.org", "http://dev.poolc.org"
+                ,"https://api.poolc.org","http://api.poolc.org",
                 "chrome-extension://doeamknhlolnflkmhbhkagganhjjbefe"
         ));
         configuration.setAllowedHeaders(Arrays.asList(
@@ -96,6 +96,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/book").permitAll()
                 .antMatchers(HttpMethod.GET, "/book/*").permitAll()
                 .antMatchers(HttpMethod.POST, "/book").hasAuthority(MemberRole.ADMIN.name())
+                .antMatchers(HttpMethod.POST, "/book/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.PUT, "/book/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.DELETE, "/book/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.PUT, "/book/borrow/*").hasAuthority(MemberRole.MEMBER.name())
