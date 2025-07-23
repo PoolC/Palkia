@@ -38,3 +38,6 @@ book:
     id: ${NAVER_BOOK_CLIENT_ID}
     secret: ${NAVER_BOOK_CLIENT_SECRET}
 
+kubernetes:
+  api:
+    key: ${KUBERNETES_API_KEY}

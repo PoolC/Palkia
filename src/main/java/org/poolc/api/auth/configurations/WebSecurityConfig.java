@@ -152,6 +152,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT, "/interview/slots/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.DELETE, "/interview/slots/*").hasAuthority(MemberRole.ADMIN.name())
                 .antMatchers(HttpMethod.PUT, "/interview/slots").hasAuthority(MemberRole.ADMIN.name())
+
+                .antMatchers(HttpMethod.GET, "/kubernetes/").permitAll()
+                .antMatchers(HttpMethod.POST, "/kubernetes/").permitAll()
                 .antMatchers("/**").permitAll()
 
                 .anyRequest().authenticated().and()
