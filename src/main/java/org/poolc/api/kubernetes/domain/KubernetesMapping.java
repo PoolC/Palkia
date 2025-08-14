@@ -19,7 +19,7 @@ public class KubernetesMapping {
     @Column(name = "user_uuid",nullable = false)
     private String UUID;
 
-    @Column(name = "kubernetes_key", nullable = false)
+    @Column(name = "kubernetes_key", nullable = false, columnDefinition = "TEXT")
     private String kubernetesKey;
 
     @Builder
