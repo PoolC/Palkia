@@ -7,10 +7,10 @@ import java.util.List;
 
 @Getter
 public class GetKubernetesResponseDto {
-    private final List<String> activeMembers;
+    private final List<ActiveMemberDto> activeMembers;
 
     @JsonCreator
-    public GetKubernetesResponseDto(List<String> activeMembers) {
+    public GetKubernetesResponseDto(List<ActiveMemberDto> activeMembers) {
         this.activeMembers = activeMembers;
     }
 }

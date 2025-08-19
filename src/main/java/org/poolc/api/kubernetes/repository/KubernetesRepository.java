@@ -1,6 +1,7 @@
 package org.poolc.api.kubernetes.repository;
 
 import org.poolc.api.kubernetes.domain.KubernetesMapping;
+import org.poolc.api.kubernetes.dto.ActiveMemberDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,19 +13,22 @@ import java.util.Optional;
 public interface KubernetesRepository extends JpaRepository<KubernetesMapping, Long> {
 
 
-    @Query(value = "SELECT DISTINCT MEMBER_UUID\n" +
-            "FROM ROLES\n" +
-            "WHERE MEMBER_UUID IN (\n" +
+    @Query(value = "SELECT DISTINCT T2.MEMBER_UUID\n" +
+            "   , (SELECT login_id" +
+            "       FROM MEMBER T1" +
+            "       WHERE T1.UUID = T2.MEMBER_UUID)\n" +
+            "FROM ROLES T2\n" +
+            "WHERE T2.MEMBER_UUID IN (\n" +
             "    SELECT MEMBER_UUID\n" +
             "    FROM ROLES\n" +
             "    WHERE ROLES = 'MEMBER'\n" +
             ")\n" +
-            "AND MEMBER_UUID NOT IN (\n" +
+            "AND T2.MEMBER_UUID NOT IN (\n" +
             "    SELECT MEMBER_UUID\n" +
             "    FROM ROLES\n" +
             "    WHERE ROLES = 'INACTIVE'\n" +
             ")", nativeQuery = true)
-    List<String> findAllActiveMembers();
+    List<ActiveMemberDto> findAllActiveMembers();
 
     @Modifying
     @Transactional
