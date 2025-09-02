@@ -35,6 +35,6 @@ public interface KubernetesRepository extends JpaRepository<KubernetesMapping, L
     @Query(value = "TRUNCATE TABLE KUBERNETES_MAPPINGS", nativeQuery = true)
     void truncateKubernetesMappingTable();
 
-    @Query(value = "SELECT kubernetesKey FROM kubernetes_mappings WHERE UUID IN (SELECT UUID FROM Member WHERE loginID = :userId)")
-    Optional<String> findKubernetesKeyByUserId(String userId);
+    @Query(value = "SELECT kubernetesKey FROM kubernetes_mappings WHERE UUID = :UUID")
+    Optional<String> findKubernetesKeyByUUID(String UUID);
 }

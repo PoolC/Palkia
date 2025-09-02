@@ -44,9 +44,10 @@ public class KubernetesService {
         kubernetesRepository.saveAll(mappings);
     }
 
-    public String getKubernetesKeyByUserId(String userId) {
-        return kubernetesRepository.findKubernetesKeyByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("No Kubernetes key found for user: " + userId));
+    public String getKubernetesKeyByUUID(String UUID) {
+        System.out.println(UUID);
+        return kubernetesRepository.findKubernetesKeyByUUID(UUID)
+                .orElseThrow(() -> new IllegalArgumentException("No Kubernetes key found for user: " + UUID));
     }
 
     private boolean isValidApiKey(String apiKey) {
