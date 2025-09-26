@@ -2,6 +2,7 @@ package org.poolc.api.kubernetes.service;
 
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.kubernetes.domain.KubernetesMapping;
+import org.poolc.api.kubernetes.dto.ActiveMemberDto;
 import org.poolc.api.kubernetes.repository.KubernetesRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ public class KubernetesService {
     @Value("${kubernetes.api.key}")
     private String API_KEY;
 
-    public List<String> getAllActiveMembers(String apiKey) {
+    public List<ActiveMemberDto> getAllActiveMembers(String apiKey) {
         if(!isValidApiKey(apiKey)) {
             throw new IllegalArgumentException("Invalid API key");
         }
@@ -43,9 +44,9 @@ public class KubernetesService {
         kubernetesRepository.saveAll(mappings);
     }
 
-    public String getKubernetesKeyByUserId(String userId) {
-        return kubernetesRepository.findKubernetesKeyByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("No Kubernetes key found for user: " + userId));
+    public String getKubernetesKeyByUUID(String UUID) {
+        return kubernetesRepository.findKubernetesKeyByUUID(UUID)
+                .orElseThrow(() -> new IllegalArgumentException("No Kubernetes key found for the authenticated user"));
     }
 
     private boolean isValidApiKey(String apiKey) {

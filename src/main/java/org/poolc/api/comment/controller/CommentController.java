@@ -54,4 +54,5 @@ public class CommentController {
         likeService.like(member, Subject.COMMENT, commentId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
 }
