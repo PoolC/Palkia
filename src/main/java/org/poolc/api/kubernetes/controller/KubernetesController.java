@@ -36,7 +36,6 @@ public class KubernetesController {
 
     @GetMapping(value="/me")
     public ResponseEntity<GetMyKubernetesKeyResponseDto> getMyKey(@AuthenticationPrincipal Member loginMember){
-        System.out.println("loginID : "+loginMember.getLoginID());
         GetMyKubernetesKeyResponseDto response = new GetMyKubernetesKeyResponseDto(
                 kubernetesService.getKubernetesKeyByUUID(loginMember.getUUID())
         );

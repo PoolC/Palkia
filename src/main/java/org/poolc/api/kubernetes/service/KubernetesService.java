@@ -45,7 +45,6 @@ public class KubernetesService {
     }
 
     public String getKubernetesKeyByUUID(String UUID) {
-        System.out.println(UUID);
         return kubernetesRepository.findKubernetesKeyByUUID(UUID)
                 .orElseThrow(() -> new IllegalArgumentException("No Kubernetes key found for user: " + UUID));
     }
