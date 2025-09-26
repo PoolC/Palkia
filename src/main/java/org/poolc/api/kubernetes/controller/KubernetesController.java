@@ -5,6 +5,7 @@ import org.poolc.api.kubernetes.dto.GetKubernetesResponseDto;
 import org.poolc.api.kubernetes.dto.GetMyKubernetesKeyResponseDto;
 import org.poolc.api.kubernetes.service.KubernetesService;
 import org.poolc.api.member.domain.Member;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -36,10 +37,17 @@ public class KubernetesController {
 
     @GetMapping(value="/me")
     public ResponseEntity<GetMyKubernetesKeyResponseDto> getMyKey(@AuthenticationPrincipal Member loginMember){
-        GetMyKubernetesKeyResponseDto response = new GetMyKubernetesKeyResponseDto(
-                kubernetesService.getKubernetesKeyByUUID(loginMember.getUUID())
-        );
-        return ResponseEntity.ok().body(response);
+        if (loginMember == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            GetMyKubernetesKeyResponseDto response = new GetMyKubernetesKeyResponseDto(
+                    kubernetesService.getKubernetesKeyByUUID(loginMember.getUUID())
+            );
+            return ResponseEntity.ok().body(response);
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }
