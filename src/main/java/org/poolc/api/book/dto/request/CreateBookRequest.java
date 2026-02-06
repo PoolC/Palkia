@@ -22,27 +22,21 @@ public class CreateBookRequest {
     @Size(max = 100)
     private String author;
 
-    @NotBlank
     @Size(max = 100)
     private String publisher;
 
-    @NotBlank
     @Size(max = 100)
     private String isbn;
 
     private String description;
 
-    @NotBlank
     @Size(max = 100)
     private String pubdate;
 
-    @NotBlank
     private String image;
 
-    @NotNull
     private Integer discount;
 
-    @NotBlank
     private String link;
 
     @Size(max = 100)
