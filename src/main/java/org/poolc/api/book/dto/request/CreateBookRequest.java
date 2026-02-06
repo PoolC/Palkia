@@ -30,7 +30,6 @@ public class CreateBookRequest {
     @Size(max = 100)
     private String isbn;
 
-    @NotBlank
     private String description;
 
     @NotBlank
@@ -46,7 +45,6 @@ public class CreateBookRequest {
     @NotBlank
     private String link;
 
-    @NotBlank
     @Size(max = 100)
     private String donor;
 
