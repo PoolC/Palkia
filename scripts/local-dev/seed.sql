@@ -727,8 +727,52 @@ INSERT INTO project_members (project_id, member_loginids) VALUES
 
 INSERT INTO book (id, created_at, updated_at, author, description, discount, donor, image_url, isbn, link, published_date, publisher, rent_date, status, title, renter)
 VALUES
-  (1, now(), now(), 'Martin Fowler', '리팩토링 기본기를 확인하기 위한 개발용 도서 데이터입니다.', 0, 'PoolC', '', '9788966263493', 'https://example.com/refactoring', '2020', '한빛미디어', NULL, 'AVAILABLE', 'Refactoring', NULL),
-  (2, now(), now(), 'Robert C. Martin', '클린 코드 관련 개발용 도서 데이터입니다.', 0, 'PoolC', '', '9788966260959', 'https://example.com/clean-code', '2013', '인사이트', NULL, 'AVAILABLE', 'Clean Code', NULL);
+  (1, now(), now(), 'Martin Fowler', '리팩토링 기본기를 확인하기 위한 개발용 도서 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9780134757599-L.jpg', '9788966263493', 'https://example.com/refactoring', '2020', '한빛미디어', NULL, 'AVAILABLE', 'Refactoring', NULL),
+  (2, now(), now(), 'Robert C. Martin', '클린 코드 관련 개발용 도서 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9780132350884-L.jpg', '9788966260959', 'https://example.com/clean-code', '2013', '인사이트', NULL, 'AVAILABLE', 'Clean Code', NULL),
+  (3, now() - interval '1 day', now() - interval '1 day', 'Andrew Hunt, David Thomas', '실용적인 개발 습관과 문제 해결 관점을 확인하기 위한 개발용 도서 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9780201616224-L.jpg', '9780201616224', 'https://example.com/pragmatic-programmer', '1999', 'Addison-Wesley', NULL, 'AVAILABLE', 'Pragmatic Programmer', NULL),
+  (4, now() - interval '2 days', now() - interval '2 days', 'Eric Evans', '도메인 모델링과 복잡한 소프트웨어 설계를 확인하기 위한 개발용 도서 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9780321125217-L.jpg', '9780321125217', 'https://example.com/domain-driven-design', '2003', 'Addison-Wesley', NULL, 'AVAILABLE', 'Domain-Driven Design', NULL),
+  (5, now() - interval '3 days', now() - interval '3 days', 'Martin Kleppmann', '데이터 중심 애플리케이션 설계 개념을 확인하기 위한 개발용 도서 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9781449373320-L.jpg', '9781449373320', 'https://example.com/designing-data-intensive-applications', '2017', 'O''Reilly Media', NULL, 'AVAILABLE', 'Data-Intensive Apps', NULL),
+  (6, now() - interval '4 days', now() - interval '4 days', 'Thomas H. Cormen', '알고리즘 기초와 자료구조 학습용 개발 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9780262033848-L.jpg', '9780262033848', 'https://example.com/clrs', '2009', 'MIT Press', NULL, 'AVAILABLE', 'Introduction to Algorithms', NULL),
+  (7, now() - interval '5 days', now() - interval '5 days', 'Harold Abelson', '컴퓨터 프로그램의 구조와 해석을 다루는 개발용 도서 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9780262510875-L.jpg', '9780262510875', 'https://example.com/sicp', '1996', 'MIT Press', NULL, 'AVAILABLE', 'SICP', NULL),
+  (8, now() - interval '6 days', now() - interval '6 days', 'Erich Gamma', '객체지향 디자인 패턴 목록 화면 확인용 개발 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9780201633610-L.jpg', '9780201633610', 'https://example.com/design-patterns', '1994', 'Addison-Wesley', NULL, 'AVAILABLE', 'Design Patterns', NULL),
+  (9, now() - interval '7 days', now() - interval '7 days', 'Michael C. Feathers', '레거시 코드 개선 흐름 확인용 개발 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9780131177055-L.jpg', '9780131177055', 'https://example.com/working-effectively-with-legacy-code', '2004', 'Prentice Hall', NULL, 'AVAILABLE', 'Legacy Code', NULL),
+  (10, now() - interval '8 days', now() - interval '8 days', 'Joshua Bloch', '자바 API와 객체 설계 예시를 위한 개발용 도서 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9780134685991-L.jpg', '9780134685991', 'https://example.com/effective-java', '2018', 'Addison-Wesley', NULL, 'AVAILABLE', 'Effective Java', NULL),
+  (11, now() - interval '9 days', now() - interval '9 days', 'Kyle Simpson', '자바스크립트 언어 동작 확인용 개발 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9781491904244-L.jpg', '9781491904244', 'https://example.com/you-dont-know-js', '2015', 'O''Reilly Media', NULL, 'AVAILABLE', 'You Don''t Know JS', NULL),
+  (12, now() - interval '10 days', now() - interval '10 days', 'David Flanagan', '자바스크립트 레퍼런스 도서 카드 확인용 개발 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9781491952023-L.jpg', '9781491952023', 'https://example.com/javascript-definitive-guide', '2020', 'O''Reilly Media', NULL, 'AVAILABLE', 'JavaScript Guide', NULL),
+  (13, now() - interval '11 days', now() - interval '11 days', 'Marijn Haverbeke', '웹 프로그래밍 학습용 더미 도서 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9781593279509-L.jpg', '9781593279509', 'https://example.com/eloquent-javascript', '2018', 'No Starch Press', NULL, 'AVAILABLE', 'Eloquent JavaScript', NULL),
+  (14, now() - interval '12 days', now() - interval '12 days', 'Steve McConnell', '소프트웨어 구성과 구현 품질을 다루는 개발용 도서 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9780735619678-L.jpg', '9780735619678', 'https://example.com/code-complete', '2004', 'Microsoft Press', NULL, 'AVAILABLE', 'Code Complete', NULL),
+  (15, now() - interval '13 days', now() - interval '13 days', 'Kent Beck', '테스트 주도 개발 카드 표시 확인용 개발 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9780321146533-L.jpg', '9780321146533', 'https://example.com/test-driven-development', '2002', 'Addison-Wesley', NULL, 'AVAILABLE', 'TDD by Example', NULL),
+  (16, now() - interval '14 days', now() - interval '14 days', 'Steve Freeman, Nat Pryce', '테스트와 객체지향 설계 학습용 개발 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9780321503626-L.jpg', '9780321503626', 'https://example.com/growing-object-oriented-software', '2009', 'Addison-Wesley', NULL, 'AVAILABLE', 'GOOS', NULL),
+  (17, now() - interval '15 days', now() - interval '15 days', 'Sam Newman', '마이크로서비스 설계와 운영 개념 확인용 개발 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9781491950357-L.jpg', '9781491950357', 'https://example.com/building-microservices', '2021', 'O''Reilly Media', NULL, 'AVAILABLE', 'Building Microservices', NULL),
+  (18, now() - interval '16 days', now() - interval '16 days', 'Gene Kim', 'DevOps 문화와 배포 흐름 확인용 더미 도서 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9781942788003-L.jpg', '9781942788003', 'https://example.com/devops-handbook', '2016', 'IT Revolution Press', NULL, 'AVAILABLE', 'DevOps Handbook', NULL),
+  (19, now() - interval '17 days', now() - interval '17 days', 'Nicole Forsgren', '소프트웨어 조직 성과와 배포 지표 확인용 개발 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9781942788331-L.jpg', '9781942788331', 'https://example.com/accelerate', '2018', 'IT Revolution Press', NULL, 'AVAILABLE', 'Accelerate', NULL),
+  (20, now() - interval '18 days', now() - interval '18 days', 'Chris Richardson', '마이크로서비스 패턴 목록 확인용 개발 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9781617294549-L.jpg', '9781617294549', 'https://example.com/microservices-patterns', '2018', 'Manning', NULL, 'AVAILABLE', 'Microservices Patterns', NULL),
+  (21, now() - interval '19 days', now() - interval '19 days', 'Robert Nystrom', '게임 프로그래밍 패턴과 카드 레이아웃 확인용 개발 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9780990582908-L.jpg', '9780990582908', 'https://example.com/game-programming-patterns', '2014', 'Genever Benning', NULL, 'AVAILABLE', 'Game Programming Patterns', NULL),
+  (22, now() - interval '20 days', now() - interval '20 days', 'Brian W. Kernighan', '유닉스 프로그래밍 환경 학습용 개발 데이터입니다.', 0, 'PoolC', 'https://covers.openlibrary.org/b/isbn/9780139376818-L.jpg', '9780139376818', 'https://example.com/unix-programming-environment', '1984', 'Prentice Hall', NULL, 'AVAILABLE', 'Unix Programming Env', NULL);
+
+INSERT INTO book_tags (id, tags) VALUES
+  (1, 'refactoring'), (1, 'architecture'),
+  (2, 'clean-code'), (2, 'engineering'),
+  (3, 'career'), (3, 'practice'),
+  (4, 'ddd'), (4, 'architecture'),
+  (5, 'database'), (5, 'distributed'),
+  (6, 'algorithm'), (6, 'cs'),
+  (7, 'cs'), (7, 'lisp'),
+  (8, 'pattern'), (8, 'oop'),
+  (9, 'legacy'), (9, 'refactoring'),
+  (10, 'java'), (10, 'oop'),
+  (11, 'javascript'), (11, 'frontend'),
+  (12, 'javascript'), (12, 'reference'),
+  (13, 'javascript'), (13, 'web'),
+  (14, 'engineering'), (14, 'quality'),
+  (15, 'test'), (15, 'tdd'),
+  (16, 'test'), (16, 'oop'),
+  (17, 'microservice'), (17, 'architecture'),
+  (18, 'devops'), (18, 'operation'),
+  (19, 'devops'), (19, 'metrics'),
+  (20, 'microservice'), (20, 'pattern'),
+  (21, 'game'), (21, 'pattern'),
+  (22, 'unix'), (22, 'system');
 
 SELECT setval('post_seq', 100, true);
 SELECT setval('activity_seq', 100, true);
