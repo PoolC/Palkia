@@ -141,20 +141,25 @@ public class PostService {
 
     private void checkWritePermission(Member member, BoardType board) {
         if (!checkWritePermissionBoolean(member, board)) throw new UnauthorizedException("접근할 수 없습니다.");
-        else if(board == BoardType.NOTICE && !member.isAdmin()) throw new UnauthorizedException("임원진만 접근할 수 있습니다.");
+        else if((board == BoardType.NOTICE || board == BoardType.STAFF) && !member.isAdmin()) throw new UnauthorizedException("임원진만 접근할 수 있습니다.");
     }
     private void checkReadPermission(Member user, BoardType board) {
         if (user == null && board != BoardType.NOTICE) {
             throw new UnauthorizedException("접근할 수 없습니다.");
         }
+        if (board == BoardType.STAFF && !user.isAdmin()) {
+            throw new UnauthorizedException("임원진만 접근할 수 있습니다.");
+        }
     }
 
     private boolean checkReadPermissionBoolean(Member user, BoardType board) {
-        return user != null || board == BoardType.NOTICE;
+        if (board == BoardType.NOTICE) return true;
+        if (board == BoardType.STAFF) return user != null && user.isAdmin();
+        return user != null;
     }
 
     private boolean checkWritePermissionBoolean(Member user, BoardType board) {
-        return user != null && user.isMember() && (user.isAdmin() || board != BoardType.NOTICE);
+        return user != null && user.isMember() && (user.isAdmin() || (board != BoardType.NOTICE && board != BoardType.STAFF));
     }
 
     private void checkWriter(Member member, Post post) {

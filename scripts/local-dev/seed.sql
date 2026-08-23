@@ -57,7 +57,10 @@ VALUES
   (1, now() - interval '10 days', now() - interval '10 days', false, 'NOTICE', '2026-02 학기 PoolC 활동 안내입니다. 세미나, 프로젝트, PKS 사용 신청은 홈페이지에서 확인합니다.', 0, false, false, 3, 1, 1, '00000000-0000-0000-0000-000000000001', '2026-02 학기 활동 안내'),
   (2, now() - interval '7 days', now() - interval '7 days', false, 'NOTICE', '운영진 자료 보관과 PoolC Forms 리팩토링 검토를 위한 개발 공지입니다.', 0, false, false, 1, 1, 0, '00000000-0000-0000-0000-000000000002', '홈페이지 리팩토링 개발 공지'),
   (3, now() - interval '5 days', now() - interval '5 days', false, 'FREE', '로컬 개발 DB에서 자유게시판 목록과 상세 화면 확인용 글입니다.', 0, false, false, 2, 1, 0, '00000000-0000-0000-0000-000000000003', '더미 자유게시글'),
-  (4, now() - interval '3 days', now() - interval '3 days', false, 'PROJECT', 'PKS 위에 팀별 웹서비스를 배포하는 흐름을 실험합니다.', 0, false, false, 4, 1, 2, '00000000-0000-0000-0000-000000000004', 'PKS 배포 실험 프로젝트 모집');
+  (4, now() - interval '3 days', now() - interval '3 days', false, 'PROJECT', 'PKS 위에 팀별 웹서비스를 배포하는 흐름을 실험합니다.', 0, false, false, 4, 1, 2, '00000000-0000-0000-0000-000000000004', 'PKS 배포 실험 프로젝트 모집'),
+  (5, now() - interval '2 days', now() - interval '2 days', false, 'EXTERNAL', '행사, 공모전, 해커톤, 외부 활동처럼 PoolC 구성원에게 도움이 되는 대외활동 정보를 공유합니다.', 0, false, false, 0, 1, 0, '00000000-0000-0000-0000-000000000003', '대외활동 게시판 안내'),
+  (6, now() - interval '1 day', now() - interval '1 day', false, 'CAREER', '채용, 인턴, 커리어 설명회 정보를 공유합니다.', 0, false, false, 0, 1, 0, '00000000-0000-0000-0000-000000000003', '채용 게시판 안내'),
+  (7, now(), now(), false, 'STAFF', '운영진 내부 회의록, 정산, 명단, 자료 보관 관련 글을 정리하는 게시판입니다.', 0, false, false, 0, 1, 0, '00000000-0000-0000-0000-000000000001', '운영진 게시판 안내');
 
 INSERT INTO activity (id, available, capacity, class_hour, description, hour, is_seminar, start_date, title, host)
 VALUES

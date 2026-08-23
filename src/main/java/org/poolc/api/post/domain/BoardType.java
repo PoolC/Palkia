@@ -6,9 +6,10 @@ import lombok.Getter;
 public enum BoardType {
     NOTICE(0L, "notice"),
     FREE(0L, "free"),
-    JOB(0L, "job"),
     PROJECT(0L, "project"),
-    CS(0L, "cs");
+    EXTERNAL(0L, "external"),
+    CAREER(0L, "career"),
+    STAFF(0L, "staff");
 
     @Getter
     private Long postCount;
