@@ -1,0 +1,74 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: poolc-postgres
+    environment:
+      POSTGRES_DB: poolc
+      POSTGRES_USER: poolc
+      POSTGRES_PASSWORD: poolc_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - poolc-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U poolc -d poolc"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  minio:
+    image: minio/minio:latest
+    container_name: poolc-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: poolc
+      MINIO_ROOT_PASSWORD: poolc_dev_password
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - poolc-minio-data:/data
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: poolc-minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 poolc poolc_dev_password; do sleep 1; done &&
+      mc mb -p local/poolc-dev || true
+      "
+
+  api:
+    image: eclipse-temurin:11-jdk
+    container_name: poolc-be-dev
+    working_dir: /workspace
+    command: ./gradlew bootRun
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PROJECT_NAME_HERE_SECRET_KEY: local_dev_secret_key_for_poolc
+      EXPIRE_LENGTH_IN_MILLISECONDS: "3600000"
+      FILE_DIR: /workspace/local-files/
+      DB_HOST: postgres:5432
+      DB_NAME: poolc
+      DB_USER_NAME: poolc
+      DB_PASSWORD: poolc_dev_password
+      EMAIL_ADDRESS: local@example.com
+      EMAIL_PASSWORD: dummy
+      NAVER_BOOK_API_URL: https://openapi.naver.com/v1/search/book.json
+      NAVER_BOOK_CLIENT_ID: dummy
+      NAVER_BOOK_CLIENT_SECRET: dummy
+      KUBERNETES_API_KEY: local-dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/workspace
+      - poolc-gradle-cache:/root/.gradle
+
+volumes:
+  poolc-postgres-data:
+  poolc-minio-data:
+  poolc-gradle-cache:
