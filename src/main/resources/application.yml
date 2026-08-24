@@ -41,3 +41,9 @@ book:
 kubernetes:
   api:
     key: ${KUBERNETES_API_KEY}
+gitea:
+  login-ticket:
+    ttl-seconds: ${GITEA_LOGIN_TICKET_TTL_SECONDS:60}
+    web-login-url: ${GITEA_LOGIN_TICKET_WEB_LOGIN_URL:http://git.dev.poolc.org/_poolc_login}
+  proxy:
+    api-key: ${GITEA_PROXY_API_KEY:${KUBERNETES_API_KEY}}

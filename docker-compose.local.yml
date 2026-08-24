@@ -62,6 +62,9 @@ services:
       NAVER_BOOK_CLIENT_ID: dummy
       NAVER_BOOK_CLIENT_SECRET: dummy
       KUBERNETES_API_KEY: local-dev
+      GITEA_LOGIN_TICKET_TTL_SECONDS: "60"
+      GITEA_LOGIN_TICKET_WEB_LOGIN_URL: http://git.dev.poolc.org/_poolc_login
+      GITEA_PROXY_API_KEY: local-dev
     ports:
       - "8080:8080"
     volumes:
