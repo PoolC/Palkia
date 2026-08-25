@@ -21,6 +21,7 @@ class GiteaLoginTicketServiceTest {
         Set<MemberRole> allowedRoles = Set.of(
                 MemberRole.SUPER_ADMIN,
                 MemberRole.ADMIN,
+                MemberRole.TECHNICIAN,
                 MemberRole.MEMBER,
                 MemberRole.GRADUATED,
                 MemberRole.COMPLETE

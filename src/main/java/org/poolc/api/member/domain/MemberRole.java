@@ -56,6 +56,27 @@ public enum MemberRole implements Role {
             return Collections.singletonList(MemberRole.MEMBER);
         }
     },
+    TECHNICIAN {
+        @Override
+        public boolean isHideInfo() {
+            return false;
+        }
+
+        @Override
+        public boolean isMember() {
+            return true;
+        }
+
+        @Override
+        public String getDescription() {
+            return "기술자";
+        }
+
+        @Override
+        public List<MemberRole> getRequiredRoles() {
+            return Collections.singletonList(MemberRole.MEMBER);
+        }
+    },
     GRADUATED {
         @Override
         public boolean isHideInfo() {

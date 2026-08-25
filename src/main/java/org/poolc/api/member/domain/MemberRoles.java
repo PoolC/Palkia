@@ -7,6 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,6 +17,15 @@ import static java.util.function.Predicate.not;
 
 @Embeddable
 public class MemberRoles {
+    private static final Set<MemberRole> AUTOMATICALLY_EXCEPTED_ROLES = EnumSet.of(
+            MemberRole.SUPER_ADMIN,
+            MemberRole.ADMIN,
+            MemberRole.TECHNICIAN,
+            MemberRole.GRADUATED,
+            MemberRole.COMPLETE,
+            MemberRole.INACTIVE
+    );
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "roles", joinColumns = @JoinColumn(name = "member_uuid"))
     @Enumerated(EnumType.STRING)
@@ -85,7 +95,7 @@ public class MemberRoles {
     }
 
     public boolean checkIsExcepted() {
-        return getHighestRole().ordinal() < MemberRole.MEMBER.ordinal();
+        return AUTOMATICALLY_EXCEPTED_ROLES.contains(getHighestRole());
     }
 
     private void checkRolesAreCorrect() {

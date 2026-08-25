@@ -22,6 +22,7 @@ public class GiteaLoginTicketService {
     private static final EnumSet<MemberRole> ALLOWED_ROLES = EnumSet.of(
             MemberRole.SUPER_ADMIN,
             MemberRole.ADMIN,
+            MemberRole.TECHNICIAN,
             MemberRole.GRADUATED,
             MemberRole.COMPLETE,
             MemberRole.MEMBER
