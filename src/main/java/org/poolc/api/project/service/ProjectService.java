@@ -23,7 +23,7 @@ public class ProjectService {
     public void createProject(ProjectCreateValues values) {
         checkMembersExist(values.getMemberLoginIDs());
 
-        Project project = new Project(values.getName(), values.getDescription(), values.getGenre(), values.getDuration(), values.getThumbnailURL(), values.getBody());
+        Project project = new Project(values.getName(), values.getDescription(), values.getGenre(), values.getStartDate(), values.getEndDate(), values.getThumbnailURL(), values.getBody());
         project.setMembers(values.getMemberLoginIDs());
 
         projectRepository.save(project);

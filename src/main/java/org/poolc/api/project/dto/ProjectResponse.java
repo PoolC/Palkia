@@ -7,6 +7,7 @@ import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.dto.MemberResponse;
 import org.poolc.api.project.domain.Project;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,24 +20,28 @@ public class ProjectResponse {
     private final String description;
     private final String genre;
     private final String duration;
+    private final LocalDate startDate;
+    private final LocalDate endDate;
     private final String thumbnailURL;
     private final List<MemberResponse> members;
 
     @JsonCreator
-    public ProjectResponse(Long id, String name, String body, String description, String genre, String duration, String thumbnailURL, List<MemberResponse> members) {
+    public ProjectResponse(Long id, String name, String body, String description, String genre, String duration, LocalDate startDate, LocalDate endDate, String thumbnailURL, List<MemberResponse> members) {
         this.id = id;
         this.name = name;
         this.body = body;
         this.description = description;
         this.genre = genre;
         this.duration = duration;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.thumbnailURL = thumbnailURL;
         this.members = members;
     }
 
     public static ProjectResponse of(Project project, List<Member> members) {
         return new ProjectResponse(project.getId(), project.getName(), project.getBody(), project.getDescription(),
-                project.getGenre(), project.getDuration(), project.getThumbnailURL(),
+                project.getGenre(), project.getDuration(), project.getStartDate(), project.getEndDate(), project.getThumbnailURL(),
                 members.stream().map(MemberResponse::of).collect(Collectors.toList()));
     }
 }

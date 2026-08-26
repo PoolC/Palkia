@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,7 +28,7 @@ public class ProjectController {
     private final MemberRepository memberRepository;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> addNewProject(@RequestBody RegisterProjectRequest requestBody) {
+    public ResponseEntity<Void> addNewProject(@RequestBody @Valid RegisterProjectRequest requestBody) {
         projectService.createProject(new ProjectCreateValues(requestBody));
         return ResponseEntity.ok().build();
     }
@@ -51,7 +52,7 @@ public class ProjectController {
     }
 
     @PutMapping(value = "/{projectID}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateProject(@RequestBody UpdateProjectRequest requestBody, @PathVariable Long projectID) {
+    public ResponseEntity<Void> updateProject(@RequestBody @Valid UpdateProjectRequest requestBody, @PathVariable Long projectID) {
         projectService.updateProject(new ProjectUpdateValues(requestBody), projectID);
         return ResponseEntity.ok().build();
     }

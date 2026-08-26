@@ -15,4 +15,5 @@ public class MyActivitySummaryResponse {
     private final BigDecimal projectHours;
     private final List<MyActivityDetailResponse> seminarStudyActivities;
     private final List<MyActivityDetailResponse> officialActivities;
+    private final List<MyActivityDetailResponse> projectActivities;
 }

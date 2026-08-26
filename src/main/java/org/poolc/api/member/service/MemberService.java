@@ -25,6 +25,7 @@ import org.poolc.api.member.repository.MemberRepository;
 import org.poolc.api.member.vo.MemberCreateValues;
 import org.poolc.api.poolc.domain.Poolc;
 import org.poolc.api.poolc.service.PoolcService;
+import org.poolc.api.project.repository.ProjectRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +44,7 @@ public class MemberService {
     private final MemberQueryRepository memberQueryRepository;
     private final ActivityService activityService;
     private final SessionRepository sessionRepository;
+    private final ProjectRepository projectRepository;
 //    private final MailService mailService;
     private final PoolcService poolcService;
 
@@ -201,14 +203,33 @@ public class MemberService {
                 .sorted(Comparator.comparing(MyActivityDetailResponse::getTitle))
                 .collect(Collectors.toList());
 
+        List<MyActivityDetailResponse> projectActivities = projectRepository.findProjectsByProjectMembers(member.getLoginID()).stream()
+                .filter(project -> isInSemester(project.getStartDate(), yearSemester))
+                .map(project -> MyActivityDetailResponse.builder()
+                        .activityId(project.getId())
+                        .title(project.getName())
+                        .recognizedHours(BigDecimal.TEN)
+                        .hosted(false)
+                        .build())
+                .sorted(Comparator.comparing(MyActivityDetailResponse::getTitle))
+                .collect(Collectors.toList());
+        BigDecimal projectHours = BigDecimal.TEN.multiply(BigDecimal.valueOf(projectActivities.size()));
+
         return MyActivitySummaryResponse.builder()
-                .totalHours(seminarStudyHours)
+                .totalHours(seminarStudyHours.add(projectHours))
                 .seminarStudyHours(seminarStudyHours)
                 .officialActivityHours(BigDecimal.ZERO)
-                .projectHours(BigDecimal.ZERO)
+                .projectHours(projectHours)
                 .seminarStudyActivities(seminarStudyActivities)
                 .officialActivities(Collections.emptyList())
+                .projectActivities(projectActivities)
                 .build();
+    }
+
+    private boolean isInSemester(LocalDate startDate, YearSemester yearSemester) {
+        return startDate != null
+                && !startDate.isBefore(yearSemester.getFirstDateFromYearSemester())
+                && !startDate.isAfter(yearSemester.getLastDateFromYearSemester());
     }
 
     public void authorizeMember(String loginID) {
