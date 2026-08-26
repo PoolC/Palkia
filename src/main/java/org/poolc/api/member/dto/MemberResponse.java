@@ -22,6 +22,7 @@ public class MemberResponse implements Serializable {
     private final String introduction;
     private final Boolean isActivated;
     private final Boolean isAdmin;
+    private final Boolean isExcepted;
     private final List<ActivityResponse> hostActivities;
     private final List<ActivityResponse> participantActivities;
     private final List<ProjectResponse> projects;
@@ -29,7 +30,7 @@ public class MemberResponse implements Serializable {
     private final Badge badge;
 
     @JsonCreator
-    public MemberResponse(String loginID, String email, String phoneNumber, String name, String department, String studentID, String profileImageURL, String introduction, Boolean isActivated, Boolean isAdmin, List<ActivityResponse> hostActivities, List<ActivityResponse> participantActivities, List<ProjectResponse> projects, String role, Badge badge) {
+    public MemberResponse(String loginID, String email, String phoneNumber, String name, String department, String studentID, String profileImageURL, String introduction, Boolean isActivated, Boolean isAdmin, Boolean isExcepted, List<ActivityResponse> hostActivities, List<ActivityResponse> participantActivities, List<ProjectResponse> projects, String role, Badge badge) {
         this.loginID = loginID;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -40,6 +41,7 @@ public class MemberResponse implements Serializable {
         this.introduction = introduction;
         this.isActivated = isActivated;
         this.isAdmin = isAdmin;
+        this.isExcepted = isExcepted;
         this.hostActivities = hostActivities;
         this.participantActivities = participantActivities;
         this.projects = projects;
@@ -59,6 +61,7 @@ public class MemberResponse implements Serializable {
             this.introduction = null;
             this.isActivated = null;
             this.isAdmin = null;
+            this.isExcepted = null;
             this.hostActivities = null;
             this.participantActivities = null;
             this.projects = null;
@@ -75,6 +78,7 @@ public class MemberResponse implements Serializable {
             this.introduction = null;
             this.isActivated = null;
             this.isAdmin = null;
+            this.isExcepted = null;
             this.hostActivities = null;
             this.participantActivities = null;
             this.projects = null;
@@ -85,7 +89,7 @@ public class MemberResponse implements Serializable {
     }
 
     public static MemberResponse of(Member member) {
-        return new MemberResponse(member.getLoginID(), member.getEmail(), member.getPhoneNumber(), member.getName(), member.getDepartment(), member.getStudentID(), member.getProfileImageURL(), member.getIntroduction(), member.isMember(), member.isAdmin(), null, null, null, member.getRole(), member.getBadge());
+        return new MemberResponse(member.getLoginID(), member.getEmail(), member.getPhoneNumber(), member.getName(), member.getDepartment(), member.getStudentID(), member.getProfileImageURL(), member.getIntroduction(), member.isMember(), member.isAdmin(), member.getIsExcepted(), null, null, null, member.getRole(), member.getBadge());
     }
 
     public static MemberResponse of(Member findMember, Member loginMember,
@@ -93,9 +97,9 @@ public class MemberResponse implements Serializable {
                                     List<ActivityResponse> participantActivities,
                                     List<ProjectResponse> projects) {
         if(findMember.equals(loginMember)) {
-            return new MemberResponse(findMember.getLoginID(), findMember.getEmail(), findMember.getPhoneNumber(), findMember.getName(), findMember.getDepartment(), findMember.getStudentID(), findMember.getProfileImageURL(), findMember.getIntroduction(), findMember.isMember(), findMember.isAdmin(), hostActivities, participantActivities, projects, findMember.getRole(),  findMember.getBadge());
+            return new MemberResponse(findMember.getLoginID(), findMember.getEmail(), findMember.getPhoneNumber(), findMember.getName(), findMember.getDepartment(), findMember.getStudentID(), findMember.getProfileImageURL(), findMember.getIntroduction(), findMember.isMember(), findMember.isAdmin(), findMember.getIsExcepted(), hostActivities, participantActivities, projects, findMember.getRole(),  findMember.getBadge());
         }else{
-            return new MemberResponse(findMember.getLoginID(), null, null, findMember.getName(), findMember.getDepartment(), null, findMember.getProfileImageURL(), findMember.getIntroduction(), findMember.isMember(), findMember.isAdmin(), hostActivities, participantActivities, projects, findMember.getRole(),  findMember.getBadge());
+            return new MemberResponse(findMember.getLoginID(), null, null, findMember.getName(), findMember.getDepartment(), null, findMember.getProfileImageURL(), findMember.getIntroduction(), findMember.isMember(), findMember.isAdmin(), findMember.getIsExcepted(), hostActivities, participantActivities, projects, findMember.getRole(),  findMember.getBadge());
         }
     }
 }

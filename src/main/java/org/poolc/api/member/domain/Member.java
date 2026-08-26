@@ -171,8 +171,9 @@ public class Member extends TimestampEntity implements UserDetails {
     }
 
     public void updateIsExcepted() {
-        updateIsExceptedFalse();
-        updateIsExceptedTrue();
+        if (roles.checkIsExcepted()) {
+            isExcepted = true;
+        }
     }
 
     public void applyInterviewSlot(InterviewSlot slot) {
@@ -239,18 +240,6 @@ public class Member extends TimestampEntity implements UserDetails {
     @Override
     public int hashCode() {
         return Objects.hash(getUUID());
-    }
-
-    private void updateIsExceptedFalse() {
-        if (roles.checkIsExcepted() && !isExcepted) {
-            toggleIsExcepted();
-        }
-    }
-
-    private void updateIsExceptedTrue() {
-        if (isExcepted && !roles.checkIsExcepted()) {
-            toggleIsExcepted();
-        }
     }
 
     private void onlyAdmin() {

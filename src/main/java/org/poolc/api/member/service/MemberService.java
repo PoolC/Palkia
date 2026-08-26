@@ -141,19 +141,38 @@ public class MemberService {
     }
     // TODO: 이부분 좀 더 깨끗하게 Refactoring해야할 거 같다.
 
+    @Transactional
     public List<MemberResponseWithHour> getHoursWithMembers() {
-        List<MemberResponseWithHour> list = new ArrayList<>();
-        Map<Member, Long> map = new HashMap<>();
-        getAllMembersAndUpdateMemberIsExcepted().forEach(m -> map.put(m, 0L));
-
         YearSemester yearSemester = YearSemester.of(LocalDate.now());
-        LocalDate startDate = yearSemester.getFirstDateFromYearSemester();
-        LocalDate endDate = yearSemester.getLastDateFromYearSemester();
-        memberQueryRepository.getHours(startDate, endDate).forEach(m -> map.replace(getMemberByLoginID(m.getKey()), m.getValue()));
+        Map<String, BigDecimal> recognizedHoursByLoginId = new HashMap<>();
+        List<Member> members = getAllMembersAndUpdateMemberIsExcepted();
+        members.forEach(member -> recognizedHoursByLoginId.put(member.getLoginID(), BigDecimal.ZERO));
 
-        map.forEach((member, hour) -> list.add(MemberResponseWithHour.of(member, hour)));
+        List<Session> sessions = sessionRepository.findAllWithActivityAndAttendanceInSemester(
+                yearSemester.getFirstDateFromYearSemester(),
+                yearSemester.getLastDateFromYearSemester(),
+                LocalDate.now()
+        );
+        for (Session session : sessions) {
+            String hostLoginId = session.getActivity().getHost().getLoginID();
+            addRecognizedHours(recognizedHoursByLoginId, hostLoginId, getSessionRecognizedHours(session, hostLoginId));
 
-        return list.stream().sorted(Comparator.comparing(o -> o.getMember().getName())).collect(Collectors.toList());
+            for (String attendeeLoginId : session.getAttendedMemberLoginIDs()) {
+                if (!attendeeLoginId.equals(hostLoginId)) {
+                    addRecognizedHours(recognizedHoursByLoginId, attendeeLoginId, getSessionRecognizedHours(session, attendeeLoginId));
+                }
+            }
+        }
+
+        projectRepository.findAll().stream()
+                .filter(project -> isInSemester(project.getStartDate(), yearSemester))
+                .forEach(project -> project.getMemberLoginIDs()
+                        .forEach(loginId -> addRecognizedHours(recognizedHoursByLoginId, loginId, BigDecimal.TEN)));
+
+        return members.stream()
+                .map(member -> MemberResponseWithHour.of(member, recognizedHoursByLoginId.get(member.getLoginID())))
+                .sorted(Comparator.comparing(response -> response.getMember().getName()))
+                .collect(Collectors.toList());
     }
 
     public Long getMyHour(Member member){
@@ -172,7 +191,6 @@ public class MemberService {
                 LocalDate.now()
         );
 
-        BigDecimal hostedMultiplier = new BigDecimal("2.5");
         BigDecimal seminarStudyHours = BigDecimal.ZERO;
         Map<Long, Session> sessionsByActivityId = new HashMap<>();
         Map<Long, BigDecimal> recognizedHoursByActivityId = new HashMap<>();
@@ -185,8 +203,7 @@ public class MemberService {
                 continue;
             }
 
-            BigDecimal sessionHours = BigDecimal.valueOf(session.getHour());
-            BigDecimal recognizedHours = hosted ? sessionHours.multiply(hostedMultiplier) : sessionHours;
+            BigDecimal recognizedHours = getSessionRecognizedHours(session, member.getLoginID());
             seminarStudyHours = seminarStudyHours.add(recognizedHours);
             Long activityId = session.getActivity().getId();
             sessionsByActivityId.putIfAbsent(activityId, session);
@@ -230,6 +247,24 @@ public class MemberService {
         return startDate != null
                 && !startDate.isBefore(yearSemester.getFirstDateFromYearSemester())
                 && !startDate.isAfter(yearSemester.getLastDateFromYearSemester());
+    }
+
+    private BigDecimal getSessionRecognizedHours(Session session, String loginId) {
+        boolean hosted = session.getActivity().getHost().getLoginID().equals(loginId);
+        boolean attended = session.getAttendedMemberLoginIDs().contains(loginId);
+
+        if (!hosted && !attended) {
+            return BigDecimal.ZERO;
+        }
+
+        BigDecimal sessionHours = BigDecimal.valueOf(session.getHour());
+        return hosted ? sessionHours.multiply(new BigDecimal("2.5")) : sessionHours;
+    }
+
+    private void addRecognizedHours(Map<String, BigDecimal> recognizedHoursByLoginId, String loginId, BigDecimal recognizedHours) {
+        if (recognizedHours.signum() > 0 && recognizedHoursByLoginId.containsKey(loginId)) {
+            recognizedHoursByLoginId.merge(loginId, recognizedHours, BigDecimal::add);
+        }
     }
 
     public void authorizeMember(String loginID) {
