@@ -1,5 +1,6 @@
 package org.poolc.api.book.service;
 
+import org.poolc.api.book.domain.BookCategory;
 import org.poolc.api.book.domain.BookSearchOption;
 import org.poolc.api.book.domain.BookSortOption;
 import org.poolc.api.book.dto.request.CreateBookRequest;
@@ -21,4 +22,3 @@ public interface BookService {
     BookResponse getBook(Long id);
 
 }
-import org.poolc.api.book.domain.BookCategory;
