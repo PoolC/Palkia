@@ -1,5 +1,6 @@
 package org.poolc.api.book.dto.request;
 
+import org.poolc.api.book.domain.BookCategory;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -44,4 +45,7 @@ public class CreateBookRequest {
 
     @Size(max = 10)
     private List<String> tags;
+
+    @NotNull
+    private BookCategory category;
 }

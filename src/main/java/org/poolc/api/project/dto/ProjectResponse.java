@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.dto.MemberResponse;
 import org.poolc.api.project.domain.Project;
+import org.poolc.api.project.domain.ProjectCategory;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,6 +20,7 @@ public class ProjectResponse {
     private final String body;
     private final String description;
     private final String genre;
+    private final ProjectCategory category;
     private final String duration;
     private final LocalDate startDate;
     private final LocalDate endDate;
@@ -26,12 +28,13 @@ public class ProjectResponse {
     private final List<MemberResponse> members;
 
     @JsonCreator
-    public ProjectResponse(Long id, String name, String body, String description, String genre, String duration, LocalDate startDate, LocalDate endDate, String thumbnailURL, List<MemberResponse> members) {
+    public ProjectResponse(Long id, String name, String body, String description, String genre, ProjectCategory category, String duration, LocalDate startDate, LocalDate endDate, String thumbnailURL, List<MemberResponse> members) {
         this.id = id;
         this.name = name;
         this.body = body;
         this.description = description;
         this.genre = genre;
+        this.category = category;
         this.duration = duration;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -41,7 +44,7 @@ public class ProjectResponse {
 
     public static ProjectResponse of(Project project, List<Member> members) {
         return new ProjectResponse(project.getId(), project.getName(), project.getBody(), project.getDescription(),
-                project.getGenre(), project.getDuration(), project.getStartDate(), project.getEndDate(), project.getThumbnailURL(),
+                project.getGenre(), project.getCategory(), project.getDuration(), project.getStartDate(), project.getEndDate(), project.getThumbnailURL(),
                 members.stream().map(MemberResponse::of).collect(Collectors.toList()));
     }
 }

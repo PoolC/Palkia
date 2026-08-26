@@ -21,11 +21,13 @@ public class BookServiceImpl implements BookService {
     private static final int PAGE_SIZE = 10;
 
     @Override
-    public Page<BookResponse> getAllBooks(int page, BookSortOption option) {
+    public Page<BookResponse> getAllBooks(int page, BookSortOption option, BookCategory category) {
         Page<Book> books;
-//        System.out.println("option: " + option);
 
-        if (option == null || option == BookSortOption.TITLE) {
+        if (category != null) {
+            BookSortOption selectedOption = option == null ? BookSortOption.TITLE : option;
+            books = bookRepository.findAll(BookSpecification.findByCategoryAndSortOption(category, selectedOption.name()), PageRequest.of(page, PAGE_SIZE));
+        } else if (option == null || option == BookSortOption.TITLE) {
             books = bookRepository.findAllByOrderByTitleAsc(PageRequest.of(page, PAGE_SIZE));
         } else if (option == BookSortOption.CREATED_AT) {
             books = bookRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(page, PAGE_SIZE));
@@ -40,17 +42,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Page<BookResponse> searchBooks(int page, BookSearchOption option, String keyword, BookSortOption sortOption) {
+    public Page<BookResponse> searchBooks(int page, BookSearchOption option, String keyword, BookSortOption sortOption, BookCategory category) {
         Page<Book> books;
         if(sortOption == null) {
             sortOption = BookSortOption.TITLE;
         }
         if (option == BookSearchOption.TITLE) {
-            books = bookRepository.findAll(BookSpecification.findByTitleAndSortOption(keyword, sortOption.name()), PageRequest.of(page, PAGE_SIZE));
+            books = bookRepository.findAll(BookSpecification.findByTitleAndSortOption(keyword, sortOption.name(), category), PageRequest.of(page, PAGE_SIZE));
         }else if (option == BookSearchOption.AUTHOR) {
-            books = bookRepository.findAll(BookSpecification.findByAuthorAndSortOption(keyword, sortOption.name()), PageRequest.of(page, PAGE_SIZE));
+            books = bookRepository.findAll(BookSpecification.findByAuthorAndSortOption(keyword, sortOption.name(), category), PageRequest.of(page, PAGE_SIZE));
         } else if (option == BookSearchOption.TAG) {
-            books = bookRepository.findAll(BookSpecification.findByTagsContainingAndSortOption(keyword, sortOption.name()), PageRequest.of(page, PAGE_SIZE));
+            books = bookRepository.findAll(BookSpecification.findByTagsContainingAndSortOption(keyword, sortOption.name(), category), PageRequest.of(page, PAGE_SIZE));
         } else {
             throw new IllegalArgumentException("잘못된 검색 옵션입니다.");
         }
@@ -75,6 +77,7 @@ public class BookServiceImpl implements BookService {
                 .rentDate(null)
                 .donor(request.getDonor())
                 .tags(request.getTags())
+                .category(request.getCategory())
                 .build();
         bookRepository.save(book);
     }

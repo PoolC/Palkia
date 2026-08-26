@@ -3,6 +3,7 @@ package org.poolc.api.book.controller;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.book.client.BookClient;
 import org.poolc.api.book.domain.BookSearchOption;
+import org.poolc.api.book.domain.BookCategory;
 import org.poolc.api.book.domain.BookSortOption;
 import org.poolc.api.book.dto.request.CreateBookRequest;
 import org.poolc.api.book.dto.request.UpdateBookRequest;
@@ -43,9 +44,10 @@ public class BookController {
             @RequestParam(value = "page", defaultValue = "0") @Min(0) Integer page,
             @RequestParam(value = "search", required = true)BookSearchOption searchOption,
             @RequestParam(value = "keyword", required = true) String keyword,
-            @RequestParam(value = "sort", required = false) BookSortOption sortOption) {
+            @RequestParam(value = "sort", required = false) BookSortOption sortOption,
+            @RequestParam(value = "category", required = false) BookCategory category) {
         try {
-            return new ResponseEntity<>(bookService.searchBooks(page,searchOption,keyword,sortOption), HttpStatus.OK);
+            return new ResponseEntity<>(bookService.searchBooks(page, searchOption, keyword, sortOption, category), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -54,9 +56,10 @@ public class BookController {
     @GetMapping("/all")
     public ResponseEntity<Page<BookResponse>> getAllBooks(
             @RequestParam(value = "page", defaultValue = "0") @Min(0) Integer page,
-            @RequestParam(value = "sort", required = false) BookSortOption sortOption) {
+            @RequestParam(value = "sort", required = false) BookSortOption sortOption,
+            @RequestParam(value = "category", required = false) BookCategory category) {
         try {
-            return new ResponseEntity<>(bookService.getAllBooks(page, sortOption), HttpStatus.OK);
+            return new ResponseEntity<>(bookService.getAllBooks(page, sortOption, category), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

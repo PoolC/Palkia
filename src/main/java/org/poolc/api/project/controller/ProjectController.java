@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.repository.MemberRepository;
 import org.poolc.api.project.domain.Project;
+import org.poolc.api.project.domain.ProjectCategory;
 import org.poolc.api.project.dto.ProjectResponse;
 import org.poolc.api.project.dto.RegisterProjectRequest;
 import org.poolc.api.project.dto.UpdateProjectRequest;
@@ -34,9 +35,9 @@ public class ProjectController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, List<ProjectResponse>>> findProjects() {
+    public ResponseEntity<Map<String, List<ProjectResponse>>> findProjects(@RequestParam(required = false) ProjectCategory category) {
         HashMap<String, List<ProjectResponse>> responseBody = new HashMap<>() {{
-            put("data", projectService.findProjects().stream()
+            put("data", projectService.findProjects(category).stream()
                     .map(p -> ProjectResponse.of(p, new ArrayList<>()))
                     .collect(Collectors.toList()));
         }};

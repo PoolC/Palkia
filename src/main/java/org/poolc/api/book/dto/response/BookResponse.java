@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.poolc.api.book.domain.Book;
 import org.poolc.api.book.domain.BookStatus;
+import org.poolc.api.book.domain.BookCategory;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -30,6 +31,7 @@ public class BookResponse {
     private String publishedDate;
     private LocalDate borrowDate;
     private BookStatus status;
+    private BookCategory category;
 
     private MemberResponse borrower;
     private String donor;
@@ -49,6 +51,7 @@ public class BookResponse {
                 .publishedDate(book.getPublishedDate())
                 .borrowDate(book.getRentDate())
                 .status(book.getStatus())
+                .category(book.getCategory())
                 .donor(book.getDonor())
                 .borrower(book.getRenter() == null ? null : MemberResponse.of(book.getRenter()))
                 .tags(book.getTags())

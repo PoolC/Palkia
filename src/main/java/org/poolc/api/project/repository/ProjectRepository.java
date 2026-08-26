@@ -1,6 +1,7 @@
 package org.poolc.api.project.repository;
 
 import org.poolc.api.project.domain.Project;
+import org.poolc.api.project.domain.ProjectCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,4 +14,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     @Query(value = "select p from Project p order by created_at DESC")
     List<Project> findAllByOrderByCreatedAtDesc();
+    List<Project> findByCategoryOrderByCreatedAtDesc(ProjectCategory category);
 }

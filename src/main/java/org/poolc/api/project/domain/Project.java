@@ -32,6 +32,10 @@ public class Project extends TimestampEntity {
     @Column(name = "genre", nullable = false, columnDefinition = "varchar(255)")
     private String genre;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category")
+    private ProjectCategory category;
+
     @Column(name = "duration", nullable = false, columnDefinition = "varchar(255)")
     private String duration;
 
@@ -54,10 +58,11 @@ public class Project extends TimestampEntity {
     protected Project() {
     }
 
-    public Project(String name, String description, String genre, LocalDate startDate, LocalDate endDate, String thumbnailURL, String body) {
+    public Project(String name, String description, String genre, ProjectCategory category, LocalDate startDate, LocalDate endDate, String thumbnailURL, String body) {
         this.name = name;
         this.description = description;
         this.genre = genre;
+        this.category = category;
         this.startDate = startDate;
         this.endDate = endDate;
         this.duration = formatDuration(startDate, endDate);
@@ -73,6 +78,7 @@ public class Project extends TimestampEntity {
         this.name = projectUpdateValues.getName();
         this.description = projectUpdateValues.getDescription();
         this.genre = projectUpdateValues.getGenre();
+        this.category = projectUpdateValues.getCategory();
         this.startDate = projectUpdateValues.getStartDate();
         this.endDate = projectUpdateValues.getEndDate();
         this.duration = formatDuration(startDate, endDate);

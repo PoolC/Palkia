@@ -1,5 +1,6 @@
 package org.poolc.api.book.dto.request;
 
+import org.poolc.api.book.domain.BookCategory;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,4 +23,5 @@ public class UpdateBookRequest {
     private String link;
     private String donor;
     private List<String> tags;
+    private BookCategory category;
 }

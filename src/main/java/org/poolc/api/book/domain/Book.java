@@ -62,6 +62,10 @@ public class Book extends TimestampEntity {
     @Column(name = "published_date")
     private String publishedDate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category")
+    private BookCategory category;
+
     @Column(name = "rent_date")
     private LocalDate rentDate;
 
@@ -100,6 +104,7 @@ public class Book extends TimestampEntity {
         if (request.getPubdate() != null) this.publishedDate = request.getPubdate();
         if (request.getDonor() != null) this.donor = request.getDonor();
         if (request.getTags() != null) this.tags = request.getTags();
+        if (request.getCategory() != null) this.category = request.getCategory();
     }
 
 }
