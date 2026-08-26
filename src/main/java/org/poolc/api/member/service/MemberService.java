@@ -2,7 +2,9 @@ package org.poolc.api.member.service;
 
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
+import org.poolc.api.activity.domain.Session;
 import org.poolc.api.activity.dto.ActivityResponse;
+import org.poolc.api.activity.repository.SessionRepository;
 import org.poolc.api.activity.service.ActivityService;
 import org.poolc.api.auth.exception.UnauthorizedException;
 import org.poolc.api.auth.infra.PasswordHashProvider;
@@ -13,6 +15,8 @@ import org.poolc.api.member.domain.MemberRoles;
 import org.poolc.api.member.dto.MemberResetRequest;
 import org.poolc.api.member.dto.MemberResponse;
 import org.poolc.api.member.dto.MemberResponseWithHour;
+import org.poolc.api.member.dto.MyActivityDetailResponse;
+import org.poolc.api.member.dto.MyActivitySummaryResponse;
 import org.poolc.api.member.dto.UpdateMemberRequest;
 import org.poolc.api.member.exception.DuplicateMemberException;
 import org.poolc.api.member.exception.WrongPasswordException;
@@ -26,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import java.time.LocalDate;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -37,6 +42,7 @@ public class MemberService {
     private final PasswordHashProvider passwordHashProvider;
     private final MemberQueryRepository memberQueryRepository;
     private final ActivityService activityService;
+    private final SessionRepository sessionRepository;
 //    private final MailService mailService;
     private final PoolcService poolcService;
 
@@ -153,6 +159,56 @@ public class MemberService {
         LocalDate startDate = yearSemester.getFirstDateFromYearSemester();
         LocalDate endDate = yearSemester.getLastDateFromYearSemester();
         return memberQueryRepository.getMyHour(member, startDate, endDate);
+    }
+
+    @Transactional(readOnly = true)
+    public MyActivitySummaryResponse getMyActivitySummary(Member member) {
+        YearSemester yearSemester = YearSemester.of(LocalDate.now());
+        List<Session> sessions = sessionRepository.findAllWithActivityAndAttendanceInSemester(
+                yearSemester.getFirstDateFromYearSemester(),
+                yearSemester.getLastDateFromYearSemester(),
+                LocalDate.now()
+        );
+
+        BigDecimal hostedMultiplier = new BigDecimal("2.5");
+        BigDecimal seminarStudyHours = BigDecimal.ZERO;
+        Map<Long, Session> sessionsByActivityId = new HashMap<>();
+        Map<Long, BigDecimal> recognizedHoursByActivityId = new HashMap<>();
+
+        for (Session session : sessions) {
+            boolean hosted = session.getActivity().getHost().getLoginID().equals(member.getLoginID());
+            boolean attended = session.getAttendedMemberLoginIDs().contains(member.getLoginID());
+
+            if (!hosted && !attended) {
+                continue;
+            }
+
+            BigDecimal sessionHours = BigDecimal.valueOf(session.getHour());
+            BigDecimal recognizedHours = hosted ? sessionHours.multiply(hostedMultiplier) : sessionHours;
+            seminarStudyHours = seminarStudyHours.add(recognizedHours);
+            Long activityId = session.getActivity().getId();
+            sessionsByActivityId.putIfAbsent(activityId, session);
+            recognizedHoursByActivityId.merge(activityId, recognizedHours, BigDecimal::add);
+        }
+
+        List<MyActivityDetailResponse> seminarStudyActivities = sessionsByActivityId.values().stream()
+                .map(session -> MyActivityDetailResponse.builder()
+                        .activityId(session.getActivity().getId())
+                        .title(session.getActivity().getTitle())
+                        .recognizedHours(recognizedHoursByActivityId.get(session.getActivity().getId()))
+                        .hosted(session.getActivity().getHost().getLoginID().equals(member.getLoginID()))
+                        .build())
+                .sorted(Comparator.comparing(MyActivityDetailResponse::getTitle))
+                .collect(Collectors.toList());
+
+        return MyActivitySummaryResponse.builder()
+                .totalHours(seminarStudyHours)
+                .seminarStudyHours(seminarStudyHours)
+                .officialActivityHours(BigDecimal.ZERO)
+                .projectHours(BigDecimal.ZERO)
+                .seminarStudyActivities(seminarStudyActivities)
+                .officialActivities(Collections.emptyList())
+                .build();
     }
 
     public void authorizeMember(String loginID) {

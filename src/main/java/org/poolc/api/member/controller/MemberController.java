@@ -57,6 +57,11 @@ public class MemberController {
         return ResponseEntity.ok().body(response);
     }
 
+    @GetMapping(value = "/me/activity-summary")
+    public ResponseEntity<MyActivitySummaryResponse> getMyActivitySummary(@AuthenticationPrincipal Member member) {
+        return ResponseEntity.ok(memberService.getMyActivitySummary(member));
+    }
+
     @GetMapping(value = "/me")
     public ResponseEntity<MemberResponse> getMe(@AuthenticationPrincipal Member loginMember) {
         memberService.checkMe(loginMember);
