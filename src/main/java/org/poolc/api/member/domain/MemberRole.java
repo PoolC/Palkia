@@ -69,7 +69,7 @@ public enum MemberRole implements Role {
 
         @Override
         public String getDescription() {
-            return "기술자";
+            return "기여자";
         }
 
         @Override

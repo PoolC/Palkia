@@ -662,6 +662,21 @@ WASD 키를 이용하여 방향을 조작합니다. 또한, 코인을 소모하�
 - 플랫폼: PC, VR
 - 2016년 넥슨 게임 제작 동아리 활동 출품작', '싱글 VR 게임 /시뮬레이터', '2016-07-01 ~ 2016-08-31', '게임', 'Genji & McCree VR', 'https://picsum.photos/seed/poolc-project-real-2/480/270');
 
+-- Legacy project records stored their dates only in the display-oriented duration text.
+-- Seed the authoritative start_date used by the activity-hour calculation; legacy projects
+-- are treated as ongoing because their original end-date data was not migrated.
+UPDATE project
+SET start_date = CASE
+    WHEN duration ~ '^[0-9]{4}[.-][0-9]{2}[.-][0-9]{2}' THEN
+        to_date(replace(substring(duration from '^[0-9]{4}[.-][0-9]{2}[.-][0-9]{2}'), '-', '.'), 'YYYY.MM.DD')
+    WHEN duration ~ '^[0-9]{4}[.-][0-9]{2}' THEN
+        to_date(replace(substring(duration from '^[0-9]{4}[.-][0-9]{2}'), '-', '.'), 'YYYY.MM')
+    WHEN duration ~ '^[0-9]{4}' THEN
+        make_date(substring(duration from '^[0-9]{4}')::integer, 1, 1)
+END,
+    end_date = NULL
+WHERE start_date IS NULL;
+
 INSERT INTO project_members (project_id, member_loginids) VALUES
   (1, 'admin'),
   (2, 'president'),

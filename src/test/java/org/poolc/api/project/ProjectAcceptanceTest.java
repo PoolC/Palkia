@@ -8,6 +8,7 @@ import org.poolc.api.AcceptanceTest;
 import org.poolc.api.auth.dto.AuthResponse;
 import org.poolc.api.project.dto.ProjectResponse;
 import org.poolc.api.project.dto.RegisterProjectRequest;
+import org.poolc.api.project.domain.ProjectCategory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -15,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.poolc.api.auth.AuthAcceptanceTest.loginRequest;
@@ -231,7 +233,8 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
     }
 
     public static ExtractableResponse<Response> addProjectRequest(String accessToken, String name, String description, String genre, String duration, String thumbnailURL, String body, List<String> ids) {
-        RegisterProjectRequest request = new RegisterProjectRequest(name, description, genre, duration, thumbnailURL, body, ids);
+        RegisterProjectRequest request = new RegisterProjectRequest(name, description, genre, ProjectCategory.GAME,
+                LocalDate.now(), LocalDate.now().plusMonths(3), thumbnailURL, body, ids);
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)
@@ -244,7 +247,8 @@ public class ProjectAcceptanceTest extends AcceptanceTest {
     }
 
     public static ExtractableResponse<Response> updateProjectRequest(Long id, String accessToken, String name, String description, String genre, String duration, String thumbnailURL, String body, List<String> ids) {
-        RegisterProjectRequest request = new RegisterProjectRequest(name, description, genre, duration, thumbnailURL, body, ids);
+        RegisterProjectRequest request = new RegisterProjectRequest(name, description, genre, ProjectCategory.GAME,
+                LocalDate.now(), LocalDate.now().plusMonths(3), thumbnailURL, body, ids);
         return RestAssured
                 .given().log().all()
                 .auth().oauth2(accessToken)

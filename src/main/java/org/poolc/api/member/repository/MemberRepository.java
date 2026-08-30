@@ -2,15 +2,22 @@ package org.poolc.api.member.repository;
 
 import org.poolc.api.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.LockModeType;
+
 public interface MemberRepository extends JpaRepository<Member, String> {
 
     Optional<Member> findByUUID(String UUID);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select m from Member m where m.UUID = :uuid")
+    Optional<Member> findByUUIDForUpdate(@Param("uuid") String uuid);
 
     Optional<Member> findByLoginID(String loginID);
 

@@ -8,10 +8,12 @@ import org.springframework.stereotype.Repository;
 
 import org.springframework.data.domain.Pageable;
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 @Repository
 public interface ScrapRepository extends JpaRepository<Scrap, Long>, PagingAndSortingRepository<Scrap, Long> {
     boolean existsByMemberIdAndPostId(String memberId, Long postId);
     Optional<Scrap> findByMemberIdAndPostId(String memberId, Long postId);
     Page<Scrap> findAllByMemberId(String memberId, Pageable pageable);
+    long countByMemberIdAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(String memberId, LocalDateTime from, LocalDateTime to);
 }

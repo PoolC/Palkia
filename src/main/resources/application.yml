@@ -47,3 +47,9 @@ gitea:
     web-login-url: ${GITEA_LOGIN_TICKET_WEB_LOGIN_URL:http://git.dev.poolc.org/_poolc_login}
   proxy:
     api-key: ${GITEA_PROXY_API_KEY:${KUBERNETES_API_KEY}}
+
+gamification:
+  pokeapi:
+    base-url: ${POKEAPI_BASE_URL:https://pokeapi.co/api/v2}
+  club-wifi:
+    allowed-ips: ${CLUB_WIFI_ALLOWED_IPS:127.0.0.1}
