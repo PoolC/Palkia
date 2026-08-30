@@ -8,6 +8,7 @@ import org.poolc.api.activity.service.SessionService;
 import org.poolc.api.activity.vo.*;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.dto.MemberResponse;
+import org.poolc.api.member.service.MemberResponseAssembler;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +25,7 @@ public class ActivityController {
 
     private final ActivityService activityService;
     private final SessionService sessionService;
+    private final MemberResponseAssembler memberResponseAssembler;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, List<GetActivitiesResponse>>> findActivities(@RequestParam Optional<String> when) {
@@ -68,16 +70,14 @@ public class ActivityController {
 
     @GetMapping(value = "/member/{activityID}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, List<MemberResponse>>> getActivityMembers(@PathVariable("activityID") Long activityId) {
-        return ResponseEntity.ok().body(Collections.singletonMap("data", activityService.findActivityMembersByActivityId(activityId).stream()
-                .map(MemberResponse::of)
-                .collect(toList())));
+        return ResponseEntity.ok().body(Collections.singletonMap("data", memberResponseAssembler.ofAll(activityService.findActivityMembersByActivityId(activityId))));
     }
 
     @GetMapping(value = "/check/{sessionID}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, List<AttendanceResponse>>> getAttendanceCheck(@PathVariable("sessionID") Long sessionId) {
         List<Map.Entry<Member, Boolean>> activityMembersWithAttendance = sessionService.findActivityMembersWithAttendanceBySessionId(sessionId);
         List<AttendanceResponse> responseList = activityMembersWithAttendance.stream()
-                .map(entry -> new AttendanceResponse(entry.getKey(), entry.getValue())).collect(toList());
+                .map(entry -> new AttendanceResponse(memberResponseAssembler.of(entry.getKey()), entry.getValue())).collect(toList());
         return ResponseEntity.ok().body(Collections.singletonMap("data", responseList));
     }
 

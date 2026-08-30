@@ -4,6 +4,7 @@ package org.poolc.api.project.controller;
 import lombok.RequiredArgsConstructor;
 import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.repository.MemberRepository;
+import org.poolc.api.member.service.MemberResponseAssembler;
 import org.poolc.api.project.domain.Project;
 import org.poolc.api.project.domain.ProjectCategory;
 import org.poolc.api.project.dto.ProjectResponse;
@@ -27,6 +28,7 @@ public class ProjectController {
 
     private final ProjectService projectService;
     private final MemberRepository memberRepository;
+    private final MemberResponseAssembler memberResponseAssembler;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> addNewProject(@RequestBody @Valid RegisterProjectRequest requestBody) {
@@ -49,7 +51,7 @@ public class ProjectController {
     public ResponseEntity<Map<String, ProjectResponse>> findOneProject(@PathVariable Long projectID) {
         Project project = projectService.findOne(projectID);
         List<Member> members = memberRepository.findAllMembersByLoginIDList(project.getMemberLoginIDs());
-        return ResponseEntity.ok().body(Collections.singletonMap("data", ProjectResponse.of(projectService.findOne(projectID), members)));
+        return ResponseEntity.ok().body(Collections.singletonMap("data", ProjectResponse.ofWithMemberResponses(project, memberResponseAssembler.ofAll(members))));
     }
 
     @PutMapping(value = "/{projectID}", produces = MediaType.APPLICATION_JSON_VALUE)

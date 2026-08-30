@@ -45,6 +45,7 @@ public class MemberService {
     private final ActivityService activityService;
     private final SessionRepository sessionRepository;
     private final ProjectRepository projectRepository;
+    private final MemberResponseAssembler memberResponseAssembler;
 //    private final MailService mailService;
     private final PoolcService poolcService;
 
@@ -86,14 +87,14 @@ public class MemberService {
         List<Member> members = getAllMembers();
         return members.stream()
                 .filter(responseMember -> (!Optional.ofNullable(loginMember).isEmpty() && loginMember.isAdmin() || !responseMember.shouldHide()))
-                .map(MemberResponse::of)
+                .map(memberResponseAssembler::of)
                 .collect(Collectors.toList());
     }
 
     public List<MemberResponse> getAllMembersResponseByName(String name) {
         return memberRepository.findByName(name)
                 .stream()
-                .map(MemberResponse::of)
+                .map(memberResponseAssembler::of)
                 .collect(Collectors.toList());
     }
 

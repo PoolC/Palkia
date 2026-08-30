@@ -11,8 +11,8 @@ public class AttendanceResponse {
     private final Boolean attended;
 
     @JsonCreator
-    public AttendanceResponse(Member member, Boolean attended) {
-        this.member = MemberResponse.of(member);
+    public AttendanceResponse(MemberResponse member, Boolean attended) {
+        this.member = member;
         this.attended = attended;
     }
 }

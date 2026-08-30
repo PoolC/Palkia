@@ -6,6 +6,8 @@ import org.poolc.api.member.domain.Member;
 import org.poolc.api.member.domain.MemberRole;
 import org.poolc.api.member.dto.*;
 import org.poolc.api.member.service.MemberService;
+import org.poolc.api.member.service.MemberResponseAssembler;
+import org.poolc.api.gamification.service.FeaturedCollectibleService;
 import org.poolc.api.member.vo.MemberCreateValues;
 import org.poolc.api.project.dto.ProjectResponse;
 import org.poolc.api.project.service.ProjectService;
@@ -30,6 +32,8 @@ import static java.util.function.Predicate.not;
 public class MemberController {
     private final MemberService memberService;
     private final ProjectService projectService;
+    private final FeaturedCollectibleService featuredCollectibleService;
+    private final MemberResponseAssembler memberResponseAssembler;
 
     @GetMapping
     public ResponseEntity<Map<String, List<MemberResponse>>> getAllMembers(@AuthenticationPrincipal Member loginMember) {
@@ -65,8 +69,7 @@ public class MemberController {
     @GetMapping(value = "/me")
     public ResponseEntity<MemberResponse> getMe(@AuthenticationPrincipal Member loginMember) {
         memberService.checkMe(loginMember);
-        MemberResponse response = MemberResponse.of(loginMember);
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok().body(memberResponseAssembler.of(loginMember));
     }
 
     @GetMapping(path = "/{loginID}")
@@ -75,9 +78,12 @@ public class MemberController {
         Member findMember = memberService.getMemberByLoginID(loginID);
         List<ActivityResponse> activityResponses = memberService.getMemberActivityResponses(loginID);
         List<ActivityResponse> hostActivityResponses = memberService.getHostActivityResponses(findMember);
-        List<ProjectResponse> projectResponses = projectService.findProjectsByProjectMembers(loginID).stream().map(project -> ProjectResponse.of(project, memberService.findMembers(project.getMemberLoginIDs())))
+        List<ProjectResponse> projectResponses = projectService.findProjectsByProjectMembers(loginID).stream()
+                .map(project -> ProjectResponse.ofWithMemberResponses(project, memberResponseAssembler.ofAll(memberService.findMembers(project.getMemberLoginIDs()))))
                 .collect(Collectors.toList());
-        MemberResponse response = MemberResponse.of(findMember, loginMember, hostActivityResponses, activityResponses, projectResponses);
+        String profileImageUrl = featuredCollectibleService.getProfileSpriteUrl(findMember)
+                .orElse(findMember.getProfileImageURL());
+        MemberResponse response = MemberResponse.of(findMember, loginMember, hostActivityResponses, activityResponses, projectResponses, profileImageUrl);
         return ResponseEntity.ok().body(response);
     }
 

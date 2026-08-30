@@ -43,8 +43,11 @@ public class ProjectResponse {
     }
 
     public static ProjectResponse of(Project project, List<Member> members) {
+        return ofWithMemberResponses(project, members.stream().map(MemberResponse::of).collect(Collectors.toList()));
+    }
+
+    public static ProjectResponse ofWithMemberResponses(Project project, List<MemberResponse> members) {
         return new ProjectResponse(project.getId(), project.getName(), project.getBody(), project.getDescription(),
-                project.getGenre(), project.getCategory(), project.getDuration(), project.getStartDate(), project.getEndDate(), project.getThumbnailURL(),
-                members.stream().map(MemberResponse::of).collect(Collectors.toList()));
+                project.getGenre(), project.getCategory(), project.getDuration(), project.getStartDate(), project.getEndDate(), project.getThumbnailURL(), members);
     }
 }

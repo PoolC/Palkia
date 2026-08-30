@@ -9,8 +9,12 @@ import org.poolc.api.gamification.dto.AchievementResponse;
 import org.poolc.api.gamification.dto.CollectionItemResponse;
 import org.poolc.api.gamification.dto.DrawResponse;
 import org.poolc.api.gamification.dto.GameSummaryResponse;
+import org.poolc.api.gamification.dto.FeaturedCollectibleResponse;
+import org.poolc.api.gamification.dto.UpdateFeaturedCollectibleRequest;
+import org.poolc.api.gamification.dto.UpdateFeaturedProfileRequest;
 import org.poolc.api.gamification.service.CatalogSyncService;
 import org.poolc.api.gamification.service.CatalogSyncWorker;
+import org.poolc.api.gamification.service.FeaturedCollectibleService;
 import org.poolc.api.gamification.service.GamificationService;
 import org.poolc.api.member.domain.Member;
 import org.springframework.http.HttpStatus;
@@ -18,6 +22,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +39,7 @@ public class GamificationController {
     private final GamificationService gamificationService;
     private final CatalogSyncService catalogSyncService;
     private final CatalogSyncWorker catalogSyncWorker;
+    private final FeaturedCollectibleService featuredCollectibleService;
 
     @GetMapping("/me/summary")
     public ResponseEntity<GameSummaryResponse> getSummary(@AuthenticationPrincipal Member member) {
@@ -46,6 +54,31 @@ public class GamificationController {
     @GetMapping("/me/draws")
     public ResponseEntity<List<DrawResponse>> getDraws(@AuthenticationPrincipal Member member) {
         return ResponseEntity.ok(gamificationService.getDraws(member));
+    }
+
+    @GetMapping("/me/featured")
+    public ResponseEntity<FeaturedCollectibleResponse> getFeatured(@AuthenticationPrincipal Member member) {
+        return featuredCollectibleService.getFeatured(member)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+    @PutMapping("/me/featured")
+    public ResponseEntity<FeaturedCollectibleResponse> updateFeatured(
+            @AuthenticationPrincipal Member member, @RequestBody UpdateFeaturedCollectibleRequest request) {
+        return ResponseEntity.ok(featuredCollectibleService.updateFeatured(member, request));
+    }
+
+    @PutMapping("/me/featured/profile")
+    public ResponseEntity<FeaturedCollectibleResponse> updateFeaturedProfile(
+            @AuthenticationPrincipal Member member, @RequestBody UpdateFeaturedProfileRequest request) {
+        return ResponseEntity.ok(featuredCollectibleService.updateUseAsProfile(member, request.isUseAsProfile()));
+    }
+
+    @DeleteMapping("/me/featured")
+    public ResponseEntity<Void> clearFeatured(@AuthenticationPrincipal Member member) {
+        featuredCollectibleService.clearFeatured(member);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/me/draws")

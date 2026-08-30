@@ -92,14 +92,26 @@ public class MemberResponse implements Serializable {
         return new MemberResponse(member.getLoginID(), member.getEmail(), member.getPhoneNumber(), member.getName(), member.getDepartment(), member.getStudentID(), member.getProfileImageURL(), member.getIntroduction(), member.isMember(), member.isAdmin(), member.getIsExcepted(), null, null, null, member.getRole(), member.getBadge());
     }
 
+    public static MemberResponse of(Member member, String profileImageURL) {
+        return new MemberResponse(member.getLoginID(), member.getEmail(), member.getPhoneNumber(), member.getName(), member.getDepartment(), member.getStudentID(), profileImageURL, member.getIntroduction(), member.isMember(), member.isAdmin(), member.getIsExcepted(), null, null, null, member.getRole(), member.getBadge());
+    }
+
     public static MemberResponse of(Member findMember, Member loginMember,
                                     List<ActivityResponse> hostActivities,
                                     List<ActivityResponse> participantActivities,
                                     List<ProjectResponse> projects) {
+        return of(findMember, loginMember, hostActivities, participantActivities, projects, findMember.getProfileImageURL());
+    }
+
+    public static MemberResponse of(Member findMember, Member loginMember,
+                                    List<ActivityResponse> hostActivities,
+                                    List<ActivityResponse> participantActivities,
+                                    List<ProjectResponse> projects,
+                                    String profileImageURL) {
         if(findMember.equals(loginMember)) {
-            return new MemberResponse(findMember.getLoginID(), findMember.getEmail(), findMember.getPhoneNumber(), findMember.getName(), findMember.getDepartment(), findMember.getStudentID(), findMember.getProfileImageURL(), findMember.getIntroduction(), findMember.isMember(), findMember.isAdmin(), findMember.getIsExcepted(), hostActivities, participantActivities, projects, findMember.getRole(),  findMember.getBadge());
+            return new MemberResponse(findMember.getLoginID(), findMember.getEmail(), findMember.getPhoneNumber(), findMember.getName(), findMember.getDepartment(), findMember.getStudentID(), profileImageURL, findMember.getIntroduction(), findMember.isMember(), findMember.isAdmin(), findMember.getIsExcepted(), hostActivities, participantActivities, projects, findMember.getRole(),  findMember.getBadge());
         }else{
-            return new MemberResponse(findMember.getLoginID(), null, null, findMember.getName(), findMember.getDepartment(), null, findMember.getProfileImageURL(), findMember.getIntroduction(), findMember.isMember(), findMember.isAdmin(), findMember.getIsExcepted(), hostActivities, participantActivities, projects, findMember.getRole(),  findMember.getBadge());
+            return new MemberResponse(findMember.getLoginID(), null, null, findMember.getName(), findMember.getDepartment(), null, profileImageURL, findMember.getIntroduction(), findMember.isMember(), findMember.isAdmin(), findMember.getIsExcepted(), hostActivities, participantActivities, projects, findMember.getRole(),  findMember.getBadge());
         }
     }
 }
