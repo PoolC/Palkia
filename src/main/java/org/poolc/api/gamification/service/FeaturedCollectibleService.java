@@ -36,10 +36,7 @@ public class FeaturedCollectibleService {
 
     public Optional<String> getProfileSpriteUrl(Member member) {
         return featuredCollectibleRepository.findByMemberUuid(member.getUUID())
-                .filter(MemberFeaturedCollectible::isUseAsProfile)
-                .map(featured -> featured.isShiny()
-                        ? featured.getCollectible().getShinySpriteUrl()
-                        : featured.getCollectible().getSpriteUrl());
+                .map(this::profileSpriteUrl);
     }
 
     public Map<String, String> getProfileSpriteUrls(Collection<Member> members) {
@@ -50,12 +47,16 @@ public class FeaturedCollectibleService {
         if (originalProfileImageUrls.isEmpty()) {
             return originalProfileImageUrls;
         }
-        featuredCollectibleRepository.findAllByMemberUuidIn(originalProfileImageUrls.keySet()).stream()
-                .filter(MemberFeaturedCollectible::isUseAsProfile)
-                .forEach(featured -> originalProfileImageUrls.put(featured.getMember().getUUID(), featured.isShiny()
-                        ? featured.getCollectible().getShinySpriteUrl()
-                        : featured.getCollectible().getSpriteUrl()));
+        featuredCollectibleRepository.findAllByMemberUuidIn(originalProfileImageUrls.keySet()).forEach(featured ->
+                originalProfileImageUrls.put(featured.getMember().getUUID(), profileSpriteUrl(featured)));
         return originalProfileImageUrls;
+    }
+
+    private String profileSpriteUrl(MemberFeaturedCollectible featured) {
+        String shinySpriteUrl = featured.getCollectible().getShinySpriteUrl();
+        return featured.isShiny() && shinySpriteUrl != null
+                ? shinySpriteUrl
+                : featured.getCollectible().getSpriteUrl();
     }
 
     @Transactional
@@ -73,15 +74,6 @@ public class FeaturedCollectibleService {
                 .orElseGet(() -> new MemberFeaturedCollectible(member, collectible, request.isShiny()));
         featured.updateCollectible(collectible, request.isShiny());
         return new FeaturedCollectibleResponse(featuredCollectibleRepository.save(featured));
-    }
-
-    @Transactional
-    public FeaturedCollectibleResponse updateUseAsProfile(Member authenticatedMember, boolean useAsProfile) {
-        Member member = findMemberForUpdate(authenticatedMember);
-        MemberFeaturedCollectible featured = featuredCollectibleRepository.findByMemberUuid(member.getUUID())
-                .orElseThrow(() -> new ConflictException("대표 포켓몬을 먼저 지정해주세요."));
-        featured.updateUseAsProfile(useAsProfile);
-        return new FeaturedCollectibleResponse(featured);
     }
 
     @Transactional

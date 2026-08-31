@@ -12,7 +12,6 @@ import org.poolc.api.gamification.dto.DrawCollectibleRequest;
 import org.poolc.api.gamification.dto.GameSummaryResponse;
 import org.poolc.api.gamification.dto.FeaturedCollectibleResponse;
 import org.poolc.api.gamification.dto.UpdateFeaturedCollectibleRequest;
-import org.poolc.api.gamification.dto.UpdateFeaturedProfileRequest;
 import org.poolc.api.gamification.service.CatalogSyncService;
 import org.poolc.api.gamification.service.CatalogSyncWorker;
 import org.poolc.api.gamification.service.FeaturedCollectibleService;
@@ -68,12 +67,6 @@ public class GamificationController {
     public ResponseEntity<FeaturedCollectibleResponse> updateFeatured(
             @AuthenticationPrincipal Member member, @RequestBody UpdateFeaturedCollectibleRequest request) {
         return ResponseEntity.ok(featuredCollectibleService.updateFeatured(member, request));
-    }
-
-    @PutMapping("/me/featured/profile")
-    public ResponseEntity<FeaturedCollectibleResponse> updateFeaturedProfile(
-            @AuthenticationPrincipal Member member, @RequestBody UpdateFeaturedProfileRequest request) {
-        return ResponseEntity.ok(featuredCollectibleService.updateUseAsProfile(member, request.isUseAsProfile()));
     }
 
     @DeleteMapping("/me/featured")

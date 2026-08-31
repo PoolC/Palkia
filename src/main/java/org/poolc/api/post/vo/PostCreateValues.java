@@ -44,7 +44,7 @@ public class PostCreateValues {
 
 
     public PostCreateValues(Member member, PostCreateRequest request) {
-        this.boardType = request.getBoardType();
+        this.boardType = BoardType.canonicalize(request.getBoardType());
         this.member = member;
         this.anonymous = request.getAnonymous();
         this.title = request.getTitle();

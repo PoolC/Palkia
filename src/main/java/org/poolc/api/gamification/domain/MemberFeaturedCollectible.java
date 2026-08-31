@@ -35,15 +35,13 @@ public class MemberFeaturedCollectible {
         this.member = member;
         this.collectible = collectible;
         this.shiny = shiny;
-        this.useAsProfile = false;
+        this.useAsProfile = true;
     }
 
     public void updateCollectible(CollectibleCatalog collectible, boolean shiny) {
         this.collectible = collectible;
         this.shiny = shiny;
+        this.useAsProfile = true;
     }
 
-    public void updateUseAsProfile(boolean useAsProfile) {
-        this.useAsProfile = useAsProfile;
-    }
 }

@@ -30,6 +30,7 @@ import org.poolc.api.member.repository.MemberRepository;
 import org.poolc.api.member.service.MemberService;
 import org.poolc.api.scrap.repository.ScrapRepository;
 import org.poolc.api.project.repository.ProjectRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -346,7 +346,7 @@ public class GamificationService {
     }
 
     public List<DrawResponse> getDraws(Member member) {
-        return collectionDrawRepository.findAllByMemberUuidWithCollectible(member.getUUID()).stream()
+        return collectionDrawRepository.findRecentByMemberUuidWithCollectible(member.getUUID(), PageRequest.of(0, 5)).stream()
                 .map(DrawResponse::new)
                 .collect(Collectors.toList());
     }
@@ -368,14 +368,13 @@ public class GamificationService {
             throw new ConflictException("사용할 포켓볼이 부족합니다.");
         }
 
-        Map<CollectibleRarity, List<CollectibleCatalog>> candidatesByRarity = new EnumMap<>(CollectibleRarity.class);
+        EnumSet<CollectibleRarity> availableCandidateRarities = EnumSet.noneOf(CollectibleRarity.class);
         for (CollectibleRarity rarity : availableRarities(BallType.NORMAL)) {
-            List<CollectibleCatalog> candidates = collectibleCatalogRepository.findUncollectedVariantByMemberUuidAndRarity(member.getUUID(), rarity, shiny);
-            if (!candidates.isEmpty()) {
-                candidatesByRarity.put(rarity, candidates);
+            if (collectibleCatalogRepository.existsUncollectedVariantByMemberUuidAndRarity(member.getUUID(), rarity, shiny)) {
+                availableCandidateRarities.add(rarity);
             }
         }
-        if (candidatesByRarity.isEmpty()) {
+        if (availableCandidateRarities.isEmpty()) {
             if (shiny) {
                 ShinyDrawStatus shinyDrawStatus = shinyDrawStatus(member.getUUID(), null);
                 throw new ConflictException(ShinyDrawStatus.NEEDS_NORMAL == shinyDrawStatus
@@ -385,9 +384,10 @@ public class GamificationService {
             throw new ConflictException("모든 일반 포켓몬을 수집했습니다.");
         }
 
-        CollectibleRarity rarity = selectRarity(candidatesByRarity.keySet());
-        List<CollectibleCatalog> candidates = candidatesByRarity.get(rarity);
-        CollectibleCatalog collectible = candidates.get(RANDOM.nextInt(candidates.size()));
+        CollectibleRarity rarity = selectRarity(availableCandidateRarities);
+        List<CollectibleCatalog> candidates = collectibleCatalogRepository
+                .findUncollectedVariantByMemberUuidAndRarity(member.getUUID(), rarity, shiny, PageRequest.of(0, 1));
+        CollectibleCatalog collectible = candidates.get(0);
         CollectionDraw draw = collectionDrawRepository.save(new CollectionDraw(member, collectible, shiny));
         ballTransactionRepository.save(new BallTransaction(member, -drawCost, BallTransactionType.DRAW, ballType,
                 shiny ? "SHINY_DRAW" : "DRAW", draw.getId().toString()));

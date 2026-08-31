@@ -15,6 +15,7 @@ import org.poolc.api.project.vo.ProjectCreateValues;
 import org.poolc.api.project.vo.ProjectUpdateValues;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -48,9 +49,11 @@ public class ProjectController {
     }
 
     @GetMapping(value = "/{projectID}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, ProjectResponse>> findOneProject(@PathVariable Long projectID) {
+    public ResponseEntity<Map<String, ProjectResponse>> findOneProject(@AuthenticationPrincipal Member loginMember, @PathVariable Long projectID) {
         Project project = projectService.findOne(projectID);
-        List<Member> members = memberRepository.findAllMembersByLoginIDList(project.getMemberLoginIDs());
+        List<Member> members = loginMember != null && loginMember.isMember()
+                ? memberRepository.findAllMembersByLoginIDList(project.getMemberLoginIDs())
+                : Collections.emptyList();
         return ResponseEntity.ok().body(Collections.singletonMap("data", ProjectResponse.ofWithMemberResponses(project, memberResponseAssembler.ofAll(members))));
     }
 

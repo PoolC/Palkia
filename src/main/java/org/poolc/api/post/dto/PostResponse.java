@@ -56,7 +56,7 @@ public class PostResponse {
         if (post.getPostType() == PostType.GENERAL_POST) response.setIsQuestion(post.getIsQuestion());
 
         response.setPostId(post.getId());
-        response.setBoardType(post.getBoardType());
+        response.setBoardType(BoardType.canonicalize(post.getBoardType()));
         response.setTitle(post.getTitle());
         response.setBody(post.getBody());
         response.setCreatedAt(post.getCreatedAt());
