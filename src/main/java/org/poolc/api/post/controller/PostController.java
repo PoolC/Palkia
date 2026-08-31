@@ -81,9 +81,11 @@ public class PostController {
 
     @GetMapping("/post/search")
     public ResponseEntity<GetBoardResponse> searchPost(@AuthenticationPrincipal Member member,
+                                                         @RequestParam String boardTitle,
                                                          @RequestParam String keyword,
                                                          @RequestParam int page) {
-        GetBoardResponse postResponses = postService.searchPost(member, keyword, page);
+        BoardType boardType = BoardType.getBoardTypeByName(boardTitle);
+        GetBoardResponse postResponses = postService.searchPost(member, boardType, keyword, page);
         return ResponseEntity.status(HttpStatus.OK).body(postResponses);
     }
 }

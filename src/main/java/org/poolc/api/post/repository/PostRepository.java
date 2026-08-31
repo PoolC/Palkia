@@ -23,4 +23,7 @@ public interface PostRepository extends JpaRepository<Post, Long>, PagingAndSort
     @Query("select p from Post p where (p.title like %:title% or p.body like %:body%) and p.isDeleted = false")
     Page<Post> findByTitleContainingOrBodyContaining(String title, String body, Pageable pageable);
 
+    @Query("select p from Post p where p.boardType = :boardType and p.title like %:keyword% and p.isDeleted = false")
+    Page<Post> findByBoardTypeAndTitleContaining(@Param("boardType") BoardType boardType, @Param("keyword") String keyword, Pageable pageable);
+
 }

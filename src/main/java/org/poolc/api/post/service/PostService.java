@@ -125,14 +125,13 @@ public class PostService {
         // postRepository.save(post);
     }
 
-    public GetBoardResponse searchPost(Member member, String keyword, int page) {
-        PageRequest pr = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findByTitleContainingOrBodyContaining(keyword, keyword, pr);
+    public GetBoardResponse searchPost(Member member, BoardType boardType, String keyword, int page) {
+        checkReadPermission(member, boardType);
+        PageRequest pr = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Post> posts = postRepository.findByBoardTypeAndTitleContaining(boardType, keyword, pr);
         return new GetBoardResponse(
                 posts.getTotalPages(),
                 posts.stream()
-                        .filter(post -> checkReadPermissionBoolean(member, post.getBoardType()))
-                        .sorted(Comparator.comparing(Post::getCreatedAt).reversed())
                         .map(GetPostsResponse::of)
                         .collect(Collectors.toList())
         );
