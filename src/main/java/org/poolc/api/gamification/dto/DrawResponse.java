@@ -13,6 +13,7 @@ public class DrawResponse {
     private final Long collectibleId;
     private final String name;
     private final String spriteUrl;
+    private final String shinySpriteUrl;
     private final Long externalId;
     private final String category;
     private final String description;
@@ -38,9 +39,8 @@ public class DrawResponse {
         this.drawId = draw.getId();
         this.collectibleId = draw.getCollectible().getId();
         this.name = draw.getCollectible().getNameKo();
-        this.spriteUrl = draw.isShiny() && draw.getCollectible().getShinySpriteUrl() != null
-                ? draw.getCollectible().getShinySpriteUrl()
-                : draw.getCollectible().getSpriteUrl();
+        this.spriteUrl = draw.getCollectible().getSpriteUrl();
+        this.shinySpriteUrl = draw.getCollectible().getShinySpriteUrl();
         this.externalId = draw.getCollectible().getExternalId();
         this.category = draw.getCollectible().getCategoryKo();
         this.description = draw.getCollectible().getDescriptionKo();

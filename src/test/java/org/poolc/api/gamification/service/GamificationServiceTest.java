@@ -15,6 +15,10 @@ import org.poolc.api.gamification.domain.AchievementProgress;
 import org.poolc.api.gamification.domain.CollectibleCatalog;
 import org.poolc.api.gamification.domain.CollectibleRarity;
 import org.poolc.api.gamification.dto.DrawResponse;
+import org.poolc.api.gamification.dto.GameSummaryResponse;
+import org.poolc.api.gamification.dto.ShinyDrawStatus;
+import org.poolc.api.gamification.dto.CollectionItemResponse;
+import org.poolc.api.gamification.dto.AchievementResponse;
 import org.poolc.api.gamification.repository.AchievementProgressRepository;
 import org.poolc.api.gamification.repository.BallTransactionRepository;
 import org.poolc.api.gamification.repository.CollectionDrawRepository;
@@ -68,7 +72,7 @@ class GamificationServiceTest {
                 activityRepository, scrapRepository, projectRepository);
         when(member.getUUID()).thenReturn("member-uuid");
         lenient().when(member.getLoginID()).thenReturn("member-login-id");
-        when(memberRepository.findByUUIDForUpdate("member-uuid")).thenReturn(Optional.of(member));
+        lenient().when(memberRepository.findByUUIDForUpdate("member-uuid")).thenReturn(Optional.of(member));
         lenient().when(sessionRepository.findAllWithActivityAndAttendanceInSemester(any(), any(), any())).thenReturn(Collections.emptyList());
         lenient().when(sessionRepository.findAll()).thenReturn(Collections.emptyList());
         lenient().when(activityRepository.findActivitiesByActivityMembers("member-login-id")).thenReturn(Collections.emptyList());
@@ -134,12 +138,12 @@ class GamificationServiceTest {
                 .thenReturn(0L);
         when(ballTransactionRepository.getBalanceByMemberUuid("member-uuid")).thenReturn(1L);
         for (CollectibleRarity rarity : CollectibleRarity.values()) {
-            when(collectibleCatalogRepository.findUncollectedByMemberUuidAndRarity("member-uuid", rarity))
+            when(collectibleCatalogRepository.findUncollectedVariantByMemberUuidAndRarity("member-uuid", rarity, false))
                     .thenReturn(Collections.emptyList());
         }
 
         assertThatThrownBy(() -> service.draw(member)).isInstanceOf(ConflictException.class)
-                .hasMessageContaining("모든 포켓몬을 수집했습니다");
+                .hasMessageContaining("모든 일반 포켓몬을 수집했습니다");
 
         verify(collectionDrawRepository, never()).save(any(CollectionDraw.class));
         verify(ballTransactionRepository, never()).save(any(BallTransaction.class));
@@ -154,10 +158,10 @@ class GamificationServiceTest {
                 eq("member-uuid"), eq(BallTransactionType.ACTIVITY_HOUR_REWARD), eq("ACTIVITY_HOURS"), eq(currentSemester())))
                 .thenReturn(0L);
         when(ballTransactionRepository.getBalanceByMemberUuid("member-uuid")).thenReturn(1L);
-        when(collectibleCatalogRepository.findUncollectedByMemberUuidAndRarity("member-uuid", CollectibleRarity.COMMON))
+        when(collectibleCatalogRepository.findUncollectedVariantByMemberUuidAndRarity("member-uuid", CollectibleRarity.COMMON, false))
                 .thenReturn(List.of(collectible));
         for (CollectibleRarity rarity : List.of(CollectibleRarity.RARE, CollectibleRarity.EPIC, CollectibleRarity.LEGENDARY)) {
-            when(collectibleCatalogRepository.findUncollectedByMemberUuidAndRarity("member-uuid", rarity))
+            when(collectibleCatalogRepository.findUncollectedVariantByMemberUuidAndRarity("member-uuid", rarity, false))
                     .thenReturn(Collections.emptyList());
         }
         when(collectionDrawRepository.save(any(CollectionDraw.class))).thenReturn(savedDraw);
@@ -175,6 +179,179 @@ class GamificationServiceTest {
         verify(ballTransactionRepository).save(transactionCaptor.capture());
         assertThat(transactionCaptor.getValue().getAmount()).isEqualTo(-1);
         assertThat(transactionCaptor.getValue().getType()).isEqualTo(BallTransactionType.DRAW);
+    }
+
+    @Test
+    void shinyDrawConsumesTwoBallsAndCreatesAShinyCollectionRecord() {
+        CollectibleCatalog collectible = org.mockito.Mockito.mock(CollectibleCatalog.class);
+        CollectionDraw savedDraw = org.mockito.Mockito.mock(CollectionDraw.class);
+        when(memberService.getMyActivitySummary(member)).thenReturn(activitySummary("0"));
+        when(ballTransactionRepository.getAmountByMemberUuidAndTypeAndSource(
+                eq("member-uuid"), eq(BallTransactionType.ACTIVITY_HOUR_REWARD), eq("ACTIVITY_HOURS"), eq(currentSemester())))
+                .thenReturn(0L);
+        when(ballTransactionRepository.getBalanceByMemberUuid("member-uuid")).thenReturn(2L);
+        when(collectibleCatalogRepository.findUncollectedVariantByMemberUuidAndRarity("member-uuid", CollectibleRarity.COMMON, true))
+                .thenReturn(List.of(collectible));
+        for (CollectibleRarity rarity : List.of(CollectibleRarity.RARE, CollectibleRarity.EPIC, CollectibleRarity.LEGENDARY)) {
+            when(collectibleCatalogRepository.findUncollectedVariantByMemberUuidAndRarity("member-uuid", rarity, true))
+                    .thenReturn(Collections.emptyList());
+        }
+        when(collectionDrawRepository.save(any(CollectionDraw.class))).thenReturn(savedDraw);
+        when(savedDraw.getId()).thenReturn(1L);
+        when(savedDraw.getCollectible()).thenReturn(collectible);
+        when(savedDraw.getRarityAtDraw()).thenReturn(CollectibleRarity.COMMON);
+        when(savedDraw.getDrawnAt()).thenReturn(LocalDateTime.now());
+        when(savedDraw.isShiny()).thenReturn(true);
+        when(collectible.getRarity()).thenReturn(CollectibleRarity.COMMON);
+
+        service.draw(member, true);
+
+        ArgumentCaptor<CollectionDraw> drawCaptor = ArgumentCaptor.forClass(CollectionDraw.class);
+        verify(collectionDrawRepository).save(drawCaptor.capture());
+        assertThat(drawCaptor.getValue().isShiny()).isTrue();
+        ArgumentCaptor<BallTransaction> transactionCaptor = ArgumentCaptor.forClass(BallTransaction.class);
+        verify(ballTransactionRepository).save(transactionCaptor.capture());
+        assertThat(transactionCaptor.getValue().getAmount()).isEqualTo(-2);
+    }
+
+    @Test
+    void summaryRequiresANormalCollectibleBeforeShinyDraw() {
+        stubSummaryPrerequisites(Collections.emptyList());
+        when(collectibleCatalogRepository.countByEnabledTrue()).thenReturn(1L);
+
+        GameSummaryResponse response = service.getSummary(member);
+
+        assertThat(response.getShinyDrawStatus()).isEqualTo(ShinyDrawStatus.NEEDS_NORMAL);
+        assertThat(response.getTotalCatalogCount()).isEqualTo(1L);
+        assertThat(response.getTotalVariantCount()).isEqualTo(2L);
+    }
+
+    @Test
+    void summaryAllowsShinyDrawWhenAnOwnedNormalHasNoShinyVariant() {
+        CollectionDraw normalDraw = org.mockito.Mockito.mock(CollectionDraw.class);
+        CollectibleCatalog collectible = org.mockito.Mockito.mock(CollectibleCatalog.class);
+        when(normalDraw.isShiny()).thenReturn(false);
+        when(normalDraw.getCollectible()).thenReturn(collectible);
+        when(collectible.getId()).thenReturn(1L);
+        stubSummaryPrerequisites(List.of(normalDraw));
+        when(collectibleCatalogRepository.countByEnabledTrue()).thenReturn(1L);
+        when(collectibleCatalogRepository.existsUncollectedShinyVariantForMember("member-uuid")).thenReturn(true);
+
+        GameSummaryResponse response = service.getSummary(member);
+
+        assertThat(response.getShinyDrawStatus()).isEqualTo(ShinyDrawStatus.AVAILABLE);
+        assertThat(response.getCollectedCatalogCount()).isEqualTo(1L);
+        assertThat(response.getNormalCatalogCount()).isEqualTo(1L);
+        assertThat(response.getCollectedVariantCount()).isEqualTo(1L);
+    }
+
+    @Test
+    void summaryKeepsLegacySpeciesCountSeparateFromVariantCount() {
+        CollectibleCatalog collectible = org.mockito.Mockito.mock(CollectibleCatalog.class);
+        CollectionDraw normalDraw = org.mockito.Mockito.mock(CollectionDraw.class);
+        CollectionDraw shinyDraw = org.mockito.Mockito.mock(CollectionDraw.class);
+        when(normalDraw.isShiny()).thenReturn(false);
+        when(normalDraw.getCollectible()).thenReturn(collectible);
+        when(shinyDraw.isShiny()).thenReturn(true);
+        when(shinyDraw.getCollectible()).thenReturn(collectible);
+        when(collectible.getId()).thenReturn(1L);
+        stubSummaryPrerequisites(List.of(normalDraw, shinyDraw));
+        when(collectibleCatalogRepository.countByEnabledTrue()).thenReturn(1L);
+        when(collectibleCatalogRepository.existsUncollectedShinyVariantForMember("member-uuid")).thenReturn(false);
+
+        GameSummaryResponse response = service.getSummary(member);
+
+        assertThat(response.getCollectedCatalogCount()).isEqualTo(1L);
+        assertThat(response.getCollectedVariantCount()).isEqualTo(2L);
+        assertThat(response.getShinyCatalogCount()).isEqualTo(1L);
+    }
+
+    @Test
+    void collectionKeepsTotalAndNormalOwnershipCountsSeparate() {
+        CollectibleCatalog collectible = org.mockito.Mockito.mock(CollectibleCatalog.class);
+        CollectionDraw normalDraw = org.mockito.Mockito.mock(CollectionDraw.class);
+        CollectionDraw shinyDraw = org.mockito.Mockito.mock(CollectionDraw.class);
+        when(normalDraw.isShiny()).thenReturn(false);
+        when(normalDraw.getCollectible()).thenReturn(collectible);
+        when(shinyDraw.isShiny()).thenReturn(true);
+        when(shinyDraw.getCollectible()).thenReturn(collectible);
+        when(collectible.getId()).thenReturn(1L);
+        when(collectible.isEnabled()).thenReturn(true);
+        when(collectionDrawRepository.findAllByMemberUuidWithCollectible("member-uuid"))
+                .thenReturn(List.of(normalDraw, shinyDraw));
+        when(collectibleCatalogRepository.findAllByOrderByGenerationAscExternalIdAsc()).thenReturn(List.of(collectible));
+
+        List<CollectionItemResponse> response = service.getCollection(member);
+
+        assertThat(response).singleElement().satisfies(item -> {
+            assertThat(item.getOwnedCount()).isEqualTo(2L);
+            assertThat(item.getNormalOwnedCount()).isEqualTo(1L);
+            assertThat(item.getShinyCount()).isEqualTo(1L);
+        });
+    }
+
+    @Test
+    void summaryMarksShinyDrawCompleteWhenAllOwnedNormalsHaveShinyVariants() {
+        CollectionDraw normalDraw = org.mockito.Mockito.mock(CollectionDraw.class);
+        CollectibleCatalog collectible = org.mockito.Mockito.mock(CollectibleCatalog.class);
+        when(normalDraw.isShiny()).thenReturn(false);
+        when(normalDraw.getCollectible()).thenReturn(collectible);
+        when(collectible.getId()).thenReturn(1L);
+        stubSummaryPrerequisites(List.of(normalDraw));
+        when(collectibleCatalogRepository.countByEnabledTrue()).thenReturn(1L);
+        when(collectibleCatalogRepository.existsUncollectedShinyVariantForMember("member-uuid")).thenReturn(false);
+
+        GameSummaryResponse response = service.getSummary(member);
+
+        assertThat(response.getShinyDrawStatus()).isEqualTo(ShinyDrawStatus.COMPLETE);
+    }
+
+    @Test
+    void shinyDrawRequiresANormalCollectible() {
+        stubShinyDrawWithoutCandidates(Collections.emptyList());
+
+        assertThatThrownBy(() -> service.draw(member, true))
+                .isInstanceOf(ConflictException.class)
+                .hasMessageContaining("일반 포켓몬을 먼저 획득");
+    }
+
+    @Test
+    void shinyDrawRejectsWhenEveryOwnedNormalAlreadyHasAShinyVariant() {
+        CollectionDraw normalDraw = org.mockito.Mockito.mock(CollectionDraw.class);
+        when(normalDraw.isShiny()).thenReturn(false);
+        stubShinyDrawWithoutCandidates(List.of(normalDraw));
+        when(collectibleCatalogRepository.existsUncollectedShinyVariantForMember("member-uuid")).thenReturn(false);
+
+        assertThatThrownBy(() -> service.draw(member, true))
+                .isInstanceOf(ConflictException.class)
+                .hasMessageContaining("이로치를 모두 수집했습니다");
+    }
+
+    @Test
+    void seasonCollectionAchievementCountsNormalAndShinyAsOneSpecies() {
+        CollectibleCatalog collectible = org.mockito.Mockito.mock(CollectibleCatalog.class);
+        CollectionDraw normalDraw = org.mockito.Mockito.mock(CollectionDraw.class);
+        CollectionDraw shinyDraw = org.mockito.Mockito.mock(CollectionDraw.class);
+        when(collectible.getId()).thenReturn(1L);
+        when(normalDraw.getCollectible()).thenReturn(collectible);
+        when(normalDraw.getDrawnAt()).thenReturn(LocalDateTime.now());
+        when(shinyDraw.getCollectible()).thenReturn(collectible);
+        when(shinyDraw.getDrawnAt()).thenReturn(LocalDateTime.now());
+        when(collectionDrawRepository.findAllByMemberUuidWithCollectible("member-uuid"))
+                .thenReturn(List.of(normalDraw, shinyDraw));
+        when(memberService.getMyActivitySummary(member)).thenReturn(activitySummary("0"));
+        when(achievementProgressRepository.findByMemberUuidAndAchievementKeyAndPeriodKey(any(), any(), any()))
+                .thenReturn(Optional.empty());
+        when(achievementProgressRepository.save(any(AchievementProgress.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        List<AchievementResponse> responses = service.getAchievements(member);
+
+        assertThat(responses)
+                .filteredOn(response -> "SEASON_COLLECTION".equals(response.getKey()))
+                .singleElement()
+                .extracting(AchievementResponse::getProgress)
+                .isEqualTo(1);
     }
 
     @Test
@@ -243,5 +420,27 @@ class GamificationServiceTest {
 
     private String currentSemester() {
         return YearSemester.of(LocalDate.now()).toString();
+    }
+
+    private void stubSummaryPrerequisites(List<CollectionDraw> draws) {
+        when(memberService.getMyActivitySummary(member)).thenReturn(activitySummary("0"));
+        when(ballTransactionRepository.getAmountByMemberUuidAndTypeAndSource(
+                eq("member-uuid"), eq(BallTransactionType.ACTIVITY_HOUR_REWARD), eq("ACTIVITY_HOURS"), eq(currentSemester())))
+                .thenReturn(0L);
+        when(ballTransactionRepository.getBalanceByMemberUuid("member-uuid")).thenReturn(0L);
+        when(collectionDrawRepository.findAllByMemberUuidWithCollectible("member-uuid")).thenReturn(draws);
+    }
+
+    private void stubShinyDrawWithoutCandidates(List<CollectionDraw> draws) {
+        when(memberService.getMyActivitySummary(member)).thenReturn(activitySummary("0"));
+        when(ballTransactionRepository.getAmountByMemberUuidAndTypeAndSource(
+                eq("member-uuid"), eq(BallTransactionType.ACTIVITY_HOUR_REWARD), eq("ACTIVITY_HOURS"), eq(currentSemester())))
+                .thenReturn(0L);
+        when(ballTransactionRepository.getBalanceByMemberUuid("member-uuid")).thenReturn(2L);
+        when(collectionDrawRepository.findAllByMemberUuidWithCollectible("member-uuid")).thenReturn(draws);
+        for (CollectibleRarity rarity : CollectibleRarity.values()) {
+            when(collectibleCatalogRepository.findUncollectedVariantByMemberUuidAndRarity("member-uuid", rarity, true))
+                    .thenReturn(Collections.emptyList());
+        }
     }
 }

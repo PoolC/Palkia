@@ -8,6 +8,7 @@ import org.poolc.api.gamification.dto.BallBalancesResponse;
 import org.poolc.api.gamification.dto.AchievementResponse;
 import org.poolc.api.gamification.dto.CollectionItemResponse;
 import org.poolc.api.gamification.dto.DrawResponse;
+import org.poolc.api.gamification.dto.DrawCollectibleRequest;
 import org.poolc.api.gamification.dto.GameSummaryResponse;
 import org.poolc.api.gamification.dto.FeaturedCollectibleResponse;
 import org.poolc.api.gamification.dto.UpdateFeaturedCollectibleRequest;
@@ -82,8 +83,10 @@ public class GamificationController {
     }
 
     @PostMapping("/me/draws")
-    public ResponseEntity<DrawResponse> draw(@AuthenticationPrincipal Member member) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(gamificationService.draw(member));
+    public ResponseEntity<DrawResponse> draw(
+            @AuthenticationPrincipal Member member,
+            @RequestBody DrawCollectibleRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(gamificationService.draw(member, request.isShiny()));
     }
 
     @GetMapping("/me/achievements")

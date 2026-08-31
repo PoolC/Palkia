@@ -26,9 +26,10 @@ public class CollectionItemResponse {
     private final Integer specialDefense;
     private final Integer speed;
     private final long ownedCount;
+    private final long normalOwnedCount;
     private final long shinyCount;
 
-    public CollectionItemResponse(CollectibleCatalog collectible, long ownedCount, long shinyCount) {
+    public CollectionItemResponse(CollectibleCatalog collectible, long ownedCount, long normalOwnedCount, long shinyCount) {
         this.collectibleId = collectible.getId();
         this.externalId = collectible.getExternalId();
         this.name = collectible.getNameKo();
@@ -49,6 +50,7 @@ public class CollectionItemResponse {
         this.specialDefense = collectible.getStatSpecialDefense();
         this.speed = collectible.getStatSpeed();
         this.ownedCount = ownedCount;
+        this.normalOwnedCount = normalOwnedCount;
         this.shinyCount = shinyCount;
     }
 }

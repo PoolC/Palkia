@@ -16,10 +16,21 @@ public interface CollectibleCatalogRepository extends JpaRepository<CollectibleC
 
     @Query("select c from CollectibleCatalog c "
             + "where c.rarity = :rarity and c.enabled = true "
-            + "and not exists (select d.id from CollectionDraw d where d.collectible = c and d.member.UUID = :memberUuid)")
-    List<CollectibleCatalog> findUncollectedByMemberUuidAndRarity(
+            + "and (:shiny = false or exists (select normalDraw.id from CollectionDraw normalDraw "
+            + "where normalDraw.collectible = c and normalDraw.member.UUID = :memberUuid and normalDraw.shiny = false)) "
+            + "and not exists (select d.id from CollectionDraw d where d.collectible = c and d.member.UUID = :memberUuid and d.shiny = :shiny)")
+    List<CollectibleCatalog> findUncollectedVariantByMemberUuidAndRarity(
             @Param("memberUuid") String memberUuid,
-            @Param("rarity") CollectibleRarity rarity);
+            @Param("rarity") CollectibleRarity rarity,
+            @Param("shiny") boolean shiny);
+
+    @Query("select case when count(c) > 0 then true else false end from CollectibleCatalog c "
+            + "where c.enabled = true "
+            + "and exists (select normalDraw.id from CollectionDraw normalDraw "
+            + "where normalDraw.collectible = c and normalDraw.member.UUID = :memberUuid and normalDraw.shiny = false) "
+            + "and not exists (select shinyDraw.id from CollectionDraw shinyDraw "
+            + "where shinyDraw.collectible = c and shinyDraw.member.UUID = :memberUuid and shinyDraw.shiny = true)")
+    boolean existsUncollectedShinyVariantForMember(@Param("memberUuid") String memberUuid);
 
     long countByEnabledTrue();
 }

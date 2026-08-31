@@ -16,6 +16,7 @@ import org.poolc.api.gamification.dto.AchievementResponse;
 import org.poolc.api.gamification.dto.BallBalancesResponse;
 import org.poolc.api.gamification.dto.DrawResponse;
 import org.poolc.api.gamification.dto.GameSummaryResponse;
+import org.poolc.api.gamification.dto.ShinyDrawStatus;
 import org.poolc.api.gamification.repository.BallTransactionRepository;
 import org.poolc.api.gamification.repository.CollectionDrawRepository;
 import org.poolc.api.gamification.repository.CollectibleCatalogRepository;
@@ -310,13 +311,21 @@ public class GamificationService {
 
         List<CollectionDraw> draws = collectionDrawRepository.findAllByMemberUuidWithCollectible(member.getUUID());
         Set<Long> collected = draws.stream().map(draw -> draw.getCollectible().getId()).collect(Collectors.toSet());
+        Set<Long> normalCollected = draws.stream().filter(draw -> !draw.isShiny())
+                .map(draw -> draw.getCollectible().getId()).collect(Collectors.toSet());
         Set<Long> shinyCollected = draws.stream().filter(CollectionDraw::isShiny)
                 .map(draw -> draw.getCollectible().getId()).collect(Collectors.toSet());
+        long catalogCount = collectibleCatalogRepository.countByEnabledTrue();
+        ShinyDrawStatus shinyDrawStatus = shinyDrawStatus(member.getUUID(), normalCollected);
         return new GameSummaryResponse(
                 getBallBalances(member),
-                collectibleCatalogRepository.countByEnabledTrue(),
+                catalogCount,
                 collected.size(),
-                shinyCollected.size());
+                shinyCollected.size(),
+                normalCollected.size(),
+                catalogCount * 2,
+                normalCollected.size() + shinyCollected.size(),
+                shinyDrawStatus);
     }
 
     public List<CollectionItemResponse> getCollection(Member member) {
@@ -327,7 +336,11 @@ public class GamificationService {
                 .filter(CollectibleCatalog::isEnabled)
                 .map(collectible -> {
                     List<CollectionDraw> draws = drawsByCollectibleId.getOrDefault(collectible.getId(), Collections.emptyList());
-                    return new CollectionItemResponse(collectible, draws.size(), draws.stream().filter(CollectionDraw::isShiny).count());
+                    return new CollectionItemResponse(
+                            collectible,
+                            draws.size(),
+                            draws.stream().filter(draw -> !draw.isShiny()).count(),
+                            draws.stream().filter(CollectionDraw::isShiny).count());
                 })
                 .collect(Collectors.toList());
     }
@@ -340,37 +353,58 @@ public class GamificationService {
 
     @Transactional
     public DrawResponse draw(Member authenticatedMember) {
-        return draw(authenticatedMember, BallType.NORMAL);
+        return draw(authenticatedMember, false);
     }
 
     @Transactional
-    public DrawResponse draw(Member authenticatedMember, BallType requestedBallType) {
+    public DrawResponse draw(Member authenticatedMember, boolean shiny) {
         Member member = memberRepository.findByUUIDForUpdate(authenticatedMember.getUUID())
                 .orElseThrow(() -> new NoSuchElementException("회원을 찾을 수 없습니다."));
         synchronizeActivityHourReward(member);
+        int drawCost = shiny ? 2 : 1;
         BallType ballType = BallType.NORMAL;
         long ballCount = ballTransactionRepository.getBalanceByMemberUuid(member.getUUID());
-        if (ballCount < 1) {
+        if (ballCount < drawCost) {
             throw new ConflictException("사용할 포켓볼이 부족합니다.");
         }
 
         Map<CollectibleRarity, List<CollectibleCatalog>> candidatesByRarity = new EnumMap<>(CollectibleRarity.class);
         for (CollectibleRarity rarity : availableRarities(BallType.NORMAL)) {
-            List<CollectibleCatalog> candidates = collectibleCatalogRepository.findUncollectedByMemberUuidAndRarity(member.getUUID(), rarity);
+            List<CollectibleCatalog> candidates = collectibleCatalogRepository.findUncollectedVariantByMemberUuidAndRarity(member.getUUID(), rarity, shiny);
             if (!candidates.isEmpty()) {
                 candidatesByRarity.put(rarity, candidates);
             }
         }
         if (candidatesByRarity.isEmpty()) {
-            throw new ConflictException("모든 포켓몬을 수집했습니다.");
+            if (shiny) {
+                ShinyDrawStatus shinyDrawStatus = shinyDrawStatus(member.getUUID(), null);
+                throw new ConflictException(ShinyDrawStatus.NEEDS_NORMAL == shinyDrawStatus
+                        ? "이로치 뽑기는 일반 포켓몬을 먼저 획득한 뒤 이용할 수 있습니다."
+                        : "획득한 포켓몬의 이로치를 모두 수집했습니다.");
+            }
+            throw new ConflictException("모든 일반 포켓몬을 수집했습니다.");
         }
 
         CollectibleRarity rarity = selectRarity(candidatesByRarity.keySet());
         List<CollectibleCatalog> candidates = candidatesByRarity.get(rarity);
         CollectibleCatalog collectible = candidates.get(RANDOM.nextInt(candidates.size()));
-        CollectionDraw draw = collectionDrawRepository.save(new CollectionDraw(member, collectible, RANDOM.nextInt(100) == 0));
-        ballTransactionRepository.save(new BallTransaction(member, -1, BallTransactionType.DRAW, ballType, "DRAW", draw.getId().toString()));
+        CollectionDraw draw = collectionDrawRepository.save(new CollectionDraw(member, collectible, shiny));
+        ballTransactionRepository.save(new BallTransaction(member, -drawCost, BallTransactionType.DRAW, ballType,
+                shiny ? "SHINY_DRAW" : "DRAW", draw.getId().toString()));
         return new DrawResponse(draw, getBallBalances(member));
+    }
+
+    private ShinyDrawStatus shinyDrawStatus(String memberUuid, Set<Long> normalCollected) {
+        boolean hasNormalCollectible = normalCollected != null
+                ? !normalCollected.isEmpty()
+                : collectionDrawRepository.findAllByMemberUuidWithCollectible(memberUuid).stream()
+                        .anyMatch(draw -> !draw.isShiny());
+        if (!hasNormalCollectible) {
+            return ShinyDrawStatus.NEEDS_NORMAL;
+        }
+        return collectibleCatalogRepository.existsUncollectedShinyVariantForMember(memberUuid)
+                ? ShinyDrawStatus.AVAILABLE
+                : ShinyDrawStatus.COMPLETE;
     }
 
     private void synchronizeActivityHourReward(Member member) {

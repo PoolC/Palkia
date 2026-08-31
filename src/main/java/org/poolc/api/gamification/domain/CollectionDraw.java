@@ -8,7 +8,11 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Table(name = "collection_draw")
+@Table(
+        name = "collection_draw",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_collection_draw_member_collectible_variant",
+                columnNames = {"member_uuid", "collectible_id", "shiny"}))
 @SequenceGenerator(name = "COLLECTION_DRAW_SEQ", sequenceName = "COLLECTION_DRAW_SEQ")
 public class CollectionDraw {
     @Id
