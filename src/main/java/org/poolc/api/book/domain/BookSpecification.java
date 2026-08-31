@@ -31,6 +31,18 @@ public class BookSpecification {
         };
     }
 
+    public static Specification<Book> findByTitleOrAuthorAndSortOption(String keyword, String sortOption, BookCategory category) {
+        return (root, query, criteriaBuilder) -> {
+            Predicate predicate = criteriaBuilder.or(
+                    criteriaBuilder.like(root.get("title"), "%" + keyword + "%"),
+                    criteriaBuilder.like(root.get("author"), "%" + keyword + "%")
+            );
+            predicate = withCategory(root, criteriaBuilder, predicate, category);
+            applySort(root, query, criteriaBuilder, sortOption);
+            return predicate;
+        };
+    }
+
     public static Specification<Book> findByTagsContainingAndSortOption(String keyword, String sortOption, BookCategory category) {
         return (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.isMember(keyword, root.get("tags"));

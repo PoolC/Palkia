@@ -51,6 +51,8 @@ public class BookServiceImpl implements BookService {
             books = bookRepository.findAll(BookSpecification.findByTitleAndSortOption(keyword, sortOption.name(), category), PageRequest.of(page, PAGE_SIZE));
         }else if (option == BookSearchOption.AUTHOR) {
             books = bookRepository.findAll(BookSpecification.findByAuthorAndSortOption(keyword, sortOption.name(), category), PageRequest.of(page, PAGE_SIZE));
+        } else if (option == BookSearchOption.TITLE_OR_AUTHOR) {
+            books = bookRepository.findAll(BookSpecification.findByTitleOrAuthorAndSortOption(keyword, sortOption.name(), category), PageRequest.of(page, PAGE_SIZE));
         } else if (option == BookSearchOption.TAG) {
             books = bookRepository.findAll(BookSpecification.findByTagsContainingAndSortOption(keyword, sortOption.name(), category), PageRequest.of(page, PAGE_SIZE));
         } else {
