@@ -21,11 +21,11 @@ export EXPIRE_LENGTH_IN_MILLISECONDS=3600000
 
 ### Local Development
 
-로컬 개발은 Docker Compose로 PostgreSQL, MinIO, Spring Boot API를 함께 띄웁니다.
-호스트에 Java 11이 없다면 이 방식을 사용하세요.
+로컬 개발은 Docker Compose로 프론트엔드, PostgreSQL, MinIO, Spring Boot API를 함께 띄웁니다.
+호스트의 Java 버전과 관계없이 이 방식을 사용하세요.
 
 ```shell
-docker compose -f docker-compose.local.yml up -d postgres minio minio-init api
+docker compose -f docker-compose.local.yml up -d
 ```
 
 API가 처음 기동되면 Hibernate가 빈 DB에 테이블을 생성합니다. 그 다음 개발용 seed를 넣습니다.
@@ -51,6 +51,7 @@ pending / poolc1234
 
 ```text
 Backend API: http://localhost:8080
+Frontend: http://localhost:3000
 PostgreSQL: localhost:5432
 MinIO API: http://localhost:9000
 MinIO Console: http://localhost:9001
@@ -111,4 +112,3 @@ compiler(`⌘,` > `Build, Execution, Deployment` > `Compiler` > `Java Compiler` 
 ### Deploy
 
 TODO with docker
-

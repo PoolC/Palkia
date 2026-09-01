@@ -71,6 +71,21 @@ services:
       - .:/workspace
       - poolc-gradle-cache:/root/.gradle
 
+  frontend:
+    image: node:20-alpine
+    container_name: poolc-fe-dev
+    working_dir: /workspace
+    command: sh -c "corepack enable && yarn workspace @dialga/poolc.org start --host 0.0.0.0"
+    depends_on:
+      - api
+    environment:
+      VITE_API_BASE_URL: http://api:8080
+      VITE_OPEN: "false"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../fe:/workspace
+
 volumes:
   poolc-postgres-data:
   poolc-minio-data:
