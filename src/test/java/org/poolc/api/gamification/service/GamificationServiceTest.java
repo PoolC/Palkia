@@ -267,7 +267,7 @@ class GamificationServiceTest {
     }
 
     @Test
-    void collectionKeepsTotalAndNormalOwnershipCountsSeparate() {
+    void collectionExposesNormalAndShinyOwnershipSeparately() {
         CollectibleCatalog collectible = org.mockito.Mockito.mock(CollectibleCatalog.class);
         CollectionDraw normalDraw = org.mockito.Mockito.mock(CollectionDraw.class);
         CollectionDraw shinyDraw = org.mockito.Mockito.mock(CollectionDraw.class);
@@ -284,9 +284,8 @@ class GamificationServiceTest {
         List<CollectionItemResponse> response = service.getCollection(member);
 
         assertThat(response).singleElement().satisfies(item -> {
-            assertThat(item.getOwnedCount()).isEqualTo(2L);
-            assertThat(item.getNormalOwnedCount()).isEqualTo(1L);
-            assertThat(item.getShinyCount()).isEqualTo(1L);
+            assertThat(item.isNormalOwned()).isTrue();
+            assertThat(item.isShinyOwned()).isTrue();
         });
     }
 

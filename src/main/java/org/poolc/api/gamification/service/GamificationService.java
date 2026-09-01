@@ -338,9 +338,8 @@ public class GamificationService {
                     List<CollectionDraw> draws = drawsByCollectibleId.getOrDefault(collectible.getId(), Collections.emptyList());
                     return new CollectionItemResponse(
                             collectible,
-                            draws.size(),
-                            draws.stream().filter(draw -> !draw.isShiny()).count(),
-                            draws.stream().filter(CollectionDraw::isShiny).count());
+                            draws.stream().anyMatch(draw -> !draw.isShiny()),
+                            draws.stream().anyMatch(CollectionDraw::isShiny));
                 })
                 .collect(Collectors.toList());
     }
