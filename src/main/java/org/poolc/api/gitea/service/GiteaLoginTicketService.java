@@ -34,9 +34,6 @@ public class GiteaLoginTicketService {
     @Value("${gitea.login-ticket.ttl-seconds:60}")
     private long ticketTtlSeconds;
 
-    @Value("${gitea.login-ticket.web-login-url:http://git.dev.poolc.org/_poolc_login}")
-    private String webLoginUrl;
-
     @Value("${gitea.proxy.api-key:${kubernetes.api.key:local-dev}}")
     private String proxyApiKey;
 
@@ -49,7 +46,7 @@ public class GiteaLoginTicketService {
 
         tickets.put(ticket, new TicketClaims(GiteaUserHeaders.of(member), expiresAt));
 
-        return new GiteaLoginTicketResponse(ticket, expiresAt, webLoginUrl + "?ticket=" + ticket);
+        return new GiteaLoginTicketResponse(ticket, expiresAt);
     }
 
     public GiteaUserHeaders consumeLoginTicket(String apiKey, String ticket) {

@@ -30,7 +30,6 @@ public class GiteaLoginAcceptanceTest extends AcceptanceTest {
 
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(ticket.getTicket()).isNotBlank();
-        assertThat(ticket.getLoginUrl()).contains(ticket.getTicket());
         assertThat(validateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(validateResponse.header("X-WEBAUTH-USER")).isEqualTo(AuthAcceptanceTest.member_id);
         assertThat(validateResponse.header("X-WEBAUTH-EMAIL")).isEqualTo("example@email.com");

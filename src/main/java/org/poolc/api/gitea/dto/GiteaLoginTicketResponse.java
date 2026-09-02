@@ -10,16 +10,13 @@ import java.time.Instant;
 public class GiteaLoginTicketResponse {
     private final String ticket;
     private final Instant expiresAt;
-    private final String loginUrl;
 
     @JsonCreator
     public GiteaLoginTicketResponse(
             @JsonProperty("ticket") String ticket,
-            @JsonProperty("expiresAt") Instant expiresAt,
-            @JsonProperty("loginUrl") String loginUrl
+            @JsonProperty("expiresAt") Instant expiresAt
     ) {
         this.ticket = ticket;
         this.expiresAt = expiresAt;
-        this.loginUrl = loginUrl;
     }
 }

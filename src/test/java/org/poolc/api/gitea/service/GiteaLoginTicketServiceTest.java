@@ -51,7 +51,6 @@ class GiteaLoginTicketServiceTest {
     private static GiteaLoginTicketService createService() {
         GiteaLoginTicketService service = new GiteaLoginTicketService();
         ReflectionTestUtils.setField(service, "ticketTtlSeconds", 60L);
-        ReflectionTestUtils.setField(service, "webLoginUrl", "http://git.dev.poolc.org/_poolc_login");
         ReflectionTestUtils.setField(service, "proxyApiKey", "test-gitea-proxy-key");
         return service;
     }
